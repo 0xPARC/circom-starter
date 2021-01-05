@@ -3,6 +3,19 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "description": "A basic circom project that verifies that a private preimage hashes to a claimed hash.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/briangu33/circom-starter.git"
+  },
+  "bugs": {
+    "url": "https://github.com/briangu33/circom-starter/issues"
+  },
+  "author": "Brian Gu",
+  "contributors": [
+    "Jacob Rosenthal"
+  ],
+  "homepage": "https://github.com/briangu33/circom-starter#readme",
   "dependencies": {},
   "devDependencies": {
     "circom": "^0.5.34",
