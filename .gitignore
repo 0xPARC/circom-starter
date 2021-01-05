@@ -11,5 +11,3 @@ circuits-compiled/
 **/verification_key.json
 **/verifier.sol
 **/witness.wtns
-.env
-
