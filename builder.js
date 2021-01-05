@@ -27,9 +27,7 @@ for (circuitName of circuitsList.split(',')) {
   }
 
   process.chdir(cwd + '/' + circuitName);
-
-  // doesnt catch yet
-  // https://github.com/iden3/snarkjs/pull/75
+  
   try {
     execSync('npx circom circuit.circom --r1cs --wasm --sym', {
       stdio: 'inherit',

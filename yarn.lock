@@ -125,9 +125,9 @@ blake2b-wasm@^1.1.0:
   dependencies:
     nanoassert "^1.0.0"
 
-"blake2b-wasm@https://github.com/jbaylina/blake2b-wasm.git":
+"blake2b-wasm@git+https://github.com/jbaylina/blake2b-wasm.git":
   version "2.1.0"
-  resolved "https://github.com/jbaylina/blake2b-wasm.git#0d5f024b212429c7f50a7f533aa3a2406b5b42b3"
+  resolved "git+https://github.com/jbaylina/blake2b-wasm.git#0d5f024b212429c7f50a7f533aa3a2406b5b42b3"
   dependencies:
     nanoassert "^1.0.0"
 
@@ -899,7 +899,7 @@ set-blocking@^2.0.0:
   resolved "https://registry.yarnpkg.com/set-blocking/-/set-blocking-2.0.0.tgz#045f9782d011ae9a6803ddd382b24392b3d890f7"
   integrity sha1-BF+XgtARrppoA93TgrJDkrPYkPc=
 
-snarkjs@^0.3.44:
+snarkjs@^0.3.51:
   version "0.3.51"
   resolved "https://registry.yarnpkg.com/snarkjs/-/snarkjs-0.3.51.tgz#bf2ce8cfb4134881e2e462d6e5599cefac3e636d"
   integrity sha512-x5faduQy5WE2tmYRMmtRX0usfNjS4KKSNQNdLBsaNERq8fpN+RsLLcM0tw2GsmrA4deJ5Le2Zui7ck1SD3eEdA==
