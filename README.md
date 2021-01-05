@@ -8,7 +8,15 @@ A basic circom project that verifies that a private preimage hashes to a claimed
 
 ## Building assets
 
-After you edit a circom file like `hash/circuit.circom`, you'll need to rebuild your assets. Use `yarn dev` or `ctrl-shift-b` in vscode to compile circuits, generate zkey (deterministic), generate a proof for the `input.json` input, and verify the proof.
+After you edit a circom file like `hash/circuit.circom`, you'll need to recompile circuits, generate zkey (deterministic), generate a proof for the `input.json` input, and verify the proof.
+
+Theres three ways to build:
+
+- Use `yarn dev`
+- Use vscode npm scripts explorer [run button](https://user-images.githubusercontent.com/38270282/90230165-68adf100-de19-11ea-9ac8-e23173d962a0.gif)
+- `ctrl-shift-b` in vscode
+
+Irrelevant intermediate build files are gitignored and don't need to be checked in.
 
 ### Warning
 
