@@ -1,0 +1,16 @@
+{
+  "name": "circuits",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "circom": "^0.5.34",
+    "circomlib": "^0.4.1",
+    "dotenv": "^8.2.0",
+    "snarkjs": "^0.3.44"
+  },
+  "scripts": {
+    "dev": "node builder.js hash circuits-compiled keys true"
+  }
+}
