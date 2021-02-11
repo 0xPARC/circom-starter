@@ -1,13 +1,6 @@
+# node
 node_modules/
-keys/
-circuits-compiled/
-**/proof.json
-**/circuit.r1cs
-**/circuit.sym
-**/circuit.wasm
-**/circuit.zkey
-**/*.zkey
-**/public.json
-**/verification_key.json
-**/verifier.sol
-**/witness.wtns
+
+# hardhat
+cache
+artifacts
