@@ -10,6 +10,9 @@
     "dotenv": "^8.2.0",
     "snarkjs": "^0.3.51"
   },
+  "engines": {
+    "node": ">=14"
+  },
   "scripts": {
     "dev": "node builder.js hash circuits-compiled keys true"
   }
