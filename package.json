@@ -6,7 +6,7 @@
   "dependencies": {},
   "devDependencies": {
     "hardhat": "^2.2.0",
-    "hardhat-circom": "1.0.0"
+    "hardhat-circom": "^1.0.0"
   },
   "engines": {
     "node": ">=14"
