@@ -6,11 +6,8 @@ require('hardhat-circom');
 module.exports = {
   solidity: "0.6.7",
   circom: {
-    ptau: "hash.ptau",
-    circuits: [
-      {
-        name: `hash`,
-      },
-    ],
+    inputBasePath: "./circuits",
+    ptau: "pot15_final.ptau",
+    circuits: [{ name: "hash" }],
   },
 };
