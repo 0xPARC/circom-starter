@@ -5,12 +5,14 @@
   "license": "MIT",
   "dependencies": {},
   "devDependencies": {
-    "circom": "^0.5.34",
-    "circomlib": "^0.4.1",
-    "dotenv": "^8.2.0",
-    "snarkjs": "^0.3.51"
+    "hardhat": "^2.2.0",
+    "hardhat-circom": "^1.0.0"
+  },
+  "engines": {
+    "node": ">=14"
   },
   "scripts": {
-    "dev": "node builder.js hash circuits-compiled keys true"
+    "circom:dev": "hardhat circom --deterministic --debug --verbose",
+    "circom:prod": "hardhat circom --verbose"
   }
 }

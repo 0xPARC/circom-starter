@@ -1,6 +1,28 @@
 # circom-starter
-A basic circom project with jacob rosenthal's scripts. Verifies that a private preimage hashes to a claimed hash.
+
+A basic circom project using [Hardhat](https://github.com/nomiclabs/hardhat) and [hardhat-circom](https://github.com/projectsophon/hardhat-circom). This combines the multiple steps of the [Circom](https://github.com/iden3/circom) and [SnarkJS](https://github.com/iden3/snarkjs) workflow into your [Hardhat](https://hardhat.org) workflow.
+
+By providing configuration containing your Phase 1 Powers of Tau and circuits, this plugin will:
+
+1. Compile the circuits
+2. Apply the final beacon
+3. Output your `wasm` and `zkey` files
+4. Generate and output a `Verifier.sol`
+
+## Documentation
+
+See the source projects for full documentation and configuration
+
+## Install
 
 `yarn` to install dependencies
 
-`yarn dev` to compile circuit, generate zkey (deterministic), generate a proof for the `input.json` input, and verify the proof.
+## Development builds
+
+`yarn circom:dev` to build deterministic development circuits.
+
+Further, for debugging purposes, you may wish to inspect the intermediate files. This is possible with the `--debug` flag which the `circom:dev` task enables by default. You'll find them (by default) in `artifacts/circom/`
+
+## Production builds
+
+`yarn circom:prod` for production builds (using `Date.now()` as entropy)
