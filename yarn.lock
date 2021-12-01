@@ -1339,10 +1339,10 @@ growl@1.10.5:
   resolved "https://registry.yarnpkg.com/growl/-/growl-1.10.5.tgz#f2735dc2283674fa67478b10181059355c369e5e"
   integrity sha512-qBr4OuELkhPenW6goKVXiv47US3clb3/IbuWF9KNKEijAy9oeHxU9IgzjvJhHkUzhaj7rOUD7+YGWqUjLp5oSA==
 
-hardhat-circom@1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/hardhat-circom/-/hardhat-circom-1.0.0.tgz#2dea5624964a84d1935610b37876fd66b1400820"
-  integrity sha512-UDDx9uFeG9CWFM9aRcuYnt5QCJzsb/8bpSl+IjtQdDW63eyIcmK+ytE9WvyMq78PP6SCSw5qqDbdcchv+E3tLw==
+hardhat-circom@^1.0.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/hardhat-circom/-/hardhat-circom-1.2.0.tgz#aaf8c1defe5320bd225cf22206c5df260dc9a424"
+  integrity sha512-DYE6cGx+SxVK/NIHDBH0jxK/ATe2/Cy+H8qcaUQ/X453r6j9YZtE2gTpMf56AFoDNKO33CMPW0U8JL8MbH4tlw==
   dependencies:
     circom "0.5.45"
     circomlib "^0.2.4"
