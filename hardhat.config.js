@@ -8,6 +8,16 @@ module.exports = {
   circom: {
     inputBasePath: "./circuits",
     ptau: "pot15_final.ptau",
-    circuits: [{ name: "hash" }],
+    circuits: [
+      {
+        name: "division"
+      },
+      {
+        name: "simple-polynomial",
+      },
+      {
+        name: "hash",
+      }
+    ],
   },
 };
