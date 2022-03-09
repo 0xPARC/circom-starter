@@ -11,12 +11,17 @@ module.exports = {
     circuits: [
       {
         name: "division"
+        // No protocol, so it defaults to groth16
       },
       {
         name: "simple-polynomial",
+        // Generate PLONK
+        protocol: 'plonk'
       },
       {
         name: "hash",
+        // Explicitly generate groth16
+        protocol: "groth16"
       }
     ],
   },
