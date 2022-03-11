@@ -1383,10 +1383,10 @@ growl@1.10.5:
   resolved "https://registry.yarnpkg.com/growl/-/growl-1.10.5.tgz#f2735dc2283674fa67478b10181059355c369e5e"
   integrity sha512-qBr4OuELkhPenW6goKVXiv47US3clb3/IbuWF9KNKEijAy9oeHxU9IgzjvJhHkUzhaj7rOUD7+YGWqUjLp5oSA==
 
-hardhat-circom@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/hardhat-circom/-/hardhat-circom-2.0.0.tgz#ed47083155f47a155f8617c1f252209929607779"
-  integrity sha512-o62ckwwqKIPkZAPMNKhwb6htHbiDR1YiBldxziQlac8TUkJ1lA36OunezNq2xBWMnHIe9Uj4VaaooMAGzXQ8Ow==
+hardhat-circom@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/hardhat-circom/-/hardhat-circom-2.1.0.tgz#90dcbdb77979732b2e87b0e91fa61cc913d371ec"
+  integrity sha512-S8TkHSDhMY/61wtmQ8lJ5VCbAjO/wVGDQFNy5Tamu+BfmAH9ZmrpCkhCBec87QPe3tw/4UpNJpKyxtxnPHMODw==
   dependencies:
     camelcase "^6.3.0"
     circom "0.5.46"

@@ -7,7 +7,7 @@
   "devDependencies": {
     "circomlib": "0.5.5",
     "hardhat": "^2.2.0",
-    "hardhat-circom": "^2.0.0"
+    "hardhat-circom": "^2.1.0"
   },
   "engines": {
     "node": ">=14"
