@@ -5,9 +5,9 @@
   "license": "MIT",
   "dependencies": {},
   "devDependencies": {
-    "circomlib": "0.5.5",
-    "hardhat": "^2.2.0",
-    "hardhat-circom": "^2.1.0"
+    "circomlib": "^2.0.3",
+    "hardhat": "^2.9.1",
+    "hardhat-circom": "^3.0.1"
   },
   "engines": {
     "node": ">=16"
