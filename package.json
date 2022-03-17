@@ -10,7 +10,7 @@
     "hardhat-circom": "^2.1.0"
   },
   "engines": {
-    "node": ">=14"
+    "node": ">=16"
   },
   "scripts": {
     "circom:dev": "hardhat circom --deterministic --debug --verbose",
