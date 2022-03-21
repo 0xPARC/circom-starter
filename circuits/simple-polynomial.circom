@@ -1,5 +1,7 @@
+pragma circom 2.0.3;
+
 template Main() {
-  signal private input x;
+  signal input x;
   signal x_squared;
   signal x_cubed;
   signal output out;

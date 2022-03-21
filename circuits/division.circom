@@ -1,8 +1,10 @@
+pragma circom 2.0.3;
+
 template Main() {
-  signal private input x1;
-  signal private input x2;
-  signal private input x3;
-  signal private input x4;
+  signal input x1;
+  signal input x2;
+  signal input x3;
+  signal input x4;
 
   signal y1;
   signal y2;
@@ -18,4 +20,4 @@ template Main() {
   out === y2 - x4;
 }
 
-component main = Main();
+component main { public [ x2 ] } = Main();
