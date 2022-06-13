@@ -807,10 +807,10 @@ cipher-base@^1.0.0, cipher-base@^1.0.1, cipher-base@^1.0.3:
     inherits "^2.0.1"
     safe-buffer "^5.0.1"
 
-circom2@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/circom2/-/circom2-0.2.0.tgz#e4a254725d5b02fc084f556639e6fed72c443a40"
-  integrity sha512-ODA9cNWS3+JYZ5QmkX6OZolBj3i1Ra4Ga6FR5fNkUAmG0HdN4v4LIeFPBXQp156cF20rWEFCLoysAzZAJL5gLA==
+circom2@^0.2.1:
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/circom2/-/circom2-0.2.2.tgz#d17927d183a1b706fe3699458046b3722610b2e6"
+  integrity sha512-JN/nyuMHvsZolwtjC2xbn5p7Wz5Au7Vldbcq+IiSlYQVe+Nva9RoGWcdlY84unykCINN/3wPvJVsv+Fw+9hrbQ==
   dependencies:
     "@wasmer/wasi" "^0.12.0"
     is-typed-array "^1.1.8"
@@ -1447,19 +1447,20 @@ growl@1.10.5:
   resolved "https://registry.yarnpkg.com/growl/-/growl-1.10.5.tgz#f2735dc2283674fa67478b10181059355c369e5e"
   integrity sha512-qBr4OuELkhPenW6goKVXiv47US3clb3/IbuWF9KNKEijAy9oeHxU9IgzjvJhHkUzhaj7rOUD7+YGWqUjLp5oSA==
 
-hardhat-circom@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/hardhat-circom/-/hardhat-circom-3.0.1.tgz#79e922e1beb85da5223e389d85d19d5236b0d291"
-  integrity sha512-2st65PnZ11mDJvhMJgtegojZBhprR3lCkf6GdNrYtnTeboCA7RaVYGXoCLM5F3E+vExUtsvA35FrkbwnhrXv0w==
+hardhat-circom@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/hardhat-circom/-/hardhat-circom-3.1.0.tgz#c634df41fe23c5c754325c59953b98881f22193a"
+  integrity sha512-8gP5qtc0vIBKNwna6T/71HmPAcc7K8DSuq8U3K9fdvFHR4zdxUWbLhWiEry7d/nUd9Q4wbAhyfS31WDOf4V0dg==
   dependencies:
     "@phated/unionfs" "^4.5.0"
     camelcase "^6.3.0"
     circom "0.5.46"
-    circom2 "^0.2.0"
+    circom2 "^0.2.1"
     debug "^4.3.3"
     memfs "^3.4.1"
     shimmer "^1.2.1"
     snarkjs "^0.4.14"
+    undici "^5.4.0"
 
 hardhat@^2.9.1:
   version "2.9.1"
@@ -2799,6 +2800,11 @@ undici@^4.14.1:
   version "4.15.1"
   resolved "https://registry.yarnpkg.com/undici/-/undici-4.15.1.tgz#c2c0e75f232178f0e6781f6b46c81ccc15065f6e"
   integrity sha512-h8LJybhMKD09IyQZoQadNtIR/GmugVhTOVREunJrpV6RStriKBFdSVoFzEzTihwXi/27DIBO+Z0OGF+Mzfi0lA==
+
+undici@^5.4.0:
+  version "5.4.0"
+  resolved "https://registry.yarnpkg.com/undici/-/undici-5.4.0.tgz#c474fae02743d4788b96118d46008a24195024d2"
+  integrity sha512-A1SRXysDg7J+mVP46jF+9cKANw0kptqSFZ8tGyL+HBiv0K1spjxPX8Z4EGu+Eu6pjClJUBdnUPlxrOafR668/g==
 
 universalify@^0.1.0:
   version "0.1.2"
