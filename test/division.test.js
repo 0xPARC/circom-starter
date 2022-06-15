@@ -1,5 +1,6 @@
 const hre = require("hardhat");
 const assert = require("assert");
+const path = require("path");
 
 describe("division circuit", () => {
   let circuit;
@@ -41,5 +42,16 @@ describe("division circuit", () => {
     const expected = { out: 3 };
     const witness = await circuit.calculateWitness(sampleInput, sanityCheck);
     await circuit.assertOut(witness, expected);
+  });
+
+  it("produces valid solidity call data", async () => {
+    const { proof, publicSignals } = await hre.snarkjs.groth16.fullProve(
+      sampleInput,
+      path.join(__dirname, "../circuits/division.wasm"),
+      path.join(__dirname, "../circuits/division.zkey")
+    );
+    console.log(
+      await hre.snarkjs.groth16.exportSolidityCallData(proof, publicSignals)
+    );
   });
 });

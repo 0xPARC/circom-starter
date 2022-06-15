@@ -1,5 +1,6 @@
 const hre = require("hardhat");
 const assert = require("assert");
+const path = require("path");
 
 describe("simple-polynomial circuit", () => {
   let circuit;
@@ -35,5 +36,16 @@ describe("simple-polynomial circuit", () => {
     const expected = { out: 127 };
     const witness = await circuit.calculateWitness(sampleInput, sanityCheck);
     await circuit.assertOut(witness, expected);
+  });
+
+  it("produces valid solidity call data", async () => {
+    const { proof, publicSignals } = await hre.snarkjs.plonk.fullProve(
+      sampleInput,
+      path.join(__dirname, "../circuits/simple-polynomial.wasm"),
+      path.join(__dirname, "../circuits/simple-polynomial.zkey")
+    );
+    console.log(
+      await hre.snarkjs.plonk.exportSolidityCallData(proof, publicSignals)
+    );
   });
 });
