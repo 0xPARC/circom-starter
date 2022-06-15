@@ -6,14 +6,16 @@
   "dependencies": {},
   "devDependencies": {
     "circomlib": "^2.0.3",
+    "circomlibjs": "^0.1.2",
     "hardhat": "^2.9.1",
-    "hardhat-circom": "^3.0.1"
+    "hardhat-circom": "^3.2.1"
   },
   "engines": {
     "node": ">=16"
   },
   "scripts": {
     "circom:dev": "hardhat circom --deterministic --debug --verbose",
-    "circom:prod": "hardhat circom --verbose"
+    "circom:prod": "hardhat circom --verbose",
+    "test": "hardhat test"
   }
 }
