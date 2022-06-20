@@ -7,7 +7,7 @@ module.exports = {
   solidity: "0.6.7",
   circom: {
     inputBasePath: "./circuits",
-    ptau: "pot15_final.ptau",
+    ptau: "https://hermezptau.blob.core.windows.net/ptau/powersOfTau28_hez_final_15.ptau",
     circuits: [
       {
         name: "division"
