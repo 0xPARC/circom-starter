@@ -1,5 +1,5 @@
 const hre = require("hardhat");
-const assert = require("assert");
+const { assert } = require("chai");
 
 describe("simple-polynomial circuit", () => {
   let circuit;
@@ -18,17 +18,15 @@ describe("simple-polynomial circuit", () => {
     await circuit.checkConstraints(witness);
   });
 
-  // TODO: Does this test make sense? Is it worthwhile?
-  // If so, what is a better name?
-  it("decorated output", async () => {
-    const expected =
-      "main.out --> 127\n" +
-      "main.x --> 5\n" +
-      "main.x_squared --> 25\n" +
-      "main.x_cubed --> undefined";
-
-    const witness = await circuit.calculateWitness(sampleInput, sanityCheck);
-    assert.strictEqual(await circuit.getDecoratedOutput(witness), expected);
+  it("has expected witness values", async () => {
+    const witness = await circuit.calculateLabeledWitness(
+      sampleInput,
+      sanityCheck
+    );
+    assert.propertyVal(witness, "main.x", "5");
+    assert.propertyVal(witness, "main.x_squared", "25");
+    assert.propertyVal(witness, "main.x_cubed", undefined);
+    assert.propertyVal(witness, "main.out", "127");
   });
 
   it("has the correct output", async () => {
