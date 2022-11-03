@@ -9,7 +9,7 @@
     "circomlib": "^2.0.3",
     "circomlibjs": "^0.1.2",
     "hardhat": "^2.9.1",
-    "hardhat-circom": "^3.3.0"
+    "hardhat-circom": "^3.3.2"
   },
   "engines": {
     "node": ">=16"
