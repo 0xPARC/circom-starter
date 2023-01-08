@@ -32,6 +32,10 @@ module.exports = {
         // Explicitly generate groth16
         protocol: "groth16",
       },
+      {
+        name: "semaphore",
+        // No protocol, so it defaults to groth16
+      },
     ],
   },
 };
