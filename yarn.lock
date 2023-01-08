@@ -581,6 +581,11 @@
     "@nomicfoundation/solidity-analyzer-win32-ia32-msvc" "0.1.0"
     "@nomicfoundation/solidity-analyzer-win32-x64-msvc" "0.1.0"
 
+"@openzeppelin/contracts@^4.8.0":
+  version "4.8.0"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-4.8.0.tgz#6854c37df205dd2c056bdfa1b853f5d732109109"
+  integrity sha512-AGuwhRRL+NaKx73WKRNzeCxOCOCxpaqF+kp8TJ89QzAipSwZy/NoflkWaL9bywXFRhIzXt8j38sfF7KBKCPWLw==
+
 "@phated/unionfs@^4.5.0":
   version "4.5.0"
   resolved "https://registry.yarnpkg.com/@phated/unionfs/-/unionfs-4.5.0.tgz#81bd1fc4c6691e30afbe6a6d9b3a0d4ffaaf671a"
@@ -735,6 +740,11 @@
     buffer-es6 "^4.9.3"
     path-browserify "^1.0.0"
     randomfill "^1.0.4"
+
+"@zk-kit/incremental-merkle-tree.sol@^1.3.3":
+  version "1.3.3"
+  resolved "https://registry.yarnpkg.com/@zk-kit/incremental-merkle-tree.sol/-/incremental-merkle-tree.sol-1.3.3.tgz#ec091912bd6862e978b7b693fcd35b5004d16017"
+  integrity sha512-Tm0MfrKii0JWgYJnyK0U4tlq69SWJemh16Tv3itvW4G2C7BLzgejnBbWomYPPrDHJBDgMDvIKETnb6/w5RLroQ==
 
 abort-controller@^3.0.0:
   version "3.0.0"
