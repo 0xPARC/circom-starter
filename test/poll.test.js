@@ -17,7 +17,7 @@ describe("testing a simple poll", function () {
     coordinator = accounts[0].address;
 
     // Deploy the verifier contract
-    const SemaphoreVerifier = await ethers.getContractFactory("Verifier16");
+    const SemaphoreVerifier = await ethers.getContractFactory("VerifyPoll");
     verifier = await SemaphoreVerifier.deploy();
     await verifier.deployed();
 
@@ -136,13 +136,11 @@ describe("testing a simple poll", function () {
     const nullifier = String(poseidon.F.toObject(poseidonNullifierHash));
     assert.propertyVal(witness, "main.nullifierHash", nullifier);
 
-    console.log("generating proof for input");
     const { proof, publicSignals } = await snarkjs.groth16.fullProve(
       sampleInput,
       "/Users/daryakaviani/priv-poll/circuits/semaphore.wasm",
       "/Users/daryakaviani/priv-poll/circuits/semaphore.zkey"
     );
-    console.log(`Generated proof ${JSON.stringify(proof)}`);
 
     const proofForTx = [
       proof.pi_a[0],
@@ -170,10 +168,7 @@ describe("testing a simple poll", function () {
       proof
     );
 
-    console.log("Proof verified: ", proofVerified)
     assert(proofVerified, "Proof did not verify.");
-
-    console.log(proofForTx);
 
     // Cast a vote
     const vote =
