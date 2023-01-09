@@ -24,6 +24,8 @@ interface IPrivPoll {
     struct Poll {
         address coordinator;
         PollState state;
+        uint256 yesVotes;
+        uint256 noVotes;
     }
 
     /// @dev Emitted when a new poll is created.
@@ -34,19 +36,17 @@ interface IPrivPoll {
     /// @dev Emitted when a poll is started.
     /// @param pollId: Id of the poll.
     /// @param coordinator: Coordinator of the poll.
-    /// @param encryptionKey: Key to encrypt the poll votes.
-    event PollStarted(uint256 pollId, address indexed coordinator, uint256 encryptionKey);
+    event PollStarted(uint256 pollId, address indexed coordinator);
 
     /// @dev Emitted when a user votes on a poll.
     /// @param pollId: Id of the poll.
-    /// @param vote: User encrypted vote.
+    /// @param vote: User vote.
     event VoteAdded(uint256 indexed pollId, bytes32 vote);
 
     /// @dev Emitted when a poll is ended.
     /// @param pollId: Id of the poll.
     /// @param coordinator: Coordinator of the poll.
-    /// @param decryptionKey: Key to decrypt the poll votes.
-    event PollEnded(uint256 pollId, address indexed coordinator, uint256 decryptionKey);
+    event PollEnded(uint256 pollId, address indexed coordinator);
 
     /// @dev Creates a poll and the associated Merkle tree/group.
     /// @param pollId: Id of the poll.
@@ -67,8 +67,7 @@ interface IPrivPoll {
 
     /// @dev Starts a pull and publishes the key to encrypt the votes.
     /// @param pollId: Id of the poll.
-    /// @param encryptionKey: Key to encrypt poll votes.
-    function startPoll(uint256 pollId, uint256 encryptionKey) external;
+    function startPoll(uint256 pollId) external;
 
     /// @dev Casts an anonymous vote in a poll.
     /// @param vote: Encrypted vote.
@@ -84,6 +83,5 @@ interface IPrivPoll {
 
     /// @dev Ends a pull and publishes the key to decrypt the votes.
     /// @param pollId: Id of the poll.
-    /// @param decryptionKey: Key to decrypt poll votes.
-    function endPoll(uint256 pollId, uint256 decryptionKey) external;
+    function endPoll(uint256 pollId) external returns (bool);
 }
