@@ -2,44 +2,47 @@ import prisma from '../../../lib/prisma';
 import { MerkleTree } from 'merkletreejs'
 import keccak256 from 'keccak256'
 
-export default async function storePoll() {
-    var title = "test"
-    var description = "testDesc"
-    var groupDescription = "testGroupDesc"
-    var createdAt = new Date()
-    var deadline = new Date()
+// Creates a merkle tree and stores the result inside of the database!
+// Returns the root hash of the merkle tree and the poll id
+export default async function storePoll(title: string, description: string, groupDescription: string, createdAt: number, deadline: number, addresses: string[]) {
+    var title = title
+    var description = description
+    var groupDescription = groupDescription
+    var dateCreatedAt = new Date(createdAt)
+    var dateDeadline = new Date(deadline)
 
-    var leaves = ["0xAAB27b150451726EC7738aa1d0A94505c8729bd1",
-            "0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5",
-            "0xDAFEA492D9c6733ae3d56b7Ed1ADB60692c98Bc5"]
-    var tree = new MerkleTree(leaves, keccak256)
+    // TODO: CONFIRM THAT ADDRESSES ARE VALID (Molly will probs take care of this)
+    var tree = new MerkleTree(addresses, keccak256)
     var root = tree.getRoot().toString('hex')
 
-    var root = await displayMerkleRoot()
-    await prisma.poll.create({
+    var poll = await prisma.poll.create({
         data : {
             title: title,
             description: description,
             groupDescription: groupDescription,
-            createdAt: createdAt,
-            deadline: deadline,
+            createdAt: dateCreatedAt,
+            deadline: dateDeadline,
             tree: {
                 create: {
                     rootHash: root,
-                    leaves: leaves,
+                    leaves: addresses,
                 }
                 
             }
         }
     })
-    const allUsers = await prisma.poll.findMany({
+    const allPolls = await prisma.poll.findMany({
         include: {
           tree: true,
         },
     })
-    console.dir(allUsers, { depth: null })
-    return root
+    // Print all polls!
+    console.dir(allPolls, { depth: null })
+
+    return {rootHash: root, pollId: poll.id}
 }
+
+// Can delete later!
 async function displayMerkleRoot() {
     // ... you will write your Prisma Client queries here
 
@@ -52,38 +55,4 @@ async function displayMerkleRoot() {
     // console.log(root)
     return root
 
-    // await prisma.$disconnect().catch(
-    //     async (e) => {
-    //         console.error(e); 
-    //         await prisma.$disconnect(); 
-    //         process.exit(1)
-    // }).then(
-        
-    // )
-
-    // var poll = await prisma.poll.create({
-    //     data : {
-    //         title: title,
-    //         description: description,
-    //         groupDescription: groupDescription,
-    //         createdAt: createdAt,
-    //         deadline: deadline,
-    //         tree: {
-    //             rootHash: root,
-    //             leaves: leaves,
-    //             pollId: 0,
-    //         }
-    //     }
-    // })
-
 }
-
-// displayMerkleRoot()
-//     .then(async () => {
-//     await prisma.$disconnect()
-//     })
-//     .catch(async (e) => {
-//     console.error(e)
-//     await prisma.$disconnect()
-//     process.exit(1)
-// })
