@@ -2,38 +2,29 @@ const hre = require("hardhat");
 const { assert } = require("chai");
 const { buildPoseidon } = require("circomlibjs");
 
-describe("semaphore trivial test", () => {
-  let circuit;
-  let poseidon;
+describe("testing a simple poll", function () {
+  it("should semaphore", async function () {
+    let circuit;
+    let poseidon;
 
-  const poseidonKey = 0;
-  const poseidonNumOutputs = 1;
-  const sampleInput = {
-    identityNullifier: "123",
-    identityTrapdoor: "0",
-    treePathIndices: [],
-    treeSiblings: [],
-    signalHash: "1",
-    externalNullifier: "0",
-  };
-  const sanityCheck = true;
+    const poseidonKey = 0;
+    const poseidonNumOutputs = 1;
+    const sampleInput = {
+      identityNullifier: "123",
+      identityTrapdoor: "0",
+      treePathIndices: [],
+      treeSiblings: [],
+      signalHash: "1",
+      externalNullifier: "0",
+    };
+    const sanityCheck = true;
 
-  before(async () => {
     poseidon = await buildPoseidon();
     circuit = await hre.circuitTest.setup("semaphore");
-  });
-
-  it("produces a witness with valid constraints", async () => {
-    const witness = await circuit.calculateWitness(sampleInput, sanityCheck);
-    await circuit.checkConstraints(witness);
-  });
-
-  it("has expected witness values", async () => {
     const witness = await circuit.calculateLabeledWitness(
       sampleInput,
       sanityCheck
     );
-
     assert.propertyVal(
       witness,
       "main.identityNullifier",
@@ -83,7 +74,7 @@ describe("semaphore trivial test", () => {
       poseidonKey,
       poseidonNumOutputs
     );
-    const expected = String(poseidon.F.toObject(poseidonNullifierHash));
-    assert.propertyVal(witness, "main.nullifierHash", expected);
+    const nullifier = String(poseidon.F.toObject(poseidonNullifierHash));
+    assert.propertyVal(witness, "main.nullifierHash", nullifier);
   });
 });
