@@ -1,0 +1,29 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "cockroachdb"
+  url      = env("DATABASE_URL")
+}
+
+model Poll {
+  id               Int         @id @default(sequence(increment: 1))
+  title            String
+  groupDescription String
+  description      String
+  createdAt        DateTime    @default(now())
+  deadline         DateTime    @default(now())
+  tree             MerkleTree?
+}
+
+model MerkleTree {
+  id       Int      @id @default(sequence(increment: 1))
+  rootHash String
+  leaves   String[]
+  pollId   Int      @unique
+  poll     Poll     @relation(fields: [pollId], references: [id])
+}
