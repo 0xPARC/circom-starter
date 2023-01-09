@@ -1,0 +1,91 @@
+// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
+import type { NextApiRequest, NextApiResponse } from 'next'
+import {relayVote} from './helpers/relayVote'
+import prisma from '../../lib/prisma'
+import { Prisma } from '@prisma/client'
+
+/** 
+ * @description: This is the API endpoint for submitting a vote via the relay.
+ */
+
+type Data = {
+  name: string
+  txHash: string
+  pollId: number
+}
+
+/** 
+ * @function: handler
+ * @description: This is the handler for the API endpoint.
+ * @param {string} req.body.data.nullifier - The nullifier to submit to the smart contract.
+ * @param {number} req.body.data.vote - The vote to submit to the smart contract {0,1}.
+ * @param {string} req.body.data.proof - The ZK-proof of the vote.
+ * @param {number} req.body.data.pollId - The poll id to submit to the smart contract.
+ */
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<Data>
+) {
+  if (req.method !== 'POST') {
+    res.status(405).json({
+      name: "POST endpoint", txHash: "", pollId: -1
+    })
+  }
+  if ("data" in req.body == false) {
+    res.status(400).json({
+      name: "No data", txHash: "", pollId: -1
+    })
+  }
+  var data = req.body.data
+
+  var nullifier, vote, proof, pollId
+
+  // Required fields!
+  if ("nullifier" in data == false) {
+    res.status(400).json({
+      name: "Must pass in nullifier", txHash: "", pollId: -1
+    })
+  } else {
+    nullifier = data.nullifier
+  }
+  if ("proof" in data == false) {
+    res.status(400).json({
+      name: "Must pass in a proof", txHash: "", pollId: -1
+    })
+  } else {
+    vote = data.vote
+  }
+  if ("vote" in data == false) {
+    res.status(400).json({
+      name: "Must pass in a vote", txHash: "", pollId: -1
+    })
+  } else {
+    proof = data.proof
+  }
+  if ("pollId" in data == false) {
+    res.status(400).json({
+      name: "Must pass in a poll id", txHash: "", pollId: -1
+    })
+  } else {
+    pollId = data.pollId
+  }
+
+
+  
+
+  var outputData = await relayVote(nullifier, vote, proof, pollId)
+
+  return res.status(200).json({ name: "Voted!", txHash: outputData.txHash, pollId: pollId })
+
+//   if (outputData.isValidPollId == false) {
+//     return res.status(400).json({ name: "invalid poll id", inTree: false, pollId: pollId })
+//   } else {
+//     if (outputData.inTree == true) {
+//       return res.status(200).json({ name: "address in tree", inTree: true, pollId: pollId })
+//     } else {
+//       return res.status(200).json({ name: "address not in tree", inTree: false, pollId: pollId })
+//     }
+//   }
+  
+  
+}
