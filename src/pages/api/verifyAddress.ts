@@ -4,25 +4,29 @@ import {verifyAddressInTree} from './helpers/merkle'
 import prisma from '../../lib/prisma'
 import { Prisma } from '@prisma/client'
 
+/** 
+ * @description: This is the API endpoint for verifying an address in a merkle tree.
+ */
+
 type Data = {
   name: string
   inTree: boolean
   pollId: number
 }
 
-// Accepts a POST request with a JSON body that is of the form:
-// data : {
-//   address,
-//   pollId,
-// 
-// }
+/** 
+ * @function: handler
+ * @description: This is the handler for the API endpoint.
+ * @param {string} req.body.data.address - The address to check against.
+ * @param {number} req.body.data.pollId - The poll id to check against.
+ */
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
-  if (req.method !== 'POST') {
+  if (req.method !== 'GET') {
     res.status(405).json({
-      name: "POST endpoint", inTree: false, pollId: -1
+      name: "GET endpoint", inTree: false, pollId: -1
     })
   }
   if ("data" in req.body == false) {
@@ -54,12 +58,12 @@ export default async function handler(
   var outputData = await verifyAddressInTree(data.address, data.pollId)
 
   if (outputData.isValidPollId == false) {
-    return res.status(400).json({ name: "Invalid PollId!", inTree: false, pollId: pollId })
+    return res.status(400).json({ name: "invalid poll id", inTree: false, pollId: pollId })
   } else {
     if (outputData.inTree == true) {
-      return res.status(200).json({ name: "Address in tree!", inTree: true, pollId: pollId })
+      return res.status(200).json({ name: "address in tree", inTree: true, pollId: pollId })
     } else {
-      return res.status(200).json({ name: "Address not in tree!", inTree: false, pollId: pollId })
+      return res.status(200).json({ name: "address not in tree", inTree: false, pollId: pollId })
     }
   }
   
