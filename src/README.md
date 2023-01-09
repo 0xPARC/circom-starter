@@ -20,6 +20,9 @@ To view the state of the database:
 npx prisma studio
 ```
 
+Open [http://localhost:5555](http://localhost:5555) with your browser to see the result.
+
+
 ## Load in Env Variables
 
 The variables necessary are the following:
