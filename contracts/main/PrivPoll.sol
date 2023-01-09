@@ -7,7 +7,7 @@ import "../base/SemaphoreGroups.sol";
 
 /// @title Semaphore voting contract.
 /// @dev The following code allows you to create polls, add voters and allow them to vote anonymously.
-contract SemaphoreVoting is IPrivPoll, SemaphoreCore, SemaphoreGroups {
+contract PrivPoll is IPrivPoll, SemaphoreCore, SemaphoreGroups {
     /// @dev Gets a tree depth and returns its verifier address.
     mapping(uint256 => IVerifier) internal verifiers;
 

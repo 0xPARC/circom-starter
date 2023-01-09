@@ -1,4 +1,5 @@
 require("hardhat-circom");
+require("@nomiclabs/hardhat-waffle");
 
 /**
  * @type import('hardhat/config').HardhatUserConfig
@@ -40,5 +41,13 @@ module.exports = {
         // No protocol, so it defaults to groth16
       },
     ],
+  },
+  networks: {
+    hardhat: {
+    },
+    goerli: {
+      url: `https://goerli.infura.io/v3/c87d47d90d134701ae50e884362ae262`, // <---- YOUR INFURA ID! (or it won't work)
+      accounts: ["0xce4c9b64990b51fb4f532b0366f2182a310a472772fef7b27c4fae602357067a"],
+    },
   },
 };

@@ -20,6 +20,7 @@ template CalculateSecret() {
     out <== poseidon.out;
 }
 
+
 // Hash secret using the Poseidon hash function (future: public key)
 template CalculateIdentityCommitment() {
     // secret = private key
