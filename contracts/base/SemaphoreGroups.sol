@@ -10,17 +10,19 @@ import "@openzeppelin/contracts/utils/Context.sol";
 /// @dev The following code allows you to create groups, add and remove members.
 /// You can use getters to obtain informations about groups (root, depth, number of leaves).
 abstract contract SemaphoreGroups is Context, ISemaphoreGroups {
-    using IncrementalBinaryTree for IncrementalTreeData;
+    /// @dev Gets a group id and returns the root.
+    mapping(uint256 => uint256) internal roots;
+    /// @dev Depth of the merkle tree.
+    mapping(uint256 => uint256) internal depths;
 
-    /// @dev Gets a group id and returns the tree data.
-    mapping(uint256 => IncrementalTreeData) internal merkleTree;
-
-    /// @dev Creates a new group by initializing the associated tree.
+    /// @dev Creates a new group by setting the merkle root of the tree.
     /// @param groupId: Id of the group.
-    /// @param merkleTreeDepth: Depth of the tree.
+    /// @param merkleTreeRoot: Merkle tree root.
+    /// @param merkleTreeDepth: Merkle tree depth.
     /// @param zeroValue: Zero value of the tree.
     function _createGroup(
         uint256 groupId,
+        uint256 merkleTreeRoot,
         uint256 merkleTreeDepth,
         uint256 zeroValue
     ) internal virtual {
@@ -28,12 +30,9 @@ abstract contract SemaphoreGroups is Context, ISemaphoreGroups {
             revert Semaphore__GroupIdIsNotLessThanSnarkScalarField();
         }
 
-        if (getMerkleTreeDepth(groupId) != 0) {
-            revert Semaphore__GroupAlreadyExists();
-        }
-
-        merkleTree[groupId].init(merkleTreeDepth, zeroValue);
-
+        roots[groupId] = merkleTreeRoot;
+        depths[groupId] = merkleTreeDepth;
+        
         emit GroupCreated(groupId, merkleTreeDepth, zeroValue);
     }
 
@@ -105,39 +104,39 @@ abstract contract SemaphoreGroups is Context, ISemaphoreGroups {
 
     /// @dev See {ISemaphoreGroups-getMerkleTreeRoot}.
     function getMerkleTreeRoot(uint256 groupId) public view virtual override returns (uint256) {
-        return merkleTree[groupId].root;
+        return roots[groupId];
     }
 
     /// @dev See {ISemaphoreGroups-getMerkleTreeDepth}.
     function getMerkleTreeDepth(uint256 groupId) public view virtual override returns (uint256) {
-        return merkleTree[groupId].depth;
+        return depths[groupId];
     }
 
-    /// @dev See {ISemaphoreGroups-getNumberOfMerkleTreeLeaves}.
-    function getNumberOfMerkleTreeLeaves(uint256 groupId) public view virtual override returns (uint256) {
-        return merkleTree[groupId].numberOfLeaves;
-    }
+    // /// @dev See {ISemaphoreGroups-getNumberOfMerkleTreeLeaves}.
+    // function getNumberOfMerkleTreeLeaves(uint256 groupId) public view virtual override returns (uint256) {
+    //     return merkleTree[groupId].numberOfLeaves;
+    // }
 
-    /// @dev Converts the path indices of a Merkle proof to the identity commitment index in the tree.
-    /// @param proofPathIndices: Path of the proof of membership.
-    /// @return Index of a group member.
-    function proofPathIndicesToMemberIndex(uint8[] calldata proofPathIndices) private pure returns (uint256) {
-        uint256 memberIndex = 0;
+    // /// @dev Converts the path indices of a Merkle proof to the identity commitment index in the tree.
+    // /// @param proofPathIndices: Path of the proof of membership.
+    // /// @return Index of a group member.
+    // function proofPathIndicesToMemberIndex(uint8[] calldata proofPathIndices) private pure returns (uint256) {
+    //     uint256 memberIndex = 0;
 
-        for (uint8 i = uint8(proofPathIndices.length); i > 0; ) {
-            if (memberIndex > 0 || proofPathIndices[i - 1] != 0) {
-                memberIndex *= 2;
+    //     for (uint8 i = uint8(proofPathIndices.length); i > 0; ) {
+    //         if (memberIndex > 0 || proofPathIndices[i - 1] != 0) {
+    //             memberIndex *= 2;
 
-                if (proofPathIndices[i - 1] == 1) {
-                    memberIndex += 1;
-                }
-            }
+    //             if (proofPathIndices[i - 1] == 1) {
+    //                 memberIndex += 1;
+    //             }
+    //         }
 
-            unchecked {
-                --i;
-            }
-        }
+    //         unchecked {
+    //             --i;
+    //         }
+    //     }
 
-        return memberIndex;
-    }
+    //     return memberIndex;
+    // }
 }

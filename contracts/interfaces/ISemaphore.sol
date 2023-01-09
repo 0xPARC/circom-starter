@@ -62,11 +62,13 @@ interface ISemaphore {
 
     /// @dev Creates a new group. Only the admin will be able to add or remove members.
     /// @param groupId: Id of the group.
+    /// @param root: Root of the tree.
     /// @param depth: Depth of the tree.
     /// @param zeroValue: Zero value of the tree.
     /// @param admin: Admin of the group.
     function createGroup(
         uint256 groupId,
+        uint256 root,
         uint256 depth,
         uint256 zeroValue,
         address admin
