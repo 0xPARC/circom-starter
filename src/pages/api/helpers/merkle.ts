@@ -4,7 +4,7 @@ import keccak256 from 'keccak256'
 
 // Creates a merkle tree and stores the result inside of the database!
 // Returns the root hash of the merkle tree and the poll id
-export default async function storePoll(title: string, description: string, groupDescription: string, createdAt: number, deadline: number, addresses: string[]) {
+export async function storePoll(title: string, description: string, groupDescription: string, createdAt: number, deadline: number, addresses: string[]) {
     var title = title
     var description = description
     var groupDescription = groupDescription
@@ -40,6 +40,33 @@ export default async function storePoll(title: string, description: string, grou
     console.dir(allPolls, { depth: null })
 
     return {rootHash: root, pollId: poll.id}
+}
+
+// Checks if some address is in specified merkle tree!
+export async function verifyAddressInTree(address: string, pollId: number) {
+
+    const data = await getTreeFromPollId(pollId)
+    if (data.tree == null) {
+        return {isValidPollId: false, inTree: false}
+    }
+    var tree = data.tree
+    var merkleTree = new MerkleTree(tree.leaves, keccak256)
+    const proof = merkleTree.getProof(address)
+    return {isValidPollId: true, inTree: merkleTree.verify(proof, address, merkleTree.getRoot())}
+}
+
+// Returns merkle tree
+async function getTreeFromPollId(pollId: number) {
+
+    const tree = await prisma.merkleTree.findUnique({
+        where: {
+            id: pollId
+        },
+    })
+    // Print all polls!
+    // console.dir(tree, { depth: null })
+
+    return {tree: tree, pollId: pollId}
 }
 
 // Can delete later!

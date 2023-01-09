@@ -1,6 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
-import storePoll from './helpers/merkle'
+import {storePoll} from './helpers/merkle'
 import prisma from '../../lib/prisma'
 import { Prisma } from '@prisma/client'
 
@@ -30,7 +30,6 @@ export default async function handler(
     res.status(405).json({
       name: "POST endpoint!", rootHash: "", pollId: -1, title: "", deadline: -1
     })
-    return
   }
   if ("data" in req.body == false) {
     res.status(400).json({
