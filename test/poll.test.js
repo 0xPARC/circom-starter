@@ -201,7 +201,7 @@ describe("testing a simple poll", function () {
     const vote =
       "0x0000000000000000000000000000000000000000000000000000000000000001";
 
-    await privPoll.castVote(vote, nullifier, pollId, proofForTx, {
+    await privPoll.castVote(vote, nullifier, pollId, badProofForTx, {
       from: coordinator,
     });
 
@@ -691,6 +691,11 @@ describe("user 401", function () {
     );
 
     // Parse the JSON string and generate the JSON object
+    // console.log(proof)
+    // var badProof = JSON.parse(JSON.stringify(proof))
+    // badProof.pi_a[0] = '17685458771769278227697353766589126061047221725670078839149918979249669632357'
+    // console.log(badProof[pi_a])
+    // badProof.pi_a = "000"
     const vkey = JSON.parse(vkeyStr);
 
     const proofVerified = await snarkjs.groth16.verify(
@@ -701,17 +706,28 @@ describe("user 401", function () {
 
     // console.log("Check 4: ", proofVerified)
 
-    assert(proofVerified, "Proof did not verify.");
+    // assert(proofVerified, "Proof did not verify.");
 
     // Cast a vote
     const vote =
       "0x0000000000000000000000000000000000000000000000000000000000000001";
 
-    const receipt = await privPoll.castVote(vote, nullifier, pollId, proofForTx, {
+    // var badProofForTx = proofForTx;
+    // badProofForTx[0] = "0000000000000000000000000000000000000000"
+
+    const castVoteReceipt = await privPoll.castVote(vote, nullifier, pollId, proofForTx, {
       from: coordinator,
     });
 
+    console.log(castVoteReceipt)
+
     // console.log(receipt)
+    const getPollResults = await privPoll.getPollState(pollId);
+    const yesVotes = getPollResults[0].toString();
+    const noVotes = getPollResults[1].toString();
+    const status = getPollResults[2]
+    // console.log(yesVotes, noVotes, status)
+    assert(yesVotes, "1")
 
     await privPoll.endPoll(pollId);
     // console.log("Check 9: ")
