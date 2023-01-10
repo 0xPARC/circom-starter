@@ -306,7 +306,7 @@ describe("testing a multi-user poll", function () {
     privPoll = await PrivPoll.deploy([
       {
         contractAddress: verifier.address,
-        merkleTreeDepth: "2",
+        merkleTreeDepth: "15",
       },
     ]);
     await privPoll.deployed();
@@ -315,10 +315,10 @@ describe("testing a multi-user poll", function () {
   it("cast a vote non-null tree", async function () {
     // Create a poll
     const merkleRoot =
-      "0x9ea648a7cac1c1e6010f0db859ec61dbcc574d84407af48ced8bcf8d678ad095";
-    const merkleTreeDepth = "2";
+      "18594020524654290899512777579579130926554658496346496506121992402799622149061";
+    const merkleTreeDepth = "15";
     const pollId = "1";
-    // console.log("Check 1: ", pollId)
+    console.log("Check 1: ", pollId)
     await privPoll.createPoll(pollId, coordinator, merkleRoot, merkleTreeDepth);
     // Start the poll
     await privPoll.startPoll(pollId, { from: coordinator });
@@ -330,12 +330,44 @@ describe("testing a multi-user poll", function () {
     const poseidonKey = 0;
     const poseidonNumOutputs = 1;
     const sampleInput = {
-      identityNullifier: "123",
+      identityNullifier: "101",
       identityTrapdoor: "0",
-      treePathIndices: [],
-      treeSiblings: [],
+      treePathIndices: [
+        "0",
+        "1",
+        "1",
+        "1",
+        "1",
+        "1",
+        "1",
+        "1",
+        "1",
+        "1",
+        "1",
+        "1",
+        "1",
+        "1",
+        "1"
+      ],
+      treeSiblings: [
+        "2288432836880142223029851275820672558598437651915204189407185299212339378544",
+        "14435153996940545406483052156559663770915414836007279032119378681709841197735",
+        "18624361856574916496058203820366795950790078780687078257641649903530959943449",
+        "19831903348221211061287449275113949495274937755341117892716020320428427983768",
+        "5101361658164783800162950277964947086522384365207151283079909745362546177817",
+        "11552819453851113656956689238827707323483753486799384854128595967739676085386",
+        "10483540708739576660440356112223782712680507694971046950485797346645134034053",
+        "7389929564247907165221817742923803467566552273918071630442219344496852141897",
+        "6373467404037422198696850591961270197948259393735756505350173302460761391561",
+        "14340012938942512497418634250250812329499499250184704496617019030530171289909",
+        "10566235887680695760439252521824446945750533956882759130656396012316506290852",
+        "14058207238811178801861080665931986752520779251556785412233046706263822020051",
+        "1841804857146338876502603211473795482567574429038948082406470282797710112230",
+        "6068974671277751946941356330314625335924522973707504316217201913831393258319",
+        "10344803844228993379415834281058662700959138333457605334309913075063427817480"
+      ],
       signalHash: "1",
-      externalNullifier: "0",
+      externalNullifier: pollId,
     };
     const sanityCheck = true;
 
@@ -364,28 +396,30 @@ describe("testing a multi-user poll", function () {
       String(parseInt(sampleInput.signalHash) ** 2)
     );
 
-    // console.log("Check 3: ")
+    console.log("Check 3: ")
     const poseidonSecret = poseidon(
       [sampleInput.identityNullifier, sampleInput.identityTrapdoor],
       poseidonKey,
       poseidonNumOutputs
     );
+    console.log("Gets to here")
     assert.propertyVal(
       witness,
       "main.secret",
       String(poseidon.F.toObject(poseidonSecret))
     );
 
-    // console.log("Check 4: ")
+    console.log("Check 4: ")
 
     const poseidonIdentityCommitment = poseidon([poseidonSecret]);
 
     assert.propertyVal(
       witness,
       "main.root",
-      String(poseidon.F.toObject(poseidonIdentityCommitment))
+      merkleRoot
     );
-
+    // console.log("Not passing identity commitment")
+    
     assert.propertyVal(witness, "main.signalHash", sampleInput.signalHash);
     assert.propertyVal(
       witness,
@@ -450,7 +484,7 @@ describe("testing a multi-user poll", function () {
       proof
     );
 
-    // console.log("Check 4: ", proofVerified)
+    console.log("Check 4: ", proofVerified)
 
     assert(proofVerified, "Proof did not verify.");
 
@@ -458,12 +492,14 @@ describe("testing a multi-user poll", function () {
     const vote =
       "0x0000000000000000000000000000000000000000000000000000000000000001";
 
-    await privPoll.castVote(vote, nullifier, pollId, proofForTx, {
+    const receipt = await privPoll.castVote(vote, nullifier, pollId, proofForTx, {
       from: coordinator,
     });
 
+    console.log(receipt)
+
     await privPoll.endPoll(pollId);
-    // console.log("Check 9: ")
+    console.log("Check 9: ")
   });
 
 });
