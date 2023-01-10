@@ -15,7 +15,7 @@ export async function relayVote(nullifier: string, vote: number, proof: string, 
     const contract = new ethers.Contract(TEST_CONTRACT_ADDRESS, testABI, wallet);
 
     // TODO: REPLACE DUMMY CALL HERE WITH ACTUAL CALL TO VERIFIER CONTRACT
-    const tx = await contract.setMessage("Hello World!");
+    const tx = await contract.setMessage("Hack Lodge is based!");
     const receipt = await tx.wait();
     console.log(receipt);
 
