@@ -1,5 +1,5 @@
 //SPDX-License-Identifier: MIT
-pragma solidity 0.8.4;
+pragma solidity ^0.8.4;
 
 import "../interfaces/IPrivPoll.sol";
 import "../base/SemaphoreCore.sol";
@@ -119,6 +119,18 @@ contract PrivPoll is IPrivPoll, SemaphoreCore, SemaphoreGroups {
         emit PollEnded(pollId, _msgSender());
 
         return polls[pollId].yesVotes > polls[pollId].noVotes;
+    }
+
+    function getPollState(uint256 pollId) public view returns (uint256, uint256, string memory) {
+        Poll memory poll = polls[pollId];
+
+        if (poll.state == PollState.Created) {
+            return (poll.yesVotes, poll.noVotes, "Created");
+        } else if (poll.state == PollState.Ongoing) {
+            return (poll.yesVotes, poll.noVotes, "Ongoing");
+        } else {
+            return (poll.yesVotes, poll.noVotes, "Ended");
+        }
     }
 
 }
