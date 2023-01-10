@@ -19,15 +19,18 @@ template Num2Bits(n) {
 
 template Split4(a, b, c, d) {
     signal input in;
+
     signal chunk1;
     signal chunk2;
     signal chunk3;
     signal chunk4;
 
-    signal output b_chunk1[a];
-    signal output b_chunk2[b];
-    signal output b_chunk3[c];
-    signal output b_chunk4[d];
+    signal output chunks[4];
+
+    // signal output b_chunk1[a];
+    // signal output b_chunk2[b];
+    // signal output b_chunk3[c];
+    // signal output b_chunk4[d];
 
     chunk1 <-- in % (1 << a);
     chunk2 <-- (in \ (1 << a)) % (1 << b);
@@ -36,21 +39,32 @@ template Split4(a, b, c, d) {
 
     in === chunk1 + chunk2 * (1 << a) + chunk3 * (1 << a + b) + chunk4 * (1 << a + b + c);
 
+    chunks[0] <== chunk1;
+    chunks[1] <== chunk2;
+    chunks[2] <== chunk3;
+    chunks[3] <== chunk4;
+
+    // log(chunks[0]);
+
+    // nonlinear constraint needed for circuit to compile succesfully
+    signal dummy;
+    dummy <== chunk1 * chunk2;
+
     component n2b_chunk1 = Num2Bits(a);
     n2b_chunk1.in <== chunk1;
-    b_chunk1 <== n2b_chunk1.out;
+    // b_chunk1 <== n2b_chunk1.out;
 
     component n2b_chunk2 = Num2Bits(b);
     n2b_chunk2.in <== chunk2;
-    b_chunk2 <== n2b_chunk2.out;
+    // b_chunk2 <== n2b_chunk2.out;
 
     component n2b_chunk3 = Num2Bits(c);
     n2b_chunk3.in <== chunk3;
-    b_chunk3 <== n2b_chunk3.out;
+    // b_chunk3 <== n2b_chunk3.out;
 
     component n2b_chunk4 = Num2Bits(d);
     n2b_chunk4.in <== chunk4;
-    b_chunk4 <== n2b_chunk4.out;
+    // b_chunk4 <== n2b_chunk4.out;
 
 }
 
