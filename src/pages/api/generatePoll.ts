@@ -87,6 +87,5 @@ export default async function handler(
 
   var pollData = await storePoll(title, description, groupDescription, createdAt, deadline, addresses)
   
-  
   res.status(200).json({ name: "Success!", rootHash: pollData.rootHash, pollId: pollData.pollId, title: title, deadline: deadline })
 }

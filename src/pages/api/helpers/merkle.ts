@@ -1,11 +1,33 @@
 import prisma from '../../../lib/prisma';
 import { MerkleTree } from 'merkletreejs'
-const poseidon = require("circomlibjs").poseidon;
+import keccak256 from 'keccak256'
+import { buildTreePoseidon, verifyInTree } from './merklePoseidon';
+import build from 'next/dist/build';
+// const buildPoseidon = require("circomlibjs").buildPoseidon;
+
+// /**
+//  * Custom poseidon hash function that hashes strings.
+//  * @returns {Promise<Function>} poseidon - The poseidon hash function.
+//  */
+// const buildCustomPoseidon = async (): Promise<Function> => {
+//     const poseidon = await buildPoseidon();
+//     return (x: string[]) => {
+//         const hashString = poseidon.F.toString(poseidon(x));
+//         // console.log(parseInt(hashString).toString(16))
+//         // const hexOfString = Buffer.from(x, 'utf8').toString('hex');
+//         // const bigIntOfString = BigInt("0x" + hexOfString);
+//         // const poseidonHashOutput = poseidon([bigIntOfString]);
+//         // console.log(poseidonHashOutput);
+//         // console.log(parseInt(poseidon.F.toString(poseidonHashOutput)).toString(16))
+//         // return poseidonHashOutput;
+//         return hashString
+//     }
+// }
 
 /** 
  * @function: storePoll
  * @description: This function creates a merkle tree and stores the result inside of the database.
- * @returns {string} root - The root hash of the merkle tree created.
+ * @returns {BigInt} root - The root hash of the merkle tree created.
  * @returns {number} pollId - The poll id of the poll that was created.
  */
 export async function storePoll(title: string, description: string, groupDescription: string, createdAt: number, deadline: number, addresses: string[]) {
@@ -19,9 +41,16 @@ export async function storePoll(title: string, description: string, groupDescrip
 
     // Import poseidon hash function
     
+    // const poseidon = await buildCustomPoseidon();
+    // const poseidon = await buildPoseidon();
 
-    var tree = new MerkleTree(addresses, poseidon)
-    var root = tree.getRoot().toString('hex')
+    var tree = await buildTreePoseidon(addresses)
+
+    console.log(tree.root)
+
+    var rootString = tree.root.toString()
+
+    // var root = tree.getRoot().toString('hex')
 
     var poll = await prisma.poll.create({
         data : {
@@ -32,28 +61,28 @@ export async function storePoll(title: string, description: string, groupDescrip
             deadline: dateDeadline,
             tree: {
                 create: {
-                    rootHash: root,
+                    rootHash: rootString,
                     leaves: addresses,
                 }
                 
             }
         }
     })
-    const allPolls = await prisma.poll.findMany({
-        include: {
-          tree: true,
-        },
-    })
-    // Print all polls!
-    console.dir(allPolls, { depth: null })
 
-    return {rootHash: root, pollId: poll.id}
+    // const allPolls = await prisma.poll.findMany({
+    //     include: {
+    //       tree: true,
+    //     },
+    // })
+    // Print all polls!
+    // console.dir(allPolls, { depth: null })
+
+    return {rootHash: rootString, pollId: poll.id}
 }
 
 /** 
  * @function: verifyAddressInTree
  * @description: This function verifies if an address is in a merkle tree.
- * @returns {MerkleTree} tree - The merkle tree that was created.
  * @returns {boolean} isValidPollId - Whether or not the poll id is valid.
  * @returns {number} inTree - Whether or not the address is in the tree.
  */
@@ -63,15 +92,13 @@ export async function verifyAddressInTree(address: string, pollId: number) {
     if (data.tree == null) {
         return {isValidPollId: false, inTree: false}
     }
-    var tree = data.tree
-    var merkleTree = new MerkleTree(tree.leaves, poseidon)
-    // console.log(MerkleTree.marshalTree(merkleTree))
-    const proof = merkleTree.getProof(address)
-    // console.log(address)
-    // console.log(MerkleTree.marshalProof(proof))
-    var inTree = merkleTree.verify(proof, address, merkleTree.getRoot())
-    // console.log(inTree)
-    return {tree: merkleTree, isValidPollId: true, inTree: inTree}
+    var tree = data.tree;
+    var merkleTree = await buildTreePoseidon(tree.leaves)
+    var BigIntAddress = BigInt(address).toString()
+    var inTree = await verifyInTree(merkleTree.root.toString(), address, merkleTree.leafToPathElements[BigIntAddress], merkleTree.leafToPathIndices[BigIntAddress])
+    // console.log("inTree", inTree)
+    // var inTree = merkleTree.verify(proof, address, merkleTree.getRoot())
+    return {isValidPollId: true, inTree: inTree}
 }
 
 /** 
@@ -86,19 +113,34 @@ export async function getSiblingsAndPathIndices(address: string, pollId: number)
     if (data.tree == null) {
         return {isValidPollId: false, siblings: [], pathIndices: []}
     }
-    var tree = data.tree
-    var merkleTree = new MerkleTree(tree.leaves, poseidon)
-    const proof = merkleTree.getProof(address)
+    var tree = data.tree;
+    var merkleTree = await buildTreePoseidon(tree.leaves)
+    console.log(merkleTree.leafToPathElements)
+    console.log(merkleTree.leafToPathIndices)
+
+
+    // const proof = merkleTree.getProof(address)
+    // var siblings = []
+    // var pathIndices = []
+    // for (var i = 0; i < proof.length; i++) {
+    //     var siblingHash = proof[i].data.toString('hex')
+    //     siblings.push(siblingHash)
+    //     // If left 0, if right 1
+    //     var pathIndex = proof[i].position == 'left' ? 1 : 0
+    //     pathIndices.push(pathIndex)
+    // }
+    
     var siblings = []
-    var pathIndices = []
-    for (var i = 0; i < proof.length; i++) {
-        var siblingHash = proof[i].data.toString('hex')
-        siblings.push(siblingHash)
-        // If left 0, if right 1
-        var pathIndex = proof[i].position == 'left' ? 1 : 0
-        pathIndices.push(pathIndex)
+    // console.log(await merkleTree.leafToPathIndices.length)
+    // console.log(merkleTree.leafToPathElements[address])
+    var BigIntAddress = BigInt(address).toString()
+    console.log(BigIntAddress)
+    var BigIntSiblings = merkleTree.leafToPathElements[BigIntAddress]
+    console.log(BigIntSiblings)
+    for (var i = 0; i < BigIntSiblings.length; i++) {
+      siblings.push(BigIntSiblings[i].toString())
     }
-    return {isValidPollId: true, siblings: siblings, pathIndices: pathIndices}
+    return {isValidPollId: true, siblings: siblings, pathIndices: merkleTree.leafToPathIndices[BigIntAddress]}
 }
 
 /** 
