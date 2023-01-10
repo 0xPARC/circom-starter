@@ -44,6 +44,7 @@ export async function storePoll(title: string, description: string, groupDescrip
     // const poseidon = await buildCustomPoseidon();
     // const poseidon = await buildPoseidon();
 
+    // Handles arbitrary input!
     var tree = await buildTreePoseidon(addresses)
 
     console.log(tree.root)
@@ -68,6 +69,8 @@ export async function storePoll(title: string, description: string, groupDescrip
             }
         }
     })
+
+    // TODO: CONTRACT CALL TO CREATE POLL IN CONTRACT
 
     // const allPolls = await prisma.poll.findMany({
     //     include: {
