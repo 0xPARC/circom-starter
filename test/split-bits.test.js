@@ -6,12 +6,12 @@ describe("split-bit test", () => {
   let circuit;
 
   const sampleInput = {
-    in: "1111",
+    in: "15",
   };
   const sanityCheck = true;
 
   before(async () => {
-    circuit = await hre.circuitTest.setup("split-bit");
+    circuit = await hre.circuitTest.setup("split-bits");
   });
 
   it("produces a witness with valid constraints", async () => {
