@@ -14,5 +14,3 @@ template Main() {
   x_cubed === x_squared * x;
   out === x_cubed - x + 7;
 }
-
-component main = Main();

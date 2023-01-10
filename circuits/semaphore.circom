@@ -2,8 +2,8 @@ pragma circom 2.0.0;
 
 include "../node_modules/circomlib/circuits/poseidon.circom";
 include "./tree.circom";
-include "./split-bit.circom";
-include "./ecdsa/eth_addr.circom"
+include "./split-bits.circom";
+include "./packages/circom-ecdsa/circuits/eth_addr.circom";
 
 // // Hash identityNullifier and identityTrapdoor using the the Poseidon hash function
 // template CalculateSecret() {
@@ -76,7 +76,7 @@ template Semaphore(nLevels) {
     splitBits.in <== identityNullifier;
 
     signal splitIdentityNullifier[4];
-    splitIdentityNullifier <== splitbits.chunks;
+    splitIdentityNullifier <== splitBits.chunks;
 
     // component calculateSecret = CalculateSecret();
     // calculateSecret.identityNullifier <== identityNullifier;
