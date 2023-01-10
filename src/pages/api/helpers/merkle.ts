@@ -1,6 +1,6 @@
 import prisma from '../../../lib/prisma';
 import { MerkleTree } from 'merkletreejs'
-import keccak256 from 'keccak256'
+const poseidon = require("circomlibjs").poseidon;
 
 /** 
  * @function: storePoll
@@ -16,7 +16,11 @@ export async function storePoll(title: string, description: string, groupDescrip
     var dateDeadline = new Date(deadline)
 
     // TODO: CONFIRM THAT ADDRESSES ARE VALID (Molly will probs take care of this)
-    var tree = new MerkleTree(addresses, keccak256)
+
+    // Import poseidon hash function
+    
+
+    var tree = new MerkleTree(addresses, poseidon)
     var root = tree.getRoot().toString('hex')
 
     var poll = await prisma.poll.create({
@@ -60,7 +64,7 @@ export async function verifyAddressInTree(address: string, pollId: number) {
         return {isValidPollId: false, inTree: false}
     }
     var tree = data.tree
-    var merkleTree = new MerkleTree(tree.leaves, keccak256)
+    var merkleTree = new MerkleTree(tree.leaves, poseidon)
     // console.log(MerkleTree.marshalTree(merkleTree))
     const proof = merkleTree.getProof(address)
     // console.log(address)
@@ -83,7 +87,7 @@ export async function getSiblingsAndPathIndices(address: string, pollId: number)
         return {isValidPollId: false, siblings: [], pathIndices: []}
     }
     var tree = data.tree
-    var merkleTree = new MerkleTree(tree.leaves, keccak256)
+    var merkleTree = new MerkleTree(tree.leaves, poseidon)
     const proof = merkleTree.getProof(address)
     var siblings = []
     var pathIndices = []
