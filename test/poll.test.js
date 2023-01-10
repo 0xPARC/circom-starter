@@ -1,10 +1,12 @@
 // import { builder } from './witness_calculator'
-// import { groth16 } from 'snarkjs'
+// const { groth16 } = require('snarkjs')
 const fs = require("fs");
-const { ethers } = require("hardhat");
+const { ethers, snarkjs } = require("hardhat");
 const hre = require("hardhat");
 const { assert } = require("chai");
 const { buildPoseidon } = require("circomlibjs");
+const path = require("path");
+
 
 describe("testing a simple poll", function () {
   let verifier;
@@ -53,16 +55,18 @@ describe("testing a simple poll", function () {
     await privPoll.startPoll(pollId, { from: coordinator });
   });
 
-  it("should cast a vote", async function () {
+  it("cast a vote (null tree)", async function () {
     // Create a poll
     const merkleRoot =
       "0x0000000000000000000000000000000000000000000000000000000000000123";
     const merkleTreeDepth = "0";
     const pollId = "1";
+    // console.log("Check 1: ", pollId)
     await privPoll.createPoll(pollId, coordinator, merkleRoot, merkleTreeDepth);
     // Start the poll
     await privPoll.startPoll(pollId, { from: coordinator });
 
+    // console.log("Check 2: ")
     let circuit;
     let poseidon;
 
@@ -103,6 +107,7 @@ describe("testing a simple poll", function () {
       String(parseInt(sampleInput.signalHash) ** 2)
     );
 
+    // console.log("Check 3: ")
     const poseidonSecret = poseidon(
       [sampleInput.identityNullifier, sampleInput.identityTrapdoor],
       poseidonKey,
@@ -113,6 +118,8 @@ describe("testing a simple poll", function () {
       "main.secret",
       String(poseidon.F.toObject(poseidonSecret))
     );
+
+    // console.log("Check 4: ")
 
     const poseidonIdentityCommitment = poseidon([poseidonSecret]);
 
@@ -128,6 +135,9 @@ describe("testing a simple poll", function () {
       "main.externalNullifier",
       sampleInput.externalNullifier
     );
+
+    // console.log("Check 5: ")
+
     const poseidonNullifierHash = poseidon(
       [sampleInput.externalNullifier, sampleInput.identityNullifier],
       poseidonKey,
@@ -135,13 +145,24 @@ describe("testing a simple poll", function () {
     );
     const nullifier = String(poseidon.F.toObject(poseidonNullifierHash));
     assert.propertyVal(witness, "main.nullifierHash", nullifier);
+    
+    // console.log("Check 6: ")
 
+    const path = __dirname
+    const wasmPath = path + "/../circuits/semaphore.wasm";
+    // console.log(wasmPath1)
+    // const wasmPath = "/Users/ratankaliani/hacklodge/priv-poll/circuits/semaphore.wasm";
+    // console.log(wasmPath)
+    const zkeyPath = path + "/../circuits/semaphore.zkey";
+    // const zkeyPath = "/Users/ratankaliani/hacklodge/priv-poll/circuits/semaphore.zkey";
+
+    // console.log("Check 7: ", wasmPath, zkeyPath)
     const { proof, publicSignals } = await snarkjs.groth16.fullProve(
       sampleInput,
-      "/Users/daryakaviani/priv-poll/circuits/semaphore.wasm",
-      "/Users/daryakaviani/priv-poll/circuits/semaphore.zkey"
+      wasmPath,
+      zkeyPath
     );
-
+    // console.log("Check 8: ", proof, publicSignals)
     const proofForTx = [
       proof.pi_a[0],
       proof.pi_a[1],
@@ -153,9 +174,13 @@ describe("testing a simple poll", function () {
       proof.pi_c[1],
     ];
 
+    // console.log("Check 9: ")
+
     // Read the contents of the JSON file into a string
+    const vkeyPath = path + "/../circuits/semaphore.vkey.json";
+    // const vkeyPath = "/Users/ratankaliani/hacklodge/priv-poll/circuits/semaphore.vkey.json";
     const vkeyStr = fs.readFileSync(
-      "/Users/daryakaviani/priv-poll/circuits/semaphore.vkey.json",
+      vkeyPath,
       "utf8"
     );
 
@@ -168,6 +193,8 @@ describe("testing a simple poll", function () {
       proof
     );
 
+    // console.log("Check 4: ", proofVerified)
+
     assert(proofVerified, "Proof did not verify.");
 
     // Cast a vote
@@ -177,6 +204,9 @@ describe("testing a simple poll", function () {
     await privPoll.castVote(vote, nullifier, pollId, proofForTx, {
       from: coordinator,
     });
+
+    await privPoll.endPoll(pollId);
+    // console.log("Check 9: ")
   });
 
   // // Fetch the zkey and wasm files, and convert them into array buffers
@@ -254,6 +284,188 @@ describe("testing a simple poll", function () {
   //       })
   //     ).to.be.revertedWith("You are using the same nullifier twice");
   //   });
+});
+
+describe("testing a multi-user poll", function () {
+  let verifier;
+  let accounts;
+  let privPoll;
+  let coordinator;
+
+  before(async function () {
+    accounts = await ethers.getSigners();
+    coordinator = accounts[0].address;
+
+    // Deploy the verifier contract
+    const SemaphoreVerifier = await ethers.getContractFactory("VerifyPoll");
+    verifier = await SemaphoreVerifier.deploy();
+    await verifier.deployed();
+
+    // Deploy the voting contract and pass in the verifier contract
+    const PrivPoll = await ethers.getContractFactory("PrivPoll");
+    privPoll = await PrivPoll.deploy([
+      {
+        contractAddress: verifier.address,
+        merkleTreeDepth: "2",
+      },
+    ]);
+    await privPoll.deployed();
+  });
+
+  it("cast a vote non-null tree", async function () {
+    // Create a poll
+    const merkleRoot =
+      "0x9ea648a7cac1c1e6010f0db859ec61dbcc574d84407af48ced8bcf8d678ad095";
+    const merkleTreeDepth = "2";
+    const pollId = "1";
+    // console.log("Check 1: ", pollId)
+    await privPoll.createPoll(pollId, coordinator, merkleRoot, merkleTreeDepth);
+    // Start the poll
+    await privPoll.startPoll(pollId, { from: coordinator });
+
+    // console.log("Check 2: ")
+    let circuit;
+    let poseidon;
+
+    const poseidonKey = 0;
+    const poseidonNumOutputs = 1;
+    const sampleInput = {
+      identityNullifier: "123",
+      identityTrapdoor: "0",
+      treePathIndices: [],
+      treeSiblings: [],
+      signalHash: "1",
+      externalNullifier: "0",
+    };
+    const sanityCheck = true;
+
+    poseidon = await buildPoseidon();
+    circuit = await hre.circuitTest.setup("semaphore");
+    const witness = await circuit.calculateLabeledWitness(
+      sampleInput,
+      sanityCheck
+    );
+    assert.propertyVal(
+      witness,
+      "main.identityNullifier",
+      sampleInput.identityNullifier
+    );
+    assert.propertyVal(
+      witness,
+      "main.identityTrapdoor",
+      sampleInput.identityTrapdoor
+    );
+
+    assert.propertyVal(witness, "main.signalHash", sampleInput.signalHash);
+
+    assert.propertyVal(
+      witness,
+      "main.signalHashSquared",
+      String(parseInt(sampleInput.signalHash) ** 2)
+    );
+
+    // console.log("Check 3: ")
+    const poseidonSecret = poseidon(
+      [sampleInput.identityNullifier, sampleInput.identityTrapdoor],
+      poseidonKey,
+      poseidonNumOutputs
+    );
+    assert.propertyVal(
+      witness,
+      "main.secret",
+      String(poseidon.F.toObject(poseidonSecret))
+    );
+
+    // console.log("Check 4: ")
+
+    const poseidonIdentityCommitment = poseidon([poseidonSecret]);
+
+    assert.propertyVal(
+      witness,
+      "main.root",
+      String(poseidon.F.toObject(poseidonIdentityCommitment))
+    );
+
+    assert.propertyVal(witness, "main.signalHash", sampleInput.signalHash);
+    assert.propertyVal(
+      witness,
+      "main.externalNullifier",
+      sampleInput.externalNullifier
+    );
+
+    // console.log("Check 5: ")
+
+    const poseidonNullifierHash = poseidon(
+      [sampleInput.externalNullifier, sampleInput.identityNullifier],
+      poseidonKey,
+      poseidonNumOutputs
+    );
+    const nullifier = String(poseidon.F.toObject(poseidonNullifierHash));
+    assert.propertyVal(witness, "main.nullifierHash", nullifier);
+    
+    // console.log("Check 6: ")
+
+    const path = __dirname
+    const wasmPath = path + "/../circuits/semaphore.wasm";
+    // console.log(wasmPath1)
+    // const wasmPath = "/Users/ratankaliani/hacklodge/priv-poll/circuits/semaphore.wasm";
+    // console.log(wasmPath)
+    const zkeyPath = path + "/../circuits/semaphore.zkey";
+    // const zkeyPath = "/Users/ratankaliani/hacklodge/priv-poll/circuits/semaphore.zkey";
+
+    // console.log("Check 7: ", wasmPath, zkeyPath)
+    const { proof, publicSignals } = await snarkjs.groth16.fullProve(
+      sampleInput,
+      wasmPath,
+      zkeyPath
+    );
+    // console.log("Check 8: ", proof, publicSignals)
+    const proofForTx = [
+      proof.pi_a[0],
+      proof.pi_a[1],
+      proof.pi_b[0][1],
+      proof.pi_b[0][0],
+      proof.pi_b[1][1],
+      proof.pi_b[1][0],
+      proof.pi_c[0],
+      proof.pi_c[1],
+    ];
+
+    // console.log("Check 9: ")
+
+    // Read the contents of the JSON file into a string
+    const vkeyPath = path + "/../circuits/semaphore.vkey.json";
+    // const vkeyPath = "/Users/ratankaliani/hacklodge/priv-poll/circuits/semaphore.vkey.json";
+    const vkeyStr = fs.readFileSync(
+      vkeyPath,
+      "utf8"
+    );
+
+    // Parse the JSON string and generate the JSON object
+    const vkey = JSON.parse(vkeyStr);
+
+    const proofVerified = await snarkjs.groth16.verify(
+      vkey,
+      publicSignals,
+      proof
+    );
+
+    // console.log("Check 4: ", proofVerified)
+
+    assert(proofVerified, "Proof did not verify.");
+
+    // Cast a vote
+    const vote =
+      "0x0000000000000000000000000000000000000000000000000000000000000001";
+
+    await privPoll.castVote(vote, nullifier, pollId, proofForTx, {
+      from: coordinator,
+    });
+
+    await privPoll.endPoll(pollId);
+    // console.log("Check 9: ")
+  });
+
 });
 
 // const calculateProof = async (address, secret) => {
