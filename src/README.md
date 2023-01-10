@@ -30,6 +30,7 @@ The variables necessary are the following:
 ```bash
 DATABASE_URL
 ETH_PRIV_KEY (for the relayer)
+ETH_RPC_URL (for the relayer)
 ```
 
 ## Deploy on Vercel
