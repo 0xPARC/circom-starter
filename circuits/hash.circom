@@ -16,5 +16,3 @@ template Main() {
 
   // out === hash;
 }
-
-component main = Main();
