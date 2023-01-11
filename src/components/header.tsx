@@ -24,7 +24,7 @@ export default function Header() {
     let paths: string[] = ['/', '/generatepoll'];
 
     return (
-    <Box as="section" pb={{ base: '12', md: '24' }}>
+    <Box as="section" pb={{ base: '12', md: '25' }}>
       <Box as="nav" bg="bg-surface" boxShadow={useColorModeValue('sm', 'sm-dark')}>
     <Container py={{ base: '4', lg: '5' }}>
           <HStack spacing="10" justify="space-between">

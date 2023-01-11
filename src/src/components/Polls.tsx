@@ -4,6 +4,7 @@ import { BsFillPeopleFill } from "react-icons/bs";
 import Link from "next/link";
 import { Card, CardHeader, CardBody, CardFooter, Heading, Button, Text, Grid, GridItem } from '@chakra-ui/react'
 import { Flex, Spacer } from '@chakra-ui/react'
+// import Header from "./components/header";
 
 interface IPoll {
     title: string;
@@ -130,6 +131,7 @@ const examplePoll: IPoll = {
 
 function PollDisplay({ poll }: { poll: IPoll }) {
     return (
+        // <Header/>
         <Card backgroundColor={'#f4f4f8'} variant={"elevated"} margin={8} _hover={{background: "white"}}>
             <Grid
                 templateAreas={`"header header"
