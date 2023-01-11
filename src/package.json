@@ -25,6 +25,7 @@
     "typescript": "4.9.4"
   },
   "devDependencies": {
+    "circomlibjs": "^0.1.7",
     "prisma": "^4.8.1"
   }
 }
