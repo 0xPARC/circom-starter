@@ -101,5 +101,5 @@ template Semaphore(nLevels) {
     nullifierHash <== calculateNullifierHash.out;
 }
 
-// Set number of levels to 15 (to match maxDepth)
-component main {public [signalHash, externalNullifier]} = Semaphore(15);
+// Set number of levels to 16 (to match maxDepth)
+component main {public [signalHash, externalNullifier]} = Semaphore(16);

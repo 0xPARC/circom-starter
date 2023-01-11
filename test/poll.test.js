@@ -306,7 +306,7 @@ describe("user 101", function () {
     privPoll = await PrivPoll.deploy([
       {
         contractAddress: verifier.address,
-        merkleTreeDepth: "15",
+        merkleTreeDepth: "16",
       },
     ]);
     await privPoll.deployed();
@@ -314,9 +314,8 @@ describe("user 101", function () {
 
   it("user 101 (pass)", async function () {
     // Create a poll
-    const merkleRoot =
-      "18594020524654290899512777579579130926554658496346496506121992402799622149061";
-    const merkleTreeDepth = "15";
+    const merkleRoot = "6619011325389904982938986242293599280972546946234438132005195786216371550779";
+    const merkleTreeDepth = "16";
     const pollId = "1";
     // console.log("Check 1: ", pollId)
     await privPoll.createPoll(pollId, coordinator, merkleRoot, merkleTreeDepth);
@@ -347,6 +346,7 @@ describe("user 101", function () {
         "1",
         "1",
         "1",
+        "1",
         "1"
       ],
       treeSiblings: [
@@ -364,8 +364,9 @@ describe("user 101", function () {
         "14058207238811178801861080665931986752520779251556785412233046706263822020051",
         "1841804857146338876502603211473795482567574429038948082406470282797710112230",
         "6068974671277751946941356330314625335924522973707504316217201913831393258319",
-        "10344803844228993379415834281058662700959138333457605334309913075063427817480"
-      ],
+        "10344803844228993379415834281058662700959138333457605334309913075063427817480",
+        "19613055433354010593181510296481106659265254887405599851386217491513440263534"
+    ],
       signalHash: "1",
       externalNullifier: pollId,
     };
@@ -522,7 +523,7 @@ describe("user 401", function () {
     privPoll = await PrivPoll.deploy([
       {
         contractAddress: verifier.address,
-        merkleTreeDepth: "15",
+        merkleTreeDepth: "16",
       },
     ]);
     await privPoll.deployed();
@@ -530,8 +531,8 @@ describe("user 401", function () {
   it("user 401 (pass)", async function () {
     // Create a poll
     const merkleRoot =
-      "18594020524654290899512777579579130926554658496346496506121992402799622149061";
-    const merkleTreeDepth = "15";
+      "6619011325389904982938986242293599280972546946234438132005195786216371550779";
+    const merkleTreeDepth = "16";
     const pollId = "1";
     // console.log("Check 1: ", pollId)
     await privPoll.createPoll(pollId, coordinator, merkleRoot, merkleTreeDepth);
@@ -562,8 +563,9 @@ describe("user 401", function () {
         "1",
         "1",
         "1",
+        "1",
         "1"
-      ],
+    ],
       treeSiblings: [
         "15031200245754860529307938414931900106970756465442563534673447347431600286950",
         "19068111245356538414096790025714731750319382447257436973804441538287758972157",
@@ -579,8 +581,9 @@ describe("user 401", function () {
         "14058207238811178801861080665931986752520779251556785412233046706263822020051",
         "1841804857146338876502603211473795482567574429038948082406470282797710112230",
         "6068974671277751946941356330314625335924522973707504316217201913831393258319",
-        "10344803844228993379415834281058662700959138333457605334309913075063427817480"
-      ],
+        "10344803844228993379415834281058662700959138333457605334309913075063427817480",
+        "19613055433354010593181510296481106659265254887405599851386217491513440263534"
+    ],
       signalHash: "1",
       externalNullifier: pollId,
     };
