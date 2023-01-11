@@ -4,8 +4,8 @@ import Head from 'next/head'
 import { Counter } from '../components/Counter'
 import { Polls } from '../src/components/Polls'
 import styles from '../styles/Home.module.css'
-import { useNavigate } from 'react-router-dom'
 import Link from 'next/link'
+import Header from '../components/header'
 
 const Home: NextPage = () => {
   return (
@@ -19,18 +19,7 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.main}>
-        <div className={styles.header}>
-          <div className={styles.hbutton}>
-            <Link href="/">Docs</Link>
-          </div>
-          <div className={styles.hbutton}>
-            <Link href="/">All Polls</Link>
-          </div>
-          <div className={styles.hbutton}>
-            <Link href="/generatepoll">Generate Poll</Link>
-          </div>
-          <ConnectButton />
-        </div>
+        <Header />
 
         <h1 className={styles.title}>ETH-Compatible Private Poll</h1>
 

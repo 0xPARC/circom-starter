@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { useState } from 'react'
 import swal from 'sweetalert'
+import Header from '../components/header'
 
 interface FormValues {
   title: string
@@ -106,19 +107,8 @@ export default function GeneratePoll() {
   return (
     <div className={styles.container}>
       <main className={styles.main}>
-        <div className={styles.header}>
-          <div className={styles.hbutton}>
-            <Link href="/">Docs</Link>
-          </div>
-          <div className={styles.hbutton}>
-            <Link href="/">All Polls</Link>
-          </div>
-          <div className={styles.hbutton}>
-            <Link href="/generatepoll">Generate Poll</Link>
-          </div>
-          <ConnectButton />
-        </div>
 
+        <Header />
         <div className={styles.card}>
           <form className={styles.generate} onSubmit={(e) => handleSubmit(e)}>
             <h1>Generate a Poll</h1>

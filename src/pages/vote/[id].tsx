@@ -4,6 +4,7 @@ import * as React from 'react'
 import styles from '../../styles/Home.module.css'
 import styled from 'styled-components'
 import { BsFillPeopleFill } from 'react-icons/bs'
+import Header from '../../components/header'
 
 interface IPoll {
   title: string
@@ -226,18 +227,7 @@ export default function GeneratePoll() {
   return (
     <div className={styles.container}>
       <main className={styles.main}>
-        <div className={styles.header}>
-          <div className={styles.hbutton}>
-            <Link href="/">Docs</Link>
-          </div>
-          <div className={styles.hbutton}>
-            <Link href="/">All Polls</Link>
-          </div>
-          <div className={styles.hbutton}>
-            <Link href="/generatepoll">Generate Poll</Link>
-          </div>
-          <ConnectButton />
-        </div>
+      <Header />
 
         <div className={styles.card} style={{width:'80%'}}>
           <div>
