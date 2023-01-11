@@ -54,75 +54,10 @@ export default function GeneratePoll() {
   const [groupDescription, setGroupDescription] = useState<string>("");
   const [createdAt, setCreatedAt] = useState<number>(0);
   const [deadline, setDeadline] = useState<number>(0);
-
   const [tempAddresses, setTempAddresses] = useState<string>("");
-
-  const [res, setRes] = useState("");
-  const [hash, setHash] = useState("");
-
   const account = getAccount();
-  console.log("ACCCOUNT");
-  console.log(account.address);
+  const [isLoading, setIsLoading] = useState(false);
 
-  function handleSubmit(e: { preventDefault: () => void }) {
-    e.preventDefault();
-
-    const split = tempAddresses.split(",");
-    if (split) {
-      setAddresses(split);
-      // for (let i = 0; i < split.length; i++) {
-      //   if (ethers.utils.isAddress(split[i])) {
-      //     setAddresses([...addresses, split[i]]);
-      //   }
-      // }
-    }
-
-    const postData = async () => {
-
-      const body = {
-        data: {
-          title: title,
-          addresses: addresses,
-          description: description,
-          groupDescription: groupDescription,
-          createdAt: createdAt,
-          deadline: deadline,
-        },
-      };
-
-      console.log(body);
-
-      const response = await fetch("/api/generatePoll", {
-        method: "POST",
-        body: JSON.stringify(body),
-      });
-      if (response.status === 200) {
-
-        const contentType = response.headers.get('content-type')
-        const temp = await response.json()
-        myResponse = temp
-        console.log(temp)
-        return temp
-
-      } else {
-        console.warn("Server returned error status: " + response.status);
-      }
-    };
-    postData().then((data) => {
-
-      swal(myResponse.name, 'Merkle Root Hash: ' + myResponse.rootHash, 'success')
-    })
-
-    write?.();
-  }
-
-  //   const { data, isError, isLoading, refetch } = useContractRead({
-  //     address: SEMAPHORE_CONTRACT,
-  //     abi: testABI,
-  //     functionName: 'getPollState',
-  // });
-
-  console.log("cleared read");
   const { config } = usePrepareContractWrite({
     address: SEMAPHORE_CONTRACT,
     abi: testABI,
@@ -135,8 +70,6 @@ export default function GeneratePoll() {
     ],
   });
 
-  console.log("config cleared");
-
   const { status, write } = useContractWrite({
     ...config,
     onError(error) {
@@ -146,7 +79,63 @@ export default function GeneratePoll() {
       console.log("Success");
       // refetch();
     },
-  });
+});
+
+  const postData = async () => {
+    const body = {
+      data: {
+        title: title,
+        addresses: addresses,
+        description: description,
+        groupDescription: groupDescription,
+        createdAt: createdAt,
+        deadline: deadline,
+      },
+    };
+
+    console.log("data to print: ", body);
+
+    const response = await fetch("/api/generatePoll", {
+      method: "POST",
+      body: JSON.stringify(body),
+    });
+    console.log(response)
+    if (response.status === 200) {
+      const contentType = response.headers.get('content-type')
+      const temp = await response.json()
+      myResponse = temp
+      console.log("got temp", temp)
+      return temp
+    } else {
+      console.warn("Server returned error status: " + response.status);
+    }
+  };
+
+  function handleSubmit(e: { preventDefault: () => void }) {
+    setIsLoading(true);
+    e.preventDefault();
+    const split = tempAddresses.split(",");
+    if (split) {
+      setAddresses(split);
+    }
+    
+    postData().then(() => {
+      // swal(myResponse.name, 'Merkle Root Hash: ' + myResponse.rootHash, 'success')
+      console.log("curr config", config);
+      setIsLoading(false);
+      write?.();
+    })
+
+    console.log("cleared read");
+    
+
+  }
+
+  //   const { data, isError, isLoading, refetch } = useContractRead({
+  //     address: SEMAPHORE_CONTRACT,
+  //     abi: testABI,
+  //     functionName: 'getPollState',
+  // });
 
   //  const isReadToWrite = !isLoading && !isError && write != null;
 
@@ -210,8 +199,10 @@ export default function GeneratePoll() {
                 <Button
                   type="submit"
                   size="md"
-                  onClick={() => write?.()}
+                  onClick={handleSubmit}
                   colorScheme="blue"
+                  isLoading={isLoading}
+                  loadingText="Submitting"
                 >
                   Submit
                 </Button>
