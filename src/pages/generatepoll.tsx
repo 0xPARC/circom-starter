@@ -8,7 +8,8 @@ import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { useState } from 'react'
 import swal from 'sweetalert'
 import Header from '../components/header'
-import {GeneratePollButton} from '../components/GeneratePollButton';
+// import {GeneratePollButton} from '../components/GeneratePollButton';
+import testABI from '../components/abi/test.json'
 import { getAccount } from '@wagmi/core'
 import {
   FormControl,
@@ -21,6 +22,8 @@ import {
   Heading,
 } from '@chakra-ui/react'
 import { Card, CardHeader, CardBody, CardFooter } from '@chakra-ui/react'
+import { useContractRead, useContractWrite, usePrepareContractWrite } from 'wagmi'
+
 
 interface FormValues {
   title: string
@@ -30,6 +33,9 @@ interface FormValues {
   createdAt: number
   deadline: number
 }
+
+const SEMAPHORE_CONTRACT = '0x3605A3A829422c06Fb53072ceF27aD556Fb9f650';
+
 
 // Generate a form poll that allows a user to enter FormValues and upload a .csv
 export default function GeneratePoll() {
@@ -98,6 +104,35 @@ export default function GeneratePoll() {
     })
   }
 
+  //   const { data, isError, isLoading, refetch } = useContractRead({
+  //     address: SEMAPHORE_CONTRACT,
+  //     abi: testABI,
+  //     functionName: 'getPollState',
+  // });
+  
+  console.log('cleared read')
+  const { config } = usePrepareContractWrite({
+      address: SEMAPHORE_CONTRACT,
+      abi: testABI,
+      functionName: "createPoll",
+      args: [1, account.address, '0x0000000000000000000000000000000000000000000000000000000000000123', 16]
+  });
+
+  console.log('config cleared')
+
+  const {status, write} = useContractWrite({
+      ...config, 
+      onError(error) {
+          console.log('Contract Error' + error);
+        },
+      onSuccess: () => {
+          console.log('Success')
+          // refetch();
+      }
+  })
+
+//  const isReadToWrite = !isLoading && !isError && write != null;
+
   function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>): void {
     console.log(e.currentTarget.files![0])
     const file = e.target.files && e.target.files[0]
@@ -137,9 +172,9 @@ export default function GeneratePoll() {
               <Input placeholder="Additional Description"  value={description} onChange={(e) => setDescription(e.target.value)}/>
               <Input placeholder='Group Description' value={groupDescription} onChange={(e) => setGroupDescription(e.target.value)}/>
               <Input placeholder='Public Addresses' value={tempAddresses} onChange={(e) => setTempAddresses(e.target.value)} />
-            <Button colorScheme='blue' type="submit" size='md'>
-              <GeneratePollButton coordinator={'0x44A4d61B46B04Bd67375eEb7b4587e3fA048eE49'} merkleRoot={hash} />
-            </Button>
+              <Button type='submit' size='md' onClick={() => write?.()} colorScheme='blue'>Submit</Button>
+
+              {/* <GeneratePollButton type="submit" coordinator={'0x44A4d61B46B04Bd67375eEb7b4587e3fA048eE49'} merkleRoot={hash} /> */}
           </FormControl>
           </CardBody>
         </Card>
