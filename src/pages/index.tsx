@@ -1,10 +1,10 @@
-import { ConnectButton } from '@rainbow-me/rainbowkit';
-import type { NextPage } from 'next';
-import Head from 'next/head';
-import { Counter } from '../components/Counter';
-import { Polls } from '../src/components/Polls';
-import styles from '../styles/Home.module.css';
-import { useNavigate } from 'react-router-dom';
+import { ConnectButton } from '@rainbow-me/rainbowkit'
+import type { NextPage } from 'next'
+import Head from 'next/head'
+import { Counter } from '../components/Counter'
+import { Polls } from '../src/components/Polls'
+import styles from '../styles/Home.module.css'
+import { useNavigate } from 'react-router-dom'
 import Link from 'next/link'
 
 const Home: NextPage = () => {
@@ -21,27 +21,23 @@ const Home: NextPage = () => {
       <main className={styles.main}>
         <div className={styles.header}>
           <div className={styles.hbutton}>
-          <Link href="/">All Polls</Link>
+            <Link href="/">Docs</Link>
           </div>
           <div className={styles.hbutton}>
-          <Link href="/generatepoll">Generate Poll</Link>
+            <Link href="/">All Polls</Link>
           </div>
           <div className={styles.hbutton}>
-          <Link href="/generatepoll">Vote</Link>
+            <Link href="/generatepoll">Generate Poll</Link>
           </div>
-        <ConnectButton />
+          <ConnectButton />
         </div>
 
-        <h1 className={styles.title}>
-          ETH-Compatible Private Poll
-        </h1>
+        <h1 className={styles.title}>ETH-Compatible Private Poll</h1>
 
-        <p className={styles.description}>
-          Add some description
-        </p>
+        <p className={styles.description}>Add some description</p>
 
         <div className={styles.section}>
-          <Polls/>
+          <Polls />
         </div>
 
         {/* <div className={styles.card}>
@@ -51,16 +47,15 @@ const Home: NextPage = () => {
         <div className={styles.card}>
           Testing
         </div> */}
+      </main>
 
-      </main >
+      <footer className={styles.footer}>
+        <a href="https://rainbow.me" target="_blank" rel="noopener noreferrer">
+          Made with ❤️ by your frens at 🌈
+        </a>
+      </footer>
+    </div>
+  )
+}
 
-  <footer className={styles.footer}>
-    <a href="https://rainbow.me" target="_blank" rel="noopener noreferrer">
-      Made with ❤️ by your frens at 🌈
-    </a>
-  </footer>
-    </div >
-  );
-};
-
-export default Home;
+export default Home

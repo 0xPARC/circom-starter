@@ -71,6 +71,16 @@ const DescriptionContainer = styled.div`
 
 `
 
+const GroupDescription = styled.div`
+    box-sizing: border-box;
+    margin: 8px 0px;
+    min-width: 0px;
+    color: #666666;
+    font-size: 10px;
+    font-weight: 400;
+    font-family: "Inter UI","SF Pro Display",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,"Open Sans","Helvetica Neue",sans-serif;
+`
+
 const VoteContainer = styled.div`
     font-family: "PT Root UI";
     font-weight: 700;
@@ -83,7 +93,8 @@ const VoteContainer = styled.div`
 `
 
 const ButtonWrapper = styled.div`
-    max-width: 5rem;
+    margin: 2px;
+    width: fit-content;
     background-color: #43b369;
     font-family: "PT Root UI";
     font-weight: 700;
@@ -91,7 +102,7 @@ const ButtonWrapper = styled.div`
     border-radius: 8px;
     font-size: 14px;
     border: 0;
-    padding: 0.36rem 0.65rem;
+    padding: 0.36rem 0.60rem;
 `
 
 const ButtonContainer = styled.div`
@@ -128,6 +139,9 @@ function PollDisplay({ poll }: { poll: IPoll }) {
         </TitleContainer>
         <DescriptionContainer>
                 {poll.des}
+                <GroupDescription>
+                {poll.gdes}
+                </GroupDescription>
                 <ButtonWrapper>
                 <ButtonContainer>
                     Active
