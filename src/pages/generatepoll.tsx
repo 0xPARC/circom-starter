@@ -1,43 +1,75 @@
-import * as React from 'react'
-import { ethers } from 'ethers'
-// import styled from "styled-components";
-import styles from '../styles/Home.module.css'
-import { useNavigate } from 'react-router-dom'
-import Link from 'next/link'
-import { ConnectButton } from '@rainbow-me/rainbowkit'
-import { useState } from 'react'
-import swal from 'sweetalert'
-import Header from '../components/header'
+import * as React from "react";
+import styles from "../styles/Home.module.css";
+import { useState } from "react";
+import swal from "sweetalert";
+import Header from "../components/header";
+import testABI from "../components/abi/test.json";
+import { getAccount } from "@wagmi/core";
+import {
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
+  FormHelperText,
+  Input,
+  Button,
+  ButtonGroup,
+  Heading,
+  Center,
+} from '@chakra-ui/react'
+import { Card, CardHeader, CardBody, CardFooter } from '@chakra-ui/react'
+import { useContractRead, useContractWrite, usePrepareContractWrite } from 'wagmi'
+
 
 interface FormValues {
-  title: string
-  addresses: string[]
-  description: string
-  groupDescription: string
-  createdAt: number
-  deadline: number
+  title: string;
+  addresses: string[];
+  description: string;
+  groupDescription: string;
+  createdAt: number;
+  deadline: number;
 }
+
+let myResponse: {
+  name: '',
+  rootHash: '',
+  pollId: 0,
+  title: '',
+  deadline: 0
+} = {
+  name: '',
+  rootHash: '',
+  pollId: 0,
+  title: '',
+  deadline: 0
+}
+
+const SEMAPHORE_CONTRACT = '0x3605A3A829422c06Fb53072ceF27aD556Fb9f650';
+
 
 // Generate a form poll that allows a user to enter FormValues and upload a .csv
 export default function GeneratePoll() {
-  const [title, setTitle] = useState<string>('')
-  const [addresses, setAddresses] = useState<string[]>([])
-  const [description, setDescription] = useState<string>('')
-  const [groupDescription, setGroupDescription] = useState<string>('')
-  const [createdAt, setCreatedAt] = useState<number>(0)
-  const [deadline, setDeadline] = useState<number>(0)
+  const [title, setTitle] = useState<string>("");
+  const [addresses, setAddresses] = useState<string[]>([]);
+  const [description, setDescription] = useState<string>("");
+  const [groupDescription, setGroupDescription] = useState<string>("");
+  const [createdAt, setCreatedAt] = useState<number>(0);
+  const [deadline, setDeadline] = useState<number>(0);
 
-  const [tempAddresses, setTempAddresses] = useState<string>('')
+  const [tempAddresses, setTempAddresses] = useState<string>("");
 
-  const [res, setRes] = useState('')
-  const [hash, setHash] = useState('')
+  const [res, setRes] = useState("");
+  const [hash, setHash] = useState("");
+
+  const account = getAccount();
+  console.log("ACCCOUNT");
+  console.log(account.address);
 
   function handleSubmit(e: { preventDefault: () => void }) {
-    e.preventDefault()
+    e.preventDefault();
 
-    const split = tempAddresses.split(',')
+    const split = tempAddresses.split(",");
     if (split) {
-      setAddresses(split)
+      setAddresses(split);
       // for (let i = 0; i < split.length; i++) {
       //   if (ethers.utils.isAddress(split[i])) {
       //     setAddresses([...addresses, split[i]]);
@@ -46,6 +78,7 @@ export default function GeneratePoll() {
     }
 
     const postData = async () => {
+
       const body = {
         data: {
           title: title,
@@ -55,108 +88,138 @@ export default function GeneratePoll() {
           createdAt: createdAt,
           deadline: deadline,
         },
-      }
+      };
 
-      console.log(body)
+      console.log(body);
 
-      const response = await fetch('/api/generatePoll', {
-        method: 'POST',
+      const response = await fetch("/api/generatePoll", {
+        method: "POST",
         body: JSON.stringify(body),
-      })
+      });
       if (response.status === 200) {
+
         const contentType = response.headers.get('content-type')
         const temp = await response.json()
+        myResponse = temp
         console.log(temp)
-        console.log(temp['name'])
-        setRes(temp.name)
-        setHash(temp.rootHash)
         return temp
+
       } else {
-        console.warn('Server returned error status: ' + response.status)
+        console.warn("Server returned error status: " + response.status);
       }
-    }
+    };
     postData().then((data) => {
-      swal(res, 'Merkle Root Hash: ' + hash, 'success')
+
+      swal(myResponse.name, 'Merkle Root Hash: ' + myResponse.rootHash, 'success')
     })
+
+    write?.();
   }
 
+  //   const { data, isError, isLoading, refetch } = useContractRead({
+  //     address: SEMAPHORE_CONTRACT,
+  //     abi: testABI,
+  //     functionName: 'getPollState',
+  // });
+
+  console.log("cleared read");
+  const { config } = usePrepareContractWrite({
+    address: SEMAPHORE_CONTRACT,
+    abi: testABI,
+    functionName: "createPoll",
+    args: [
+      1,
+      account.address,
+      "0x0000000000000000000000000000000000000000000000000000000000000123",
+      16,
+    ],
+  });
+
+  console.log("config cleared");
+
+  const { status, write } = useContractWrite({
+    ...config,
+    onError(error) {
+      console.log("Contract Error" + error);
+    },
+    onSuccess: () => {
+      console.log("Success");
+      // refetch();
+    },
+  });
+
+  //  const isReadToWrite = !isLoading && !isError && write != null;
+
   function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>): void {
-    console.log(e.currentTarget.files![0])
-    const file = e.target.files && e.target.files[0]
+    console.log(e.currentTarget.files![0]);
+    const file = e.target.files && e.target.files[0];
     if (!file) {
-      return
+      return;
     }
 
-    const reader = new FileReader()
+    const reader = new FileReader();
     reader.onload = (e) => {
       if (e.target && e.target.result) {
-        const contents = e.target.result
-        if (typeof contents == 'string') {
-          const rows = contents.split('\n')
-          const values = rows.map((row) => row.split(','))
-          const flatValues = values.flat()
-          const addresses = flatValues
-          // const addresses = flatValues.filter((value) => ethers.utils.isAddress(value));
-          setAddresses(addresses)
+        const contents = e.target.result;
+        if (typeof contents == "string") {
+          const rows = contents.split("\n");
+          const values = rows.map((row) => row.split(","));
+          const flatValues = values.flat();
+          const addresses = flatValues;
+          setAddresses(addresses);
         }
       }
-    }
-    reader.readAsText(file)
+    };
+    reader.readAsText(file);
   }
 
   return (
-    <div className={styles.container}>
-      <main className={styles.main}>
-
-        <Header />
-        <div className={styles.card}>
-          <form className={styles.generate} onSubmit={(e) => handleSubmit(e)}>
-            <h1>Generate a Poll</h1>
-            <div>
-              <input
-                id="title"
-                type="text"
-                value={title}
-                placeholder="Question"
-                required={true}
-                onChange={(e) => setTitle(e.target.value)}
-              />
-            </div>
-            <div>
-              <input
-                id="description"
-                type="text"
-                value={description}
-                placeholder="Additional Description"
-                required={true}
-                onChange={(e) => setDescription(e.target.value)}
-              />
-            </div>
-            <div>
-              <input
-                id="groupDescription"
-                type="text"
-                value={groupDescription}
-                placeholder="Voter Description"
-                required={true}
-                onChange={(e) => setGroupDescription(e.target.value)}
-              />
-            </div>
-            <div>
-              <input
-                id="tempAddresses"
-                type="text"
-                value={tempAddresses}
-                placeholder="Public Keys (Comma-Seperated)"
-                onChange={(e) => setTempAddresses(e.target.value)}
-              />
-            </div>
-            <p>or upload via CSV:</p>
-            <input type="file" onChange={(e) => handleFileUpload(e)} />
-            <button type="submit">Submit</button>
-          </form>
-        </div>
-      </main>
-    </div>
+    <>
+      <Header />
+      <div className={styles.container}>
+        <main className={styles.main}>
+        <Heading as="h1" size="xl">
+            Generate a Poll
+        </Heading>
+          <Card variant={"elevated"} style={{ width: "40%", marginTop: "1%"}}>
+            <CardBody>
+              <FormControl
+                className={styles.generate}
+                onSubmit={(e) => handleSubmit(e)}
+              >
+                <Input
+                  placeholder="Title"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                />
+                <Input
+                  placeholder="Additional Description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                />
+                <Input
+                  placeholder="Group Description"
+                  value={groupDescription}
+                  onChange={(e) => setGroupDescription(e.target.value)}
+                />
+                <Input
+                  placeholder="Public Addresses"
+                  value={tempAddresses}
+                  onChange={(e) => setTempAddresses(e.target.value)}
+                />
+                <Button
+                  type="submit"
+                  size="md"
+                  onClick={() => write?.()}
+                  colorScheme="blue"
+                >
+                  Submit
+                </Button>
+              </FormControl>
+            </CardBody>
+          </Card>
+        </main>
+      </div>
+    </>
   )
 }
