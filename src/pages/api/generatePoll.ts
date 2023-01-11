@@ -36,12 +36,18 @@ export default async function handler(
       name: "POST endpoint!", rootHash: "", pollId: -1, title: "", deadline: -1
     })
   }
-  if ("data" in req.body == false) {
+  if (typeof req.body == 'string') {
+    var body = JSON.parse(req.body)
+  } else {
+    var body = req.body
+  }
+  if ("data" in body == false) {
     res.status(400).json({
       name: "No data!", rootHash: "", pollId: -1, title: "", deadline: -1
     })
   }
-  var data = req.body.data
+  var data = body.data
+
 
   var title, description, groupDescription, createdAt, deadline, addresses
 
@@ -74,7 +80,7 @@ export default async function handler(
   if ("createdAt" in data == false) {
     createdAt = Date.now()
   } else {
-    createdAt = data.groupDescription
+    createdAt = data.createdAt
   }
   if ("deadline" in data == false) {
     // Fix: Set time to 1 hour from now
@@ -84,6 +90,7 @@ export default async function handler(
   } else {
     deadline = data.deadline
   }
+  console.log("Parsed Correctly: ", title, description, groupDescription, createdAt, deadline, addresses)
 
   var pollData = await storePoll(title, description, groupDescription, createdAt, deadline, addresses)
   
