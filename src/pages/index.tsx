@@ -6,6 +6,7 @@ import { Polls } from '../src/components/Polls'
 import styles from '../styles/Home.module.css'
 import Link from 'next/link'
 import Header from '../components/header'
+import { Heading } from '@chakra-ui/react'
 
 const Home: NextPage = () => {
   return (
@@ -21,21 +22,8 @@ const Home: NextPage = () => {
       <main className={styles.main}>
         <Header />
 
-        <h1 className={styles.title}>ETH-Compatible Private Poll</h1>
-
-        <p className={styles.description}>Add some description</p>
-
-        <div className={styles.section}>
+        <Heading as='h1' size='xl'>ETH-Compatible Private Poll</Heading>
           <Polls />
-        </div>
-
-        {/* <div className={styles.card}>
-          <Counter/>
-        </div>
-
-        <div className={styles.card}>
-          Testing
-        </div> */}
       </main>
 
       <footer className={styles.footer}>

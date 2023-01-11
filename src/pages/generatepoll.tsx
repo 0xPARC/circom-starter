@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { ethers } from 'ethers'
-// import styled from "styled-components";
 import styles from '../styles/Home.module.css'
 import { useNavigate } from 'react-router-dom'
 import Link from 'next/link'
@@ -8,7 +7,6 @@ import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { useState } from 'react'
 import swal from 'sweetalert'
 import Header from '../components/header'
-// import {GeneratePollButton} from '../components/GeneratePollButton';
 import testABI from '../components/abi/test.json'
 import { getAccount } from '@wagmi/core'
 import {
@@ -93,7 +91,6 @@ export default function GeneratePoll() {
         console.log(temp['name'])
         setRes(temp.name)
         setHash(temp.rootHash)
-
         return temp
       } else {
         console.warn('Server returned error status: ' + response.status)
@@ -149,7 +146,6 @@ export default function GeneratePoll() {
           const values = rows.map((row) => row.split(','))
           const flatValues = values.flat()
           const addresses = flatValues
-          // const addresses = flatValues.filter((value) => ethers.utils.isAddress(value));
           setAddresses(addresses)
         }
       }
@@ -160,7 +156,6 @@ export default function GeneratePoll() {
   return (
     <div className={styles.container}>
       <main className={styles.main}>
-
         <Header />
         <Card variant={'elevated'} style={{width: '80%'}}>
           <CardHeader>
@@ -173,8 +168,6 @@ export default function GeneratePoll() {
               <Input placeholder='Group Description' value={groupDescription} onChange={(e) => setGroupDescription(e.target.value)}/>
               <Input placeholder='Public Addresses' value={tempAddresses} onChange={(e) => setTempAddresses(e.target.value)} />
               <Button type='submit' size='md' onClick={() => write?.()} colorScheme='blue'>Submit</Button>
-
-              {/* <GeneratePollButton type="submit" coordinator={'0x44A4d61B46B04Bd67375eEb7b4587e3fA048eE49'} merkleRoot={hash} /> */}
           </FormControl>
           </CardBody>
         </Card>
