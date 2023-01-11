@@ -40,8 +40,8 @@ async function verifyInTree(
 // NOTE: default tree depth based on dao hack confessions
 async function buildTreePoseidon(
     leaves: any,
-    depth = 15,
-    proof_depth = 15,           
+    depth = 16,
+    proof_depth = 16,           
     nullNode = NULL_NODE
     ) {
     //   if (!poseidon) {
