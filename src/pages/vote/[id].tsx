@@ -226,9 +226,8 @@ export default function GeneratePoll() {
 
   return (
     <div className={styles.container}>
-      <main className={styles.main}>
       <Header />
-
+      <main className={styles.main}>
         <div className={styles.card} style={{width:'80%'}}>
           <div>
             <PollDisplay poll={examplePoll} />
