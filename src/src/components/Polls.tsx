@@ -142,7 +142,6 @@ function PollDisplay({ poll }: { poll: IPoll }) {
                 h='150px'
                 gap='1'
                 color='#242124'
-                fontWeight='bold'
                 padding={4}
                 margin={2}
                 marginLeft={0}
@@ -155,7 +154,7 @@ function PollDisplay({ poll }: { poll: IPoll }) {
                     </Flex>
                 </GridItem>
                 <GridItem pl='2' area={'main'}>
-                    <Text fontSize='2xl'>{poll.title}</Text>
+                    <Text fontSize='2xl' fontWeight='700'>{poll.title}</Text>
                 </GridItem>
                 <GridItem pl='2' area={'footer'}>
                     <Text>{poll.des}</Text>
@@ -166,23 +165,6 @@ function PollDisplay({ poll }: { poll: IPoll }) {
                     {poll.votes}
                 </GridItem>
             </Grid>
-
-
-            {/* <CardHeader>
-                <Heading size='md'>{poll.title}</Heading>
-            </CardHeader>
-            <CardBody>
-                <Row>
-                    <Text>{poll.des}</Text>
-                    <BsFillPeopleFill color="black"/>
-                    {poll.votes}
-                </Row>
-                <Text>{poll.des}</Text>
-                <Text>{poll.gdes}</Text>
-            </CardBody>
-            <CardFooter>
-                <Button colorScheme='green'>Active</Button>
-            </CardFooter> */}
         </Card>
 
 

@@ -31,7 +31,6 @@
     "react-dom": "^18.2.0",
     "react-icons": "^4.7.1",
     "react-router-dom": "^6.6.2",
-    "react-success-popup": "^1.1.2",
     "styled-components": "^5.3.6",
     "sweetalert": "^2.1.2",
     "wagmi": "^0.9.6"

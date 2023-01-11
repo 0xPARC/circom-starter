@@ -14,12 +14,11 @@ import {
   Button,
   ButtonGroup,
   Heading,
-} from "@chakra-ui/react";
-import { Card, CardHeader, CardBody } from "@chakra-ui/react";
-import {
-  useContractWrite,
-  usePrepareContractWrite,
-} from "wagmi";
+  Center,
+} from '@chakra-ui/react'
+import { Card, CardHeader, CardBody, CardFooter } from '@chakra-ui/react'
+import { useContractRead, useContractWrite, usePrepareContractWrite } from 'wagmi'
+
 
 interface FormValues {
   title: string;
@@ -30,7 +29,22 @@ interface FormValues {
   deadline: number;
 }
 
-const SEMAPHORE_CONTRACT = "0x3605A3A829422c06Fb53072ceF27aD556Fb9f650";
+let myResponse: {
+  name: '',
+  rootHash: '',
+  pollId: 0,
+  title: '',
+  deadline: 0
+} = {
+  name: '',
+  rootHash: '',
+  pollId: 0,
+  title: '',
+  deadline: 0
+}
+
+const SEMAPHORE_CONTRACT = '0x3605A3A829422c06Fb53072ceF27aD556Fb9f650';
+
 
 // Generate a form poll that allows a user to enter FormValues and upload a .csv
 export default function GeneratePoll() {
@@ -64,6 +78,7 @@ export default function GeneratePoll() {
     }
 
     const postData = async () => {
+
       const body = {
         data: {
           title: title,
@@ -82,20 +97,23 @@ export default function GeneratePoll() {
         body: JSON.stringify(body),
       });
       if (response.status === 200) {
-        const contentType = response.headers.get("content-type");
-        const temp = await response.json();
-        console.log(temp);
-        console.log(temp["name"]);
-        setRes(temp.name);
-        setHash(temp.rootHash);
-        return temp;
+
+        const contentType = response.headers.get('content-type')
+        const temp = await response.json()
+        myResponse = temp
+        console.log(temp)
+        return temp
+
       } else {
         console.warn("Server returned error status: " + response.status);
       }
     };
     postData().then((data) => {
-      swal(res, "Merkle Root Hash: " + hash, "success");
-    });
+
+      swal(myResponse.name, 'Merkle Root Hash: ' + myResponse.rootHash, 'success')
+    })
+
+    write?.();
   }
 
   //   const { data, isError, isLoading, refetch } = useContractRead({
@@ -156,52 +174,24 @@ export default function GeneratePoll() {
   }
 
   return (
-    <>
-      <Header />
-      <div className={styles.container}>
-        <main className={styles.main}>
-        <Heading as="h1" size="xl">
-            Generate a Poll
-        </Heading>
-          <Card variant={"elevated"} style={{ width: "40%", marginTop: "1%"}}>
-            <CardBody>
-              <FormControl
-                className={styles.generate}
-                onSubmit={(e) => handleSubmit(e)}
-              >
-                <Input
-                  placeholder="Title"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                />
-                <Input
-                  placeholder="Additional Description"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                />
-                <Input
-                  placeholder="Group Description"
-                  value={groupDescription}
-                  onChange={(e) => setGroupDescription(e.target.value)}
-                />
-                <Input
-                  placeholder="Public Addresses"
-                  value={tempAddresses}
-                  onChange={(e) => setTempAddresses(e.target.value)}
-                />
-                <Button
-                  type="submit"
-                  size="md"
-                  onClick={() => write?.()}
-                  colorScheme="blue"
-                >
-                  Submit
-                </Button>
-              </FormControl>
-            </CardBody>
-          </Card>
-        </main>
-      </div>
-    </>
-  );
+    <div className={styles.container}>
+        <Header />
+      <main className={styles.main}>
+        <Card variant={'elevated'} style={{width: '80%'}}>
+          <CardHeader>
+            <Heading as='h1' size='2xl'><Center>Generate a Poll</Center></Heading>
+          </CardHeader>
+          <CardBody>
+          <FormControl className={styles.generate} onSubmit={(e) => handleSubmit(e)}>
+              <Input placeholder='Title'  value={title} onChange={(e) => setTitle(e.target.value)}/>
+              <Input placeholder="Additional Description"  value={description} onChange={(e) => setDescription(e.target.value)}/>
+              <Input placeholder='Group Description' value={groupDescription} onChange={(e) => setGroupDescription(e.target.value)}/>
+              <Input placeholder='Public Addresses' value={tempAddresses} onChange={(e) => setTempAddresses(e.target.value)} />
+              <Button type='submit' size='md' onClick={handleSubmit} colorScheme='blue'>Submit</Button>
+          </FormControl>
+          </CardBody>
+        </Card>
+      </main>
+    </div>
+  )
 }
