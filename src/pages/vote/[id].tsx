@@ -7,6 +7,7 @@ import { BsFillPeopleFill } from 'react-icons/bs'
 import Header from '../../components/header'
 import { Card, CardHeader, CardBody, CardFooter, Heading, Button, Text, Grid, GridItem, Center, Input } from '@chakra-ui/react'
 import { Flex, Spacer } from '@chakra-ui/react'
+import { useState } from 'react'
 
 interface IPoll {
   title: string
@@ -30,7 +31,17 @@ const examplePoll: IPoll = {
   deadline: 12345678,
 }
 
+
 function PollDisplay({ poll }: { poll: IPoll }) {
+
+  const [yesSelected, setYesSelected] = useState(false);
+  const [noSelected, setNoSelected] = useState(false);
+
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    setYesSelected(e.currentTarget.textContent === "Yes" ? true : false);
+    setNoSelected(e.currentTarget.textContent === "No" ? true : false);
+  }
+
   return (
     <Card backgroundColor={'#f4f4f8'} variant={"elevated"} margin={8}>
     <Grid
@@ -68,9 +79,11 @@ function PollDisplay({ poll }: { poll: IPoll }) {
         <GridItem pl='2' area={'extra'}>
         <Center>
             <Flex>
-                <Input placeholder='Enter your Private Key: ' />
-                <Button size='md' colorScheme='teal' variant="outline" mr={4}>Yes</Button>
-                <Button size='md' colorScheme='red' variant="outline">No</Button>
+                <Input mr={4} placeholder='Enter your Private Key: ' />
+                {/* <Button size='md' colorScheme='teal' variant="outline" mr={4}>Yes</Button>
+                <Button size='md' colorScheme='red' variant="outline">No</Button> */}
+                <Button size='md' variant="outline" isActive={yesSelected} colorScheme='green' mr={4} onClick={handleClick} >Yes</Button>
+                <Button size='md' variant="outline" isActive={noSelected} colorScheme='red' onClick={handleClick} >No</Button>
             </Flex>
           </Center>
             <Spacer/>
@@ -108,7 +121,6 @@ function PollDisplay({ poll }: { poll: IPoll }) {
 // }
 
 const StyledDiv = styled.div`
-  width: 80%;
   transition: all 0.1s ease-in-out;
   border-radius: 8px;
   border: 1px solid #eaeaea;
