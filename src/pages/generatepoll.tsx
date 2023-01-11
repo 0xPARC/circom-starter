@@ -8,6 +8,19 @@ import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { useState } from 'react'
 import swal from 'sweetalert'
 import Header from '../components/header'
+import {GeneratePollButton} from '../components/GeneratePollButton';
+import { getAccount } from '@wagmi/core'
+import {
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
+  FormHelperText,
+  Input,
+  Button, 
+  ButtonGroup, 
+  Heading,
+} from '@chakra-ui/react'
+import { Card, CardHeader, CardBody, CardFooter } from '@chakra-ui/react'
 
 interface FormValues {
   title: string
@@ -31,6 +44,10 @@ export default function GeneratePoll() {
 
   const [res, setRes] = useState('')
   const [hash, setHash] = useState('')
+
+  const account = getAccount();
+  console.log("ACCCOUNT");
+  console.log(account.address);
 
   function handleSubmit(e: { preventDefault: () => void }) {
     e.preventDefault()
@@ -70,6 +87,7 @@ export default function GeneratePoll() {
         console.log(temp['name'])
         setRes(temp.name)
         setHash(temp.rootHash)
+
         return temp
       } else {
         console.warn('Server returned error status: ' + response.status)
@@ -109,53 +127,22 @@ export default function GeneratePoll() {
       <main className={styles.main}>
 
         <Header />
-        <div className={styles.card}>
-          <form className={styles.generate} onSubmit={(e) => handleSubmit(e)}>
-            <h1>Generate a Poll</h1>
-            <div>
-              <input
-                id="title"
-                type="text"
-                value={title}
-                placeholder="Question"
-                required={true}
-                onChange={(e) => setTitle(e.target.value)}
-              />
-            </div>
-            <div>
-              <input
-                id="description"
-                type="text"
-                value={description}
-                placeholder="Additional Description"
-                required={true}
-                onChange={(e) => setDescription(e.target.value)}
-              />
-            </div>
-            <div>
-              <input
-                id="groupDescription"
-                type="text"
-                value={groupDescription}
-                placeholder="Voter Description"
-                required={true}
-                onChange={(e) => setGroupDescription(e.target.value)}
-              />
-            </div>
-            <div>
-              <input
-                id="tempAddresses"
-                type="text"
-                value={tempAddresses}
-                placeholder="Public Keys (Comma-Seperated)"
-                onChange={(e) => setTempAddresses(e.target.value)}
-              />
-            </div>
-            <p>or upload via CSV:</p>
-            <input type="file" onChange={(e) => handleFileUpload(e)} />
-            <button type="submit">Submit</button>
-          </form>
-        </div>
+        <Card variant={'elevated'} style={{width: '80%'}}>
+          <CardHeader>
+            <Heading as='h1' size='2xl'>Generate a Poll</Heading>
+          </CardHeader>
+          <CardBody>
+          <FormControl className={styles.generate} onSubmit={(e) => handleSubmit(e)}>
+              <Input placeholder='Title'  value={title} onChange={(e) => setTitle(e.target.value)}/>
+              <Input placeholder="Additional Description"  value={description} onChange={(e) => setDescription(e.target.value)}/>
+              <Input placeholder='Group Description' value={groupDescription} onChange={(e) => setGroupDescription(e.target.value)}/>
+              <Input placeholder='Public Addresses' value={tempAddresses} onChange={(e) => setTempAddresses(e.target.value)} />
+            <Button colorScheme='blue' type="submit" size='md'>
+              <GeneratePollButton coordinator={'0x44A4d61B46B04Bd67375eEb7b4587e3fA048eE49'} merkleRoot={hash} />
+            </Button>
+          </FormControl>
+          </CardBody>
+        </Card>
       </main>
     </div>
   )
