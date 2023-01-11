@@ -5,7 +5,7 @@ import styles from '../../styles/Home.module.css'
 import styled from 'styled-components'
 import { BsFillPeopleFill } from 'react-icons/bs'
 import Header from '../../components/header'
-import { Card, CardHeader, CardBody, CardFooter, Heading, Button, Text, Grid, GridItem, Center } from '@chakra-ui/react'
+import { Card, CardHeader, CardBody, CardFooter, Heading, Button, Text, Grid, GridItem, Center, Input } from '@chakra-ui/react'
 import { Flex, Spacer } from '@chakra-ui/react'
 
 interface IPoll {
@@ -38,7 +38,7 @@ function PollDisplay({ poll }: { poll: IPoll }) {
                         "main nav"
                         "footer nav"
                         "extra extra"`}
-        gridTemplateRows={'18% 2em 20% 10em'}
+        gridTemplateRows={'18% 2em 20% 9em'}
         gridTemplateColumns={'95% 2em '}
         // h='150%'
         gap='1'
@@ -68,6 +68,7 @@ function PollDisplay({ poll }: { poll: IPoll }) {
         <GridItem pl='2' area={'extra'}>
         <Center>
             <Flex>
+                <Input placeholder='Enter your Private Key: ' />
                 <Button size='md' colorScheme='teal' variant="outline" mr={4}>Yes</Button>
                 <Button size='md' colorScheme='red' variant="outline">No</Button>
             </Flex>

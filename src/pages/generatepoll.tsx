@@ -174,24 +174,52 @@ export default function GeneratePoll() {
   }
 
   return (
-    <div className={styles.container}>
-        <Header />
-      <main className={styles.main}>
-        <Card variant={'elevated'} style={{width: '80%'}}>
-          <CardHeader>
-            <Heading as='h1' size='2xl'><Center>Generate a Poll</Center></Heading>
-          </CardHeader>
-          <CardBody>
-          <FormControl className={styles.generate} onSubmit={(e) => handleSubmit(e)}>
-              <Input placeholder='Title'  value={title} onChange={(e) => setTitle(e.target.value)}/>
-              <Input placeholder="Additional Description"  value={description} onChange={(e) => setDescription(e.target.value)}/>
-              <Input placeholder='Group Description' value={groupDescription} onChange={(e) => setGroupDescription(e.target.value)}/>
-              <Input placeholder='Public Addresses' value={tempAddresses} onChange={(e) => setTempAddresses(e.target.value)} />
-              <Button type='submit' size='md' onClick={handleSubmit} colorScheme='blue'>Submit</Button>
-          </FormControl>
-          </CardBody>
-        </Card>
-      </main>
-    </div>
+    <>
+      <Header />
+      <div className={styles.container}>
+        <main className={styles.main}>
+        <Heading as="h1" size="xl">
+            Generate a Poll
+        </Heading>
+          <Card variant={"elevated"} style={{ width: "40%", marginTop: "1%"}}>
+            <CardBody>
+              <FormControl
+                className={styles.generate}
+                onSubmit={(e) => handleSubmit(e)}
+              >
+                <Input
+                  placeholder="Title"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                />
+                <Input
+                  placeholder="Additional Description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                />
+                <Input
+                  placeholder="Group Description"
+                  value={groupDescription}
+                  onChange={(e) => setGroupDescription(e.target.value)}
+                />
+                <Input
+                  placeholder="Public Addresses"
+                  value={tempAddresses}
+                  onChange={(e) => setTempAddresses(e.target.value)}
+                />
+                <Button
+                  type="submit"
+                  size="md"
+                  onClick={() => write?.()}
+                  colorScheme="blue"
+                >
+                  Submit
+                </Button>
+              </FormControl>
+            </CardBody>
+          </Card>
+        </main>
+      </div>
+    </>
   )
 }
