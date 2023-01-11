@@ -41,6 +41,7 @@
     "lint": "next lint"
   },
   "devDependencies": {
+    "circomlibjs": "^0.1.7",
     "@types/node": "^18.11.18",
     "@types/ramda": "^0.28.20",
     "@types/styled-components": "^5.1.26",

@@ -61,8 +61,10 @@ export default async function handler(
 
   
 
-  var outputData = await getSiblingsAndPathIndices(data.address, data.pollId)
-
+  var outputData = await getSiblingsAndPathIndices(data.address, data.pollId);
+  
+  console.log(outputData.siblings)
+  console.log(outputData.pathIndices)
   if (outputData.isValidPollId == false) {
     return res.status(400).json({ name: "invalid poll id", siblings: [], pathIndices: [] })
   } else {

@@ -1,3 +1,6 @@
+# env
+.env
+
 # node
 node_modules/
 
@@ -12,3 +15,4 @@ circuits/*.vkey.json
 circuits/*.wasm
 circuits/*.zkey
 contracts/*.sol
+circuits/ptau/
