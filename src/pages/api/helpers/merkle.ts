@@ -37,7 +37,7 @@ export async function storePoll(title: string, description: string, groupDescrip
     var dateCreatedAt = new Date(createdAt)
     var dateDeadline = new Date(deadline)
 
-    // TODO: CONFIRM THAT ADDRESSES ARE VALID (Molly will probs take care of this)
+    // TODO: CONFIRM THAT ADDRESSES ARE VALID (Molly will probs take care of this) Yep
 
     // Import poseidon hash function
     
