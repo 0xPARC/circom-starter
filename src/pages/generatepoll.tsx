@@ -155,8 +155,8 @@ export default function GeneratePoll() {
 
   return (
     <div className={styles.container}>
+      <Header />
       <main className={styles.main}>
-        <Header />
         <Card variant={'elevated'} style={{width: '80%'}}>
           <CardHeader>
             <Heading as='h1' size='2xl'>Generate a Poll</Heading>

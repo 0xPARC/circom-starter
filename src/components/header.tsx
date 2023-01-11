@@ -20,6 +20,9 @@ export default function Header() {
     const isDesktop = useBreakpointValue({ base: false, lg: true })
     const router = useRouter()
 
+    let pages: string[] = ['Home', 'Generate Poll'];
+    let paths: string[] = ['/', '/generatepoll'];
+
     return (
     <Box as="section" pb={{ base: '12', md: '24' }}>
       <Box as="nav" bg="bg-surface" boxShadow={useColorModeValue('sm', 'sm-dark')}>
@@ -29,8 +32,8 @@ export default function Header() {
             {isDesktop ? (
               <Flex justify="space-between" flex="1">
                 <ButtonGroup variant="link" spacing="8">
-                  {['Docs', 'Generate Poll'].map((item) => (
-                    <Button key={item} onClick={() => router.push('/generatepoll')}>{item}</Button>
+                  {[0, 1].map((pageIndex) => (
+                    <Button key={pageIndex} onClick={() => router.push(paths[pageIndex])}>{pages[pageIndex]}</Button>
                   ))}
                 </ButtonGroup>
                 <HStack spacing="3">
