@@ -17,8 +17,22 @@ export async function relayVote(nullifier: string, vote: number, proof: string, 
 
     // TODO: REPLACE DUMMY CALL HERE WITH ACTUAL CALL TO VERIFIER CONTRACT
     console.log("Right before cast vote")
-    const tx = await contract.castVote(vote, nullifier, pollId, proof)
-    const receipt = await tx.wait();
+    console.log("vote", typeof(vote))
+    console.log("nullifier", typeof(nullifier))
+    console.log("pollId", typeof(pollId))
+    console.log("proof", typeof(proof))
+    var strVote;
+    if (vote == 0) {
+        strVote =
+        "0x0000000000000000000000000000000000000000000000000000000000000000";
+    } else {
+        strVote =
+        "0x0000000000000000000000000000000000000000000000000000000000000001";
+    }
+    // const tx = await contract.getPollState(pollId)
+
+    const tx = await contract.castVote(strVote, nullifier, pollId, proof)
+    const receipt = tx.wait();
     console.log(receipt);
 
 
