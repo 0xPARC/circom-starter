@@ -5,6 +5,7 @@ import swal from "sweetalert";
 import Header from "../components/header";
 import testABI from "../components/abi/test.json";
 import { getAccount } from "@wagmi/core";
+import { getProvider } from "@wagmi/core";
 import {
   FormControl,
   FormLabel,
@@ -17,7 +18,7 @@ import {
   Center,
 } from '@chakra-ui/react'
 import { Card, CardHeader, CardBody, CardFooter } from '@chakra-ui/react'
-import { useContractRead, useContractWrite, usePrepareContractWrite } from 'wagmi'
+import { useContractRead, useContractWrite, usePrepareContractWrite, useContract, useSigner } from 'wagmi'
 
 
 interface FormValues {
@@ -45,7 +46,6 @@ let myResponse: {
 
 const SEMAPHORE_CONTRACT = '0x3605A3A829422c06Fb53072ceF27aD556Fb9f650';
 
-
 // Generate a form poll that allows a user to enter FormValues and upload a .csv
 export default function GeneratePoll() {
   const [title, setTitle] = useState<string>("");
@@ -56,30 +56,15 @@ export default function GeneratePoll() {
   const [deadline, setDeadline] = useState<number>(0);
   const [tempAddresses, setTempAddresses] = useState<string>("");
   const account = getAccount();
-  const [isLoading, setIsLoading] = useState(false);
-
-  const { config } = usePrepareContractWrite({
+  const [contractLoading, setContractLoading] = useState(false);
+  const [dbLoading, setDbLoading] = useState(false);
+  const {data: signer} = useSigner();
+  
+  const contract = useContract({
     address: SEMAPHORE_CONTRACT,
     abi: testABI,
-    functionName: "createPoll",
-    args: [
-      1,
-      account.address,
-      "0x0000000000000000000000000000000000000000000000000000000000000123",
-      16,
-    ],
-  });
-
-  const { status, write } = useContractWrite({
-    ...config,
-    onError(error) {
-      console.log("Contract Error" + error);
-    },
-    onSuccess: () => {
-      console.log("Success");
-      // refetch();
-    },
-});
+    signerOrProvider: signer
+  })
 
   const postData = async () => {
     const body = {
@@ -104,7 +89,6 @@ export default function GeneratePoll() {
       const contentType = response.headers.get('content-type')
       const temp = await response.json()
       myResponse = temp
-      console.log("got temp", temp)
       return temp
     } else {
       console.warn("Server returned error status: " + response.status);
@@ -112,23 +96,19 @@ export default function GeneratePoll() {
   };
 
   function handleSubmit(e: { preventDefault: () => void }) {
-    setIsLoading(true);
+    setDbLoading(true);
     e.preventDefault();
     const split = tempAddresses.split(",");
     if (split) {
       setAddresses(split);
     }
     
-    postData().then(() => {
-      // swal(myResponse.name, 'Merkle Root Hash: ' + myResponse.rootHash, 'success')
-      console.log("curr config", config);
-      setIsLoading(false);
-      write?.();
+    postData().then(async () => {
+      setDbLoading(false);
+      setContractLoading(true);
+      await contract?.createPoll(1, account.address, myResponse.rootHash, 16);      
+      // setContractLoading(false);
     })
-
-    console.log("cleared read");
-    
-
   }
 
   //   const { data, isError, isLoading, refetch } = useContractRead({
@@ -201,8 +181,8 @@ export default function GeneratePoll() {
                   size="md"
                   onClick={handleSubmit}
                   colorScheme="blue"
-                  isLoading={isLoading}
-                  loadingText="Submitting"
+                  isLoading={contractLoading || dbLoading}
+                  loadingText={dbLoading? "Generating merkle root": "Submitting poll"}
                 >
                   Submit
                 </Button>
