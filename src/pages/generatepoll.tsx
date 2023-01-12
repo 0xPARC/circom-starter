@@ -9,9 +9,7 @@ import {
   FormControl,
   Input,
   Button,
-  ButtonGroup,
   Heading,
-  Center,
 } from "@chakra-ui/react";
 import { Card, CardBody } from "@chakra-ui/react";
 import {
@@ -19,7 +17,6 @@ import {
   useSigner,
   useWaitForTransaction,
 } from "wagmi";
-import { time } from "console";
 
 interface FormValues {
   title: string;
@@ -77,7 +74,7 @@ export default function GeneratePoll() {
         description: description,
         groupDescription: groupDescription,
         createdAt: Date.now(),
-        deadline: Date.now() + duration!,
+        deadline: Date.now() + (3600000 * duration!),
       },
     };
 
@@ -89,7 +86,6 @@ export default function GeneratePoll() {
     });
     console.log(response);
     if (response.status === 200) {
-      const contentType = response.headers.get("content-type");
       const temp = await response.json();
       myResponse = temp;
       return temp;
@@ -126,6 +122,10 @@ export default function GeneratePoll() {
           status: "success",
           duration: 5000,
           isClosable: true,
+          containerStyle: {
+            width: '700px',
+            maxWidth: '90%',
+          },
         });
       } else {
         toast({
@@ -134,6 +134,10 @@ export default function GeneratePoll() {
           status: "error",
           duration: 5000,
           isClosable: true,
+          containerStyle: {
+            width: '700px',
+            maxWidth: '90%',
+          },
         });
       }
       setContractLoading(false);
