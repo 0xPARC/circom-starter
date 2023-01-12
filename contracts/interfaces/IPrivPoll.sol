@@ -11,7 +11,6 @@ interface IPrivPoll {
     error Semaphore__YouAreUsingTheSameNillifierTwice();
 
     enum PollState {
-        Created,
         Ongoing,
         Ended
     }
@@ -32,11 +31,6 @@ interface IPrivPoll {
     /// @param pollId: Id of the poll.
     /// @param coordinator: Coordinator of the poll.
     event PollCreated(uint256 pollId, address indexed coordinator);
-
-    /// @dev Emitted when a poll is started.
-    /// @param pollId: Id of the poll.
-    /// @param coordinator: Coordinator of the poll.
-    event PollStarted(uint256 pollId, address indexed coordinator);
 
     /// @dev Emitted when a user votes on a poll.
     /// @param pollId: Id of the poll.
@@ -59,15 +53,6 @@ interface IPrivPoll {
         uint256 merkleRoot,
         uint256 merkleTreeDepth
     ) external;
-
-    // /// @dev Adds a voter to a poll.
-    // /// @param pollId: Id of the poll.
-    // /// @param identityCommitment: Identity commitment of the group member.
-    // function addVoter(uint256 pollId, uint256 identityCommitment) external;
-
-    /// @dev Starts a pull and publishes the key to encrypt the votes.
-    /// @param pollId: Id of the poll.
-    function startPoll(uint256 pollId) external;
 
     /// @dev Casts an anonymous vote in a poll.
     /// @param vote: Encrypted vote.
