@@ -56,6 +56,7 @@ export default function GeneratePoll() {
   const [tempAddresses, setTempAddresses] = useState<string>("");
   const account = getAccount();
   const [dbLoading, setDbLoading] = useState(false);
+  const [contractLoading, setContractLoading] = useState(false);
   const { data: signer } = useSigner();
   const toast = useToast();
   const [currHash, setHash] = useState();
@@ -108,6 +109,7 @@ export default function GeneratePoll() {
     postData().then(async () => {
       setDbLoading(false);
       console.log("OK ROOT HASH", myResponse.rootHash);
+      setContractLoading(true);
       const tx = await contract?.createPoll(
         1,
         account.address,
@@ -134,6 +136,7 @@ export default function GeneratePoll() {
           isClosable: true,
         });
       }
+      setContractLoading(false);
       console.log(`Transaction response: `, response);
     });
   }
@@ -185,10 +188,11 @@ export default function GeneratePoll() {
                   size="md"
                   onClick={handleSubmit}
                   colorScheme="blue"
-                  isLoading={isLoading || dbLoading}
+                  isLoading={contractLoading || dbLoading}
                   loadingText={
                     dbLoading ? "Generating merkle root" : "Submitting poll"
                   }
+                  style={{marginTop: "2%"}}
                 >
                   Submit
                 </Button>
