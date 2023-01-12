@@ -141,14 +141,6 @@ export default function GeneratePoll() {
     });
   }
 
-  //   const { data, isError, isLoading, refetch } = useContractRead({
-  //     address: SEMAPHORE_CONTRACT,
-  //     abi: testABI,
-  //     functionName: 'getPollState',
-  // });
-
-  //  const isReadToWrite = !isLoading && !isError && write != null;
-
   return (
     <>
       <Header />
