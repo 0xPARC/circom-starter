@@ -9,9 +9,7 @@ import {
   FormControl,
   Input,
   Button,
-  ButtonGroup,
   Heading,
-  Center,
 } from "@chakra-ui/react";
 import { Card, CardBody } from "@chakra-ui/react";
 import {
@@ -51,8 +49,7 @@ export default function GeneratePoll() {
   const [addresses, setAddresses] = useState<string[]>([]);
   const [description, setDescription] = useState<string>("");
   const [groupDescription, setGroupDescription] = useState<string>("");
-  const [createdAt, setCreatedAt] = useState<number>(0);
-  const [deadline, setDeadline] = useState<number>(0);
+  const [duration, setDuration] = useState<number>();
   const [tempAddresses, setTempAddresses] = useState<string>("");
   const account = getAccount();
   const [dbLoading, setDbLoading] = useState(false);
@@ -76,8 +73,8 @@ export default function GeneratePoll() {
         addresses: addresses,
         description: description,
         groupDescription: groupDescription,
-        createdAt: createdAt,
-        deadline: deadline,
+        createdAt: Date.now(),
+        deadline: Date.now() + (3600000 * duration!),
       },
     };
 
@@ -89,7 +86,6 @@ export default function GeneratePoll() {
     });
     console.log(response);
     if (response.status === 200) {
-      const contentType = response.headers.get("content-type");
       const temp = await response.json();
       myResponse = temp;
       return temp;
@@ -122,32 +118,32 @@ export default function GeneratePoll() {
       if (!isError) {
         toast({
           title: "Poll created",
-          description: "We've created your poll!",
+          description: tx.hash,
           status: "success",
           duration: 5000,
           isClosable: true,
+          containerStyle: {
+            width: '700px',
+            maxWidth: '90%',
+          },
         });
       } else {
         toast({
           title: "Transaction failed",
-          description: "Transaction to create poll failed",
+          description: tx.hash,
           status: "error",
           duration: 5000,
           isClosable: true,
+          containerStyle: {
+            width: '700px',
+            maxWidth: '90%',
+          },
         });
       }
       setContractLoading(false);
       console.log(`Transaction response: `, response);
     });
   }
-
-  //   const { data, isError, isLoading, refetch } = useContractRead({
-  //     address: SEMAPHORE_CONTRACT,
-  //     abi: testABI,
-  //     functionName: 'getPollState',
-  // });
-
-  //  const isReadToWrite = !isLoading && !isError && write != null;
 
   return (
     <>
@@ -177,6 +173,11 @@ export default function GeneratePoll() {
                   placeholder="Group Description"
                   value={groupDescription}
                   onChange={(e) => setGroupDescription(e.target.value)}
+                />
+                <Input
+                  placeholder="Duration (Hours)"
+                  value={duration}
+                  onChange={(e) => setDuration(Number(e.target.value))}
                 />
                 <Input
                   placeholder="Public Addresses"
