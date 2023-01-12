@@ -8,6 +8,9 @@ import Header from '../../components/header'
 import { Card, CardHeader, CardBody, CardFooter, Heading, Button, Text, Grid, GridItem, Center, Input } from '@chakra-ui/react'
 import { Flex, Spacer } from '@chakra-ui/react'
 import { useState } from 'react'
+import { getAccount } from "@wagmi/core";
+import { generateProof } from '../../components/generateProof'
+
 
 interface IPoll {
   title: string
@@ -30,10 +33,14 @@ const examplePoll: IPoll = {
   createdAt: 40234850,
   deadline: 12345678,
 }
-
+const account = getAccount();
+console.log("ACCCOUNT");
+console.log(account.address);
 
 function PollDisplay({ poll }: { poll: IPoll }) {
 
+  const [publicKey, setPublicKey] = useState<string>("");
+  const [privateKey, setPrivateKey] = useState<string>("");
   const [yesSelected, setYesSelected] = useState(false);
   const [noSelected, setNoSelected] = useState(false);
 
@@ -42,12 +49,14 @@ function PollDisplay({ poll }: { poll: IPoll }) {
     setNoSelected(e.currentTarget.textContent === "No" ? true : false);
   }
 
+
   return (
     <Card backgroundColor={'#f4f4f8'} variant={"elevated"} margin={8}>
     <Grid
         templateAreas={`"header header"
                         "main nav"
                         "footer nav"
+                        "extra extra"
                         "extra extra"`}
         gridTemplateRows={'18% 2em 20% 9em'}
         gridTemplateColumns={'95% 2em '}
@@ -78,8 +87,24 @@ function PollDisplay({ poll }: { poll: IPoll }) {
         </GridItem>
         <GridItem pl='2' area={'extra'}>
         <Center>
+          <Flex>
+              <Input 
+              mr={4} 
+              placeholder='Enter your Public Key: '
+              value={publicKey}
+              onChange={(e) => setPublicKey(e.target.value)} 
+              />
+            </Flex>
+        </Center>
+        <Center>
+            
             <Flex>
-                <Input mr={4} placeholder='Enter your Private Key: ' />
+                <Input 
+                mr={4} 
+                placeholder='Enter your Private Key: '
+                value={privateKey}
+                onChange={(e) => setPrivateKey(e.target.value)} 
+                />
                 {/* <Button size='md' colorScheme='teal' variant="outline" mr={4}>Yes</Button>
                 <Button size='md' colorScheme='red' variant="outline">No</Button> */}
                 <Button size='md' variant="outline" isActive={yesSelected} colorScheme='green' mr={4} onClick={handleClick} >Yes</Button>
@@ -87,7 +112,16 @@ function PollDisplay({ poll }: { poll: IPoll }) {
             </Flex>
           </Center>
             <Spacer/>
-            <Center><Button margin={10} size='md' colorScheme='green'>Cast Vote</Button></Center>
+            <Center>
+              <Button mt={5}
+                mb={10}
+                disabled={account? false: true}
+                onClick={account ? () => generateProof(privateKey, publicKey as `0x${string}`, 1, 47) : () => {console.log("Generated Proof!")}}
+                // onClick={account ? () => generateProof(privateKey, account.address as `0x${string}`, 1, poll.id) : () => {console.log("Generated Proof!")}}
+                loadingText='Submitting'
+                colorScheme='teal'
+                variant='outline'>Cast Vote</Button>
+            </Center>
         </GridItem>
     </Grid>
 </Card>
@@ -139,7 +173,7 @@ export default function GeneratePoll() {
     <Header />
     <Center>
       <StyledDiv>
-<PollDisplay poll={examplePoll} />
+        <PollDisplay poll={examplePoll} />
       </StyledDiv>
     </Center>
     </div>
