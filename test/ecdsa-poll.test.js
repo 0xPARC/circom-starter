@@ -100,8 +100,14 @@ describe.only("testing a simple poll", function () {
       "main.identityTrapdoor",
       sampleInput.identityTrapdoor
     );
-
     assert.propertyVal(witness, "main.signalHash", sampleInput.signalHash);
+    assert.propertyVal(
+      witness,
+      "main.externalNullifier",
+      sampleInput.externalNullifier
+    );
+
+    console.log("inputs passed into circuit correctly");
 
     assert.propertyVal(
       witness,
@@ -128,12 +134,6 @@ describe.only("testing a simple poll", function () {
       String(poseidon.F.toObject(poseidonIdentityCommitment))
     );
 
-    assert.propertyVal(witness, "main.signalHash", sampleInput.signalHash);
-    assert.propertyVal(
-      witness,
-      "main.externalNullifier",
-      sampleInput.externalNullifier
-    );
     const poseidonNullifierHash = poseidon(
       [sampleInput.externalNullifier, sampleInput.identityNullifier],
       poseidonKey,
