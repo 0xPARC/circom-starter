@@ -6,6 +6,7 @@ import Header from "../components/header";
 import testABI from "../components/abi/test.json";
 import { getAccount } from "@wagmi/core";
 import { getProvider } from "@wagmi/core";
+import { useToast } from '@chakra-ui/react'
 import {
   FormControl,
   FormLabel,
@@ -59,7 +60,7 @@ export default function GeneratePoll() {
   const [contractLoading, setContractLoading] = useState(false);
   const [dbLoading, setDbLoading] = useState(false);
   const {data: signer} = useSigner();
-  
+  const toast = useToast()
   const contract = useContract({
     address: SEMAPHORE_CONTRACT,
     abi: testABI,
@@ -110,6 +111,13 @@ export default function GeneratePoll() {
       const response = await tx.wait()
       console.log(`Transaction response: ${response}`) 
       setContractLoading(false);
+      toast({
+        title: 'Poll created',
+        description: "We've published your poll!",
+        status: 'success',
+        duration: 5000,
+        isClosable: true,
+      })
     })
   }
 
