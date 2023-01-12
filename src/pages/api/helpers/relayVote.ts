@@ -16,6 +16,7 @@ export async function relayVote(nullifier: string, vote: number, proof: string, 
     const contract = new ethers.Contract(PRIV_POLL_CONTRACT_ADDRESS, privPollABI, wallet);
 
     // TODO: REPLACE DUMMY CALL HERE WITH ACTUAL CALL TO VERIFIER CONTRACT
+    console.log("Right before cast vote")
     const tx = await contract.castVote(vote, nullifier, pollId, proof)
     const receipt = await tx.wait();
     console.log(receipt);

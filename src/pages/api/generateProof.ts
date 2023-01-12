@@ -18,6 +18,7 @@ import { none } from 'ramda';
 type Data = {
     name: string
     proofForTx: string[]
+    nullifierHash: string
 }
 
 type Proof = {
@@ -43,7 +44,7 @@ export default async function handler(
 ) {
     if (req.method !== 'POST') {
         res.status(405).json({
-        name: "POST endpoint", proofForTx: []
+        name: "POST endpoint", proofForTx: [], nullifierHash: ""
         })
     }
     if (typeof req.body == 'string') {
@@ -53,7 +54,7 @@ export default async function handler(
     }
     if ("data" in body == false) {
         res.status(400).json({
-            name: "No Data", proofForTx: []
+            name: "No Data", proofForTx: [], nullifierHash: ""
         })
     }
     var data = body.data
@@ -63,35 +64,35 @@ export default async function handler(
     // Required fields!
     if ("identityNullifier" in data == false) {
         res.status(400).json({
-            name: "Must pass in nullifier", proofForTx: []
+            name: "Must pass in nullifier", proofForTx: [], nullifierHash: ""
         })
     } else {
         identityNullifier = data.identityNullifier
     }
     if ("treePathIndices" in data == false) {
         res.status(400).json({
-            name: "Must pass in tree path indices", proofForTx: []
+            name: "Must pass in tree path indices", proofForTx: [], nullifierHash: ""
         })
     } else {
         treePathIndices = data.treePathIndices
     }
     if ("treeSiblings" in data == false) {
         res.status(400).json({
-            name: "Must pass in vote", proofForTx: []
+            name: "Must pass in vote", proofForTx: [], nullifierHash: ""
         })
     } else {
         treeSiblings = data.treeSiblings
     }
     if ("externalNullifier" in data == false) {
         res.status(400).json({
-            name: "Must pass in a poll id", proofForTx: []
+            name: "Must pass in a poll id", proofForTx: [], nullifierHash: ""
         })
     } else {
         externalNullifier = data.externalNullifier
     }
     if ("signalHash" in data == false) {
         res.status(400).json({
-            name: "Must pass in a signal hash", proofForTx: []
+            name: "Must pass in a signal hash", proofForTx: [], nullifierHash: ""
         })
     } else {
         signalHash = data.signalHash
@@ -134,7 +135,7 @@ export default async function handler(
         proof.pi_c[1],
       ];
 
-    return res.status(200).json({ name: "Voted!", proofForTx: proofForTx})
+    return res.status(200).json({ name: "Voted!", proofForTx: proofForTx, nullifierHash: publicSignals[1]})
 
 }
 //   if (outputData.isValidPollId == false) {
