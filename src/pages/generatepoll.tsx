@@ -41,7 +41,7 @@ let myResponse: {
   deadline: 0,
 };
 
-const SEMAPHORE_CONTRACT = "0x0DF72e82a88e22B904814DFB9c735358040D1C58";
+const SEMAPHORE_CONTRACT = process.env.NEXT_PUBLIC_GOERLI_POLL_CONTRACT;
 
 // Generate a form poll that allows a user to enter FormValues and upload a .csv
 export default function GeneratePoll() {

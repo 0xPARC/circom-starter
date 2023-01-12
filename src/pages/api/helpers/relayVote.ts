@@ -6,7 +6,7 @@ import privPollABI from './abi/privpoll1.json'
 export async function relayVote(nullifier: string, vote: number, proof: string, pollId: number) {
 
     // TODO: REPLACE WITH PRIV_POLL SMART CONTRACT
-    const PRIV_POLL_CONTRACT_ADDRESS = "0x0DF72e82a88e22B904814DFB9c735358040D1C58"
+    const PRIV_POLL_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_GOERLI_POLL_CONTRACT
 
     // Initialize wallet from env private variable
     // Replace with local host endpoint & private key
