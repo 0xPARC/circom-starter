@@ -121,6 +121,7 @@ export default async function handler(
     const vKey = await fs.readFile(proofKeysDirectory + '/semaphore.vkey.json')
 
     const { proof, publicSignals } = await snarkjs.groth16.fullProve(input, wasm, zKey);
+    console.log("public signals: ", publicSignals)
     console.log(proof)
     const proofForTx = [
         proof.pi_a[0],
