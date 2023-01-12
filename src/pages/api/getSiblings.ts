@@ -24,7 +24,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
-  if (req.method !== 'GET') {
+  if (req.method !== 'POST') {
     res.status(405).json({
       name: "GET endpoint", siblings: [], pathIndices: []
     })
@@ -40,6 +40,7 @@ export default async function handler(
     })
   }
   var data = body.data
+  console.log("In API: ", req.body)
 
   var address, pollId
 

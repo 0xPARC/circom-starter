@@ -5,9 +5,12 @@ import styles from '../../styles/Home.module.css'
 import styled from 'styled-components'
 import { BsFillPeopleFill } from 'react-icons/bs'
 import Header from '../../components/header'
-import { Card, CardHeader, CardBody, CardFooter, Heading, Button, Text, Grid, GridItem, Center, Input } from '@chakra-ui/react'
+import { Card, CardHeader, CardBody, CardFooter, Heading, Button, Text, Grid, GridItem, Center, Input, Textarea } from '@chakra-ui/react'
 import { Flex, Spacer } from '@chakra-ui/react'
 import { useState } from 'react'
+import { getAccount } from "@wagmi/core";
+import { generateProof } from '../../components/generateProof'
+
 
 interface IPoll {
   title: string
@@ -30,17 +33,52 @@ const examplePoll: IPoll = {
   createdAt: 40234850,
   deadline: 12345678,
 }
-
+const account = getAccount();
+console.log("ACCCOUNT");
+console.log(account.address);
 
 function PollDisplay({ poll }: { poll: IPoll }) {
 
+  const [publicKey, setPublicKey] = useState<string>("");
+  const [privateKey, setPrivateKey] = useState<string>("");
   const [yesSelected, setYesSelected] = useState(false);
   const [noSelected, setNoSelected] = useState(false);
+  const [proofForTx, setProofForTx] = useState<string[]>([]);
+  const [proofResponse, setProofResponse] = useState<string>("");
+  const [loadingProof, setLoadingProof] = useState<boolean>(false);
+  const [loadingSubmitVote, setLoadingSubmitVote] = useState<boolean>(false);
+
+
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     setYesSelected(e.currentTarget.textContent === "Yes" ? true : false);
     setNoSelected(e.currentTarget.textContent === "No" ? true : false);
   }
+
+  const handleGenProof = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (account) {
+      // 1: Vote yes, 2: Poll ID
+      setLoadingProof(true);
+      const response = await generateProof(privateKey, publicKey as `0x${string}`, 1, 2)
+      setProofForTx(response);
+      setProofResponse("Proof generated! Check console for proof")
+      setLoadingProof(false);
+      // console.log("Proof in frontend", proofForTx)
+    }
+  }
+
+  const handleSubmitVote = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (account) {
+      // 1: Vote yes, 2: Poll ID
+      setLoadingSubmitVote(true);
+      const response = await generateProof(privateKey, publicKey as `0x${string}`, 1, 2)
+      setProofForTx(response);
+      setProofResponse("Proof generated! Check console for proof")
+      setLoadingSubmitVote(false);
+      // console.log("Proof in frontend", proofForTx)
+    }
+  }
+
 
   return (
     <Card backgroundColor={'#f4f4f8'} variant={"elevated"} margin={8}>
@@ -48,7 +86,9 @@ function PollDisplay({ poll }: { poll: IPoll }) {
         templateAreas={`"header header"
                         "main nav"
                         "footer nav"
-                        "extra extra"`}
+                        "extra extra"
+                        "extra extra"
+                        `}
         gridTemplateRows={'18% 2em 20% 9em'}
         gridTemplateColumns={'95% 2em '}
         // h='150%'
@@ -78,16 +118,58 @@ function PollDisplay({ poll }: { poll: IPoll }) {
         </GridItem>
         <GridItem pl='2' area={'extra'}>
         <Center>
+          <Flex>
+              <Input 
+              mr={4} 
+              placeholder='Enter your Public Key: '
+              value={publicKey}
+              onChange={(e) => setPublicKey(e.target.value)} 
+              />
+            </Flex>
+        </Center>
+        <Spacer/>
+        <Center>
+            
             <Flex>
-                <Input mr={4} placeholder='Enter your Private Key: ' />
+                <Input 
+                mr={4} 
+                placeholder='Enter your Private Key: '
+                value={privateKey}
+                onChange={(e) => setPrivateKey(e.target.value)} 
+                />
                 {/* <Button size='md' colorScheme='teal' variant="outline" mr={4}>Yes</Button>
                 <Button size='md' colorScheme='red' variant="outline">No</Button> */}
                 <Button size='md' variant="outline" isActive={yesSelected} colorScheme='green' mr={4} onClick={handleClick} >Yes</Button>
                 <Button size='md' variant="outline" isActive={noSelected} colorScheme='red' onClick={handleClick} >No</Button>
             </Flex>
           </Center>
-            <Spacer/>
-            <Center><Button margin={10} size='md' colorScheme='green'>Cast Vote</Button></Center>
+        <Spacer/>
+        <Center>
+          <Button mt={5}
+            mb={10}
+            disabled={(account && proofResponse=='')? false: true}
+            onClick={handleGenProof}
+            // onClick={account ? () => generateProof(privateKey, account.address as `0x${string}`, 1, poll.id) : () => {console.log("Generated Proof!")}}
+            loadingText='Generating Proof'
+            isLoading={loadingProof}
+            colorScheme='teal'
+            variant='outline'>Generate Proof</Button>
+          <Button mt={5}
+            mb={10}
+            disabled={(account && proofResponse)? false: true}
+            onClick={handleSubmitVote}
+            // onClick={account ? () => generateProof(privateKey, account.address as `0x${string}`, 1, poll.id) : () => {console.log("Generated Proof!")}}
+            loadingText='Submitting Vote'
+            isLoading={loadingSubmitVote}
+            colorScheme='teal'
+            variant='outline'>Submit Vote</Button>
+        </Center>
+
+        <Center>
+          <Flex>
+              <Text mb='8px'>Proof: {proofResponse}</Text>
+            </Flex>
+        </Center>
         </GridItem>
     </Grid>
 </Card>
@@ -139,7 +221,7 @@ export default function GeneratePoll() {
     <Header />
     <Center>
       <StyledDiv>
-<PollDisplay poll={examplePoll} />
+        <PollDisplay poll={examplePoll} />
       </StyledDiv>
     </Center>
     </div>

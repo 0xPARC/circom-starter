@@ -350,6 +350,8 @@ describe("user 101", function () {
       proof.pi_c[1],
     ];
 
+    // console.log("Check 9: ")
+
     // Read the contents of the JSON file into a string
     const vkeyPath = path + "/../circuits/semaphore.vkey.json";
     const vkeyStr = fs.readFileSync(vkeyPath, "utf8");
