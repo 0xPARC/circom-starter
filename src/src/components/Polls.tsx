@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { Card, Button, Text, Grid, GridItem } from "@chakra-ui/react";
 import { Flex, Spacer } from "@chakra-ui/react";
+import { CheckCircleIcon, TimeIcon } from "@chakra-ui/icons";
 
 interface IPoll {
   title: string;
@@ -12,6 +13,7 @@ interface IPoll {
   id: number;
   createdAt: number;
   deadline: number;
+  active: boolean;
 }
 
 function PollCard({ poll }: { poll: IPoll }) {
@@ -47,9 +49,11 @@ function PollCard({ poll }: { poll: IPoll }) {
               POSTED {poll.createdAt.toString()} | POLL ID {poll.id}
             </Text>
             <Spacer />
-            <Button size="xs" colorScheme="green">
-              Active
-            </Button>
+            {poll.active ? (
+              <Button disabled={true} size="xs" colorScheme="yellow">Active</Button>
+            ) : (
+              <Button disabled={true} size="xs" colorScheme="green">Complete</Button>
+            )}
           </Flex>
         </GridItem>
         <GridItem pl="2" area={"main"}>
@@ -85,7 +89,7 @@ export function Polls() {
         console.warn("Server returned error status: " + response.status);
       }
     }
-    getPolls()
+    getPolls();
   }, []);
 
   return (

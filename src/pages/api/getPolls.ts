@@ -14,6 +14,7 @@ type PollOutput = {
   description: string,
   createdAt: string,
   deadline: string,
+  active: boolean
 }
 
 type Data = {
@@ -30,6 +31,7 @@ function mapPolls(polls: Poll[]) {
       description: poll.description,
       createdAt: new Date(poll.createdAt).toUTCString(),
       deadline: new Date(poll.deadline).toUTCString(),
+      active: poll.createdAt < poll.deadline
     };
   });
 }
