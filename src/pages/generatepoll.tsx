@@ -1,24 +1,24 @@
 import * as React from "react";
 import styles from "../styles/Home.module.css";
 import { useState } from "react";
-import swal from "sweetalert";
 import Header from "../components/header";
 import testABI from "../components/abi/test.json";
 import { getAccount } from "@wagmi/core";
+import { useToast } from "@chakra-ui/react";
 import {
   FormControl,
-  FormLabel,
-  FormErrorMessage,
-  FormHelperText,
   Input,
   Button,
   ButtonGroup,
   Heading,
   Center,
-} from '@chakra-ui/react'
-import { Card, CardHeader, CardBody, CardFooter } from '@chakra-ui/react'
-import { useContractRead, useContractWrite, usePrepareContractWrite } from 'wagmi'
-
+} from "@chakra-ui/react";
+import { Card, CardBody } from "@chakra-ui/react";
+import {
+  useContract,
+  useSigner,
+  useWaitForTransaction,
+} from "wagmi";
 
 interface FormValues {
   title: string;
@@ -30,21 +30,20 @@ interface FormValues {
 }
 
 let myResponse: {
-  name: '',
-  rootHash: '',
-  pollId: 0,
-  title: '',
-  deadline: 0
+  name: "";
+  rootHash: "";
+  pollId: 0;
+  title: "";
+  deadline: 0;
 } = {
-  name: '',
-  rootHash: '',
+  name: "",
+  rootHash: "",
   pollId: 0,
-  title: '',
-  deadline: 0
-}
+  title: "",
+  deadline: 0,
+};
 
-const SEMAPHORE_CONTRACT = '0x3605A3A829422c06Fb53072ceF27aD556Fb9f650';
-
+const SEMAPHORE_CONTRACT = "0x3605A3A829422c06Fb53072ceF27aD556Fb9f650";
 
 // Generate a form poll that allows a user to enter FormValues and upload a .csv
 export default function GeneratePoll() {
@@ -54,66 +53,92 @@ export default function GeneratePoll() {
   const [groupDescription, setGroupDescription] = useState<string>("");
   const [createdAt, setCreatedAt] = useState<number>(0);
   const [deadline, setDeadline] = useState<number>(0);
-
   const [tempAddresses, setTempAddresses] = useState<string>("");
-
-  const [res, setRes] = useState("");
-  const [hash, setHash] = useState("");
-
   const account = getAccount();
-  console.log("ACCCOUNT");
-  console.log(account.address);
+  const [dbLoading, setDbLoading] = useState(false);
+  const [contractLoading, setContractLoading] = useState(false);
+  const { data: signer } = useSigner();
+  const toast = useToast();
+  const [currHash, setHash] = useState();
+  const { data, isError, isLoading } = useWaitForTransaction({
+    hash: currHash,
+  });
+  const contract = useContract({
+    address: SEMAPHORE_CONTRACT,
+    abi: testABI,
+    signerOrProvider: signer,
+  });
+
+  const postData = async () => {
+    const body = {
+      data: {
+        title: title,
+        addresses: addresses,
+        description: description,
+        groupDescription: groupDescription,
+        createdAt: createdAt,
+        deadline: deadline,
+      },
+    };
+
+    console.log("data to print: ", body);
+
+    const response = await fetch("/api/generatePoll", {
+      method: "POST",
+      body: JSON.stringify(body),
+    });
+    console.log(response);
+    if (response.status === 200) {
+      const contentType = response.headers.get("content-type");
+      const temp = await response.json();
+      myResponse = temp;
+      return temp;
+    } else {
+      console.warn("Server returned error status: " + response.status);
+    }
+  };
 
   function handleSubmit(e: { preventDefault: () => void }) {
+    setDbLoading(true);
     e.preventDefault();
-
     const split = tempAddresses.split(",");
     if (split) {
       setAddresses(split);
-      // for (let i = 0; i < split.length; i++) {
-      //   if (ethers.utils.isAddress(split[i])) {
-      //     setAddresses([...addresses, split[i]]);
-      //   }
-      // }
     }
 
-    const postData = async () => {
-
-      const body = {
-        data: {
-          title: title,
-          addresses: addresses,
-          description: description,
-          groupDescription: groupDescription,
-          createdAt: createdAt,
-          deadline: deadline,
-        },
-      };
-
-      console.log(body);
-
-      const response = await fetch("/api/generatePoll", {
-        method: "POST",
-        body: JSON.stringify(body),
-      });
-      if (response.status === 200) {
-
-        const contentType = response.headers.get('content-type')
-        const temp = await response.json()
-        myResponse = temp
-        console.log(temp)
-        return temp
-
+    postData().then(async () => {
+      setDbLoading(false);
+      console.log("OK ROOT HASH", myResponse.rootHash);
+      setContractLoading(true);
+      const tx = await contract?.createPoll(
+        1,
+        account.address,
+        myResponse.rootHash,
+        16
+      );
+      const response = await tx.wait();
+      setHash(tx.hash);
+      console.log("tx", tx.hash);
+      if (!isError) {
+        toast({
+          title: "Poll created",
+          description: "We've created your poll!",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+        });
       } else {
-        console.warn("Server returned error status: " + response.status);
+        toast({
+          title: "Transaction failed",
+          description: "Transaction to create poll failed",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
       }
-    };
-    postData().then((data) => {
-
-      swal(myResponse.name, 'Merkle Root Hash: ' + myResponse.rootHash, 'success')
-    })
-
-    write?.();
+      setContractLoading(false);
+      console.log(`Transaction response: `, response);
+    });
   }
 
   //   const { data, isError, isLoading, refetch } = useContractRead({
@@ -122,66 +147,17 @@ export default function GeneratePoll() {
   //     functionName: 'getPollState',
   // });
 
-  console.log("cleared read");
-  const { config } = usePrepareContractWrite({
-    address: SEMAPHORE_CONTRACT,
-    abi: testABI,
-    functionName: "createPoll",
-    args: [
-      1,
-      account.address,
-      "0x0000000000000000000000000000000000000000000000000000000000000123",
-      16,
-    ],
-  });
-
-  console.log("config cleared");
-
-  const { status, write } = useContractWrite({
-    ...config,
-    onError(error) {
-      console.log("Contract Error" + error);
-    },
-    onSuccess: () => {
-      console.log("Success");
-      // refetch();
-    },
-  });
-
   //  const isReadToWrite = !isLoading && !isError && write != null;
-
-  function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>): void {
-    console.log(e.currentTarget.files![0]);
-    const file = e.target.files && e.target.files[0];
-    if (!file) {
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      if (e.target && e.target.result) {
-        const contents = e.target.result;
-        if (typeof contents == "string") {
-          const rows = contents.split("\n");
-          const values = rows.map((row) => row.split(","));
-          const flatValues = values.flat();
-          const addresses = flatValues;
-          setAddresses(addresses);
-        }
-      }
-    };
-    reader.readAsText(file);
-  }
 
   return (
     <>
       <Header />
       <div className={styles.container}>
         <main className={styles.main}>
-        <Heading as="h1" size="xl">
+          <Heading as="h1" size="xl">
             Generate a Poll
-        </Heading>
-          <Card variant={"elevated"} style={{ width: "40%", marginTop: "1%"}}>
+          </Heading>
+          <Card variant={"elevated"} style={{ width: "40%", marginTop: "1%" }}>
             <CardBody>
               <FormControl
                 className={styles.generate}
@@ -210,8 +186,13 @@ export default function GeneratePoll() {
                 <Button
                   type="submit"
                   size="md"
-                  onClick={() => write?.()}
+                  onClick={handleSubmit}
                   colorScheme="blue"
+                  isLoading={contractLoading || dbLoading}
+                  loadingText={
+                    dbLoading ? "Generating merkle root" : "Submitting poll"
+                  }
+                  style={{marginTop: "2%"}}
                 >
                   Submit
                 </Button>
@@ -221,5 +202,5 @@ export default function GeneratePoll() {
         </main>
       </div>
     </>
-  )
+  );
 }
