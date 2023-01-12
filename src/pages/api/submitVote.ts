@@ -17,7 +17,7 @@ type Data = {
 /** 
  * @function: handler
  * @description: This is the handler for the API endpoint.
- * @param {string} req.body.data.nullifier - The nullifier to submit to the smart contract.
+ * @param {string} req.body.data.nullifierHash - The nullifier to submit to the smart contract.
  * @param {number} req.body.data.vote - The vote to submit to the smart contract {0,1}.
  * @param {string} req.body.data.proof - The ZK-proof of the vote.
  * @param {number} req.body.data.pollId - The poll id to submit to the smart contract.
@@ -43,15 +43,15 @@ export default async function handler(
   }
   var data = body.data
 
-  var nullifier, vote, proof, pollId
+  var nullifierHash, vote, proof, pollId
 
   // Required fields!
-  if ("nullifier" in data == false) {
+  if ("nullifierHash" in data == false) {
     res.status(400).json({
-      name: "Must pass in nullifier", txHash: "", pollId: -1
+      name: "Must pass in nullifierHash", txHash: "", pollId: -1
     })
   } else {
-    nullifier = data.nullifier
+    nullifierHash = data.nullifierHash
   }
   if ("proof" in data == false) {
     res.status(400).json({
@@ -78,7 +78,7 @@ export default async function handler(
 
   
 
-  var outputData = await relayVote(nullifier, vote, proof, pollId)
+  var outputData = await relayVote(nullifierHash, vote, proof, pollId)
 
   return res.status(200).json({ name: "Voted!", txHash: outputData.txHash, pollId: pollId })
 

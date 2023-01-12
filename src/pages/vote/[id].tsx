@@ -10,6 +10,7 @@ import { Flex, Spacer } from '@chakra-ui/react'
 import { useState } from 'react'
 import { getAccount } from "@wagmi/core";
 import { generateProof } from '../../components/generateProof'
+import { castVote } from '../../components/castVote'
 
 
 interface IPoll {
@@ -44,9 +45,15 @@ function PollDisplay({ poll }: { poll: IPoll }) {
   const [yesSelected, setYesSelected] = useState(false);
   const [noSelected, setNoSelected] = useState(false);
   const [proofForTx, setProofForTx] = useState<string[]>([]);
+  const [nullifierHash, setNullifierHash] = useState<string>("");
   const [proofResponse, setProofResponse] = useState<string>("");
   const [loadingProof, setLoadingProof] = useState<boolean>(false);
   const [loadingSubmitVote, setLoadingSubmitVote] = useState<boolean>(false);
+  const [txHash, setTxHash] = useState<string>("");
+  const [submitVoteResponse, setSubmitVoteResponse] = useState<string>("");
+
+
+
 
 
 
@@ -57,10 +64,14 @@ function PollDisplay({ poll }: { poll: IPoll }) {
 
   const handleGenProof = async (e: React.MouseEvent<HTMLButtonElement>) => {
     if (account) {
-      // 1: Vote yes, 2: Poll ID
+      // 1: Vote yes, 1: Poll ID
       setLoadingProof(true);
-      const response = await generateProof(privateKey, publicKey as `0x${string}`, 1, 2)
-      setProofForTx(response);
+      // Hardcode these differently depending on pollID
+      const response = await generateProof(privateKey, publicKey as `0x${string}`, 1, 1)
+      const proofForTx = response[0];
+      const nullifierHash = response[1];
+      setProofForTx(proofForTx);
+      setNullifierHash(nullifierHash);
       setProofResponse("Proof generated! Check console for proof")
       setLoadingProof(false);
       // console.log("Proof in frontend", proofForTx)
@@ -71,9 +82,11 @@ function PollDisplay({ poll }: { poll: IPoll }) {
     if (account) {
       // 1: Vote yes, 2: Poll ID
       setLoadingSubmitVote(true);
-      const response = await generateProof(privateKey, publicKey as `0x${string}`, 1, 2)
-      setProofForTx(response);
-      setProofResponse("Proof generated! Check console for proof")
+      const response = await castVote(nullifierHash, proofForTx, 1, 1)
+      const txHash = response[1];
+      setTxHash(txHash);
+      setSubmitVoteResponse("Vote submitted! Tx below")
+      // setProofResponse("Proof generated! Check console for proof")
       setLoadingSubmitVote(false);
       // console.log("Proof in frontend", proofForTx)
     }
