@@ -12,8 +12,8 @@ type PollOutput = {
   title: string,
   groupDescription: string,
   description: string,
-  createdAt: Date,
-  deadline: Date,
+  createdAt: string,
+  deadline: string,
 }
 
 type Data = {
@@ -28,8 +28,8 @@ function mapPolls(polls: Poll[]) {
       title: poll.title,
       groupDescription: poll.groupDescription,
       description: poll.description,
-      createdAt: new Date(poll.createdAt),
-      deadline: new Date(poll.deadline)
+      createdAt: new Date(poll.createdAt).toUTCString(),
+      deadline: new Date(poll.deadline).toUTCString(),
     };
   });
 }

@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from "react";
-import styled from "styled-components";
-import { BsFillPeopleFill } from "react-icons/bs";
 import Link from "next/link";
 import { Card, Button, Text, Grid, GridItem } from "@chakra-ui/react";
 import { Flex, Spacer } from "@chakra-ui/react";
@@ -8,24 +6,13 @@ import { Flex, Spacer } from "@chakra-ui/react";
 interface IPoll {
   title: string;
   author: string;
-  gdes: string;
-  des: string;
+  groupDescription: string;
+  description: string;
   votes: number;
   id: number;
   createdAt: number;
   deadline: number;
 }
-
-const examplePoll: IPoll = {
-  title: "Does pineapple belong on pizza?",
-  author: "0x71C7656EC7ab88b098defB751B7401B5f6d8976F",
-  gdes: "A group for all pizza lovers",
-  des: "A decade long debate, Pineapple on pizza remains a contentious. ",
-  votes: 10,
-  id: 1,
-  createdAt: 40234850,
-  deadline: 12345678,
-};
 
 function PollCard({ poll }: { poll: IPoll }) {
   return (
@@ -57,7 +44,7 @@ function PollCard({ poll }: { poll: IPoll }) {
                 '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu'
               }
             >
-              POSTED {poll.createdAt} | POLL ID {poll.id}
+              POSTED {poll.createdAt.toString()} | POLL ID {poll.id}
             </Text>
             <Spacer />
             <Button size="xs" colorScheme="green">
@@ -71,43 +58,35 @@ function PollCard({ poll }: { poll: IPoll }) {
           </Text>
         </GridItem>
         <GridItem pl="2" area={"footer"}>
-          <Text>{poll.des}</Text>
-          <Text fontSize="xs">{poll.gdes}</Text>
+          <Text>{poll.description}</Text>
+          <Text fontSize="xs">{poll.groupDescription}</Text>
         </GridItem>
-        <GridItem pl="2" area={"nav"} marginTop={2}>
+        {/* <GridItem pl="2" area={"nav"} marginTop={2}>
           <BsFillPeopleFill color="black" />
-          {poll.votes}
-        </GridItem>
+          {2}
+        </GridItem> */}
       </Grid>
     </Card>
   );
 }
 
-
-
 export function Polls() {
   const [polls, setPolls] = useState<IPoll[]>([]);
   useEffect(() => {
     async function getPolls() {
-      console.log("we're in here")
       const response = await fetch("/api/getPolls", {
         method: "GET",
       });
       console.log(response);
       if (response.status === 200) {
-        const contentType = response.headers.get("content-type");
         const temp = await response.json();
-        console.log(response.json);
         setPolls(temp.polls);
-        return temp;
       } else {
         console.warn("Server returned error status: " + response.status);
       }
     }
     getPolls()
   }, []);
-
-  // render component using data
 
   return (
     <>
