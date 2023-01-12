@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -8,16 +8,25 @@ import {
   HStack,
   IconButton,
   useBreakpointValue,
+  useColorMode,
   useColorModeValue,
 } from "@chakra-ui/react";
 import { FiMenu } from "react-icons/fi";
 //   import { Logo } from './Logo'
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useRouter } from "next/router";
+import { DarkModeSwitch } from 'react-toggle-dark-mode';
 
 export default function Header() {
   const isDesktop = useBreakpointValue({ base: false, lg: true });
   const router = useRouter();
+  const [isDarkMode, setDarkMode] = useState<boolean>(false);
+  const toggleDarkMode = (checked: boolean) => {
+    setDarkMode(!checked);
+    toggleColorMode();
+  };
+
+  const { colorMode, toggleColorMode } = useColorMode()
 
   let pages: string[] = ["Home", "Generate Poll"];
   let paths: string[] = ["/", "/generatepoll"];
@@ -55,6 +64,14 @@ export default function Header() {
                 aria-label="Open Menu"
               />
             )}
+                <DarkModeSwitch
+                  style={{ marginRight: '2' }}
+                  checked={colorMode === 'light'}
+                  onChange={toggleDarkMode}
+                  size={30}
+                  sunColor="white"
+                  moonColor="black"
+                />
           </HStack>
         </Container>
       </Box>
