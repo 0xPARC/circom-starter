@@ -1,4 +1,5 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
+import { Poll } from '@prisma/client';
 import type { NextApiRequest, NextApiResponse } from 'next'
 import prisma from '../../lib/prisma';
 
@@ -20,6 +21,19 @@ type Data = {
     polls: PollOutput[]
 }
 
+function mapPolls(polls: Poll[]) {
+  return polls.map(poll => {
+    return {
+      id: poll.id,
+      title: poll.title,
+      groupDescription: poll.groupDescription,
+      description: poll.description,
+      createdAt: new Date(poll.createdAt),
+      deadline: new Date(poll.deadline)
+    };
+  });
+}
+
 /** 
  * @function: handler
  * @description: This is the handler for the API endpoint.
@@ -34,8 +48,8 @@ export default async function handler(
     })
   }
 
+  var pollsReceived = await prisma.poll.findMany()
+  const pollOutputs = mapPolls(pollsReceived);
 
-  var pollsReceived = prisma.poll.findMany()
-  console.log(pollsReceived)
-  return {name: "Got polls", polls: pollsReceived}
+  res.status(200).json({name: "Got polls", polls: pollOutputs});
 }

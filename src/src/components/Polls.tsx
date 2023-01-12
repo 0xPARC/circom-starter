@@ -57,7 +57,7 @@ function PollCard({ poll }: { poll: IPoll }) {
                 '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu'
               }
             >
-              POSTED {examplePoll.createdAt} | POLL ID {examplePoll.id}
+              POSTED {poll.createdAt} | POLL ID {poll.id}
             </Text>
             <Spacer />
             <Button size="xs" colorScheme="green">
@@ -67,26 +67,29 @@ function PollCard({ poll }: { poll: IPoll }) {
         </GridItem>
         <GridItem pl="2" area={"main"}>
           <Text fontSize="2xl" fontWeight="700">
-            {examplePoll.title}
+            {poll.title}
           </Text>
         </GridItem>
         <GridItem pl="2" area={"footer"}>
-          <Text>{examplePoll.des}</Text>
-          <Text fontSize="xs">{examplePoll.gdes}</Text>
+          <Text>{poll.des}</Text>
+          <Text fontSize="xs">{poll.gdes}</Text>
         </GridItem>
         <GridItem pl="2" area={"nav"} marginTop={2}>
           <BsFillPeopleFill color="black" />
-          {examplePoll.votes}
+          {poll.votes}
         </GridItem>
       </Grid>
     </Card>
   );
 }
 
+
+
 export function Polls() {
   const [polls, setPolls] = useState<IPoll[]>([]);
   useEffect(() => {
     async function getPolls() {
+      console.log("we're in here")
       const response = await fetch("/api/getPolls", {
         method: "GET",
       });
@@ -95,19 +98,21 @@ export function Polls() {
         const contentType = response.headers.get("content-type");
         const temp = await response.json();
         console.log(response.json);
-        // myResponse = temp;
+        setPolls(temp.polls);
         return temp;
       } else {
         console.warn("Server returned error status: " + response.status);
       }
     }
-    getPolls();
+    getPolls()
   }, []);
+
+  // render component using data
 
   return (
     <>
       <div>
-        {polls?.map((p) => (
+        {polls.map((p) => (
           <Link href={"/vote/" + p.id} key={p.id}>
             <PollCard poll={p} />
           </Link>
