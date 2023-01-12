@@ -29,12 +29,17 @@ export default async function handler(
       name: "GET endpoint", inTree: false, pollId: -1
     })
   }
-  if ("data" in req.body == false) {
+  if (typeof req.body == 'string') {
+    var body = JSON.parse(req.body)
+  } else {
+    var body = req.body
+  }
+  if ("data" in body == false) {
     res.status(400).json({
       name: "No data", inTree: false, pollId: -1
     })
   }
-  var data = req.body.data
+  var data = body.data
 
   var address, pollId
 

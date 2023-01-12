@@ -24,17 +24,23 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
-  if (req.method !== 'GET') {
+  if (req.method !== 'POST') {
     res.status(405).json({
       name: "GET endpoint", siblings: [], pathIndices: []
     })
   }
-  if ("data" in req.body == false) {
+  if (typeof req.body == 'string') {
+    var body = JSON.parse(req.body)
+  } else {
+    var body = req.body
+  }
+  if ("data" in body == false) {
     res.status(400).json({
       name: "no data in body", siblings: [], pathIndices: []
     })
   }
-  var data = req.body.data
+  var data = body.data
+  console.log("In API: ", req.body)
 
   var address, pollId
 
@@ -56,8 +62,10 @@ export default async function handler(
 
   
 
-  var outputData = await getSiblingsAndPathIndices(data.address, data.pollId)
-
+  var outputData = await getSiblingsAndPathIndices(data.address, data.pollId);
+  
+  console.log(outputData.siblings)
+  console.log(outputData.pathIndices)
   if (outputData.isValidPollId == false) {
     return res.status(400).json({ name: "invalid poll id", siblings: [], pathIndices: [] })
   } else {
