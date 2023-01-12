@@ -1,13 +1,12 @@
-import { ethers } from "ethers";
 import axios from "axios";
-const hre = require("hardhat");
-const circomlib = require("circomlibjs");
-
+// const snarkjs = require("snarkjs");
 // TODO: Change the storage of the Merkle Tree to an S3 Bucket
-async function generateProof(identityNullifier: string, address: string, vote: number, pollId: number) {
+async function generateProof(identityNullifier: string, publicKey: string, vote: number, pollId: number) {
+    console.log("Generating Proof")
+    console.log("Address: ", publicKey)
     const response = await axios.post("/api/getSiblings", {
         data: {
-            address: address,
+            address: publicKey,
             pollId: pollId
         }
     })
@@ -17,34 +16,51 @@ async function generateProof(identityNullifier: string, address: string, vote: n
 
     const input = {
         identityNullifier: identityNullifier,
-        identityTrapdoor: "0",
         treePathIndices: pathIndices,
         treeSiblings: siblings,
         signalHash: vote.toString(),
         externalNullifier: pollId
     }
 
-    const wasmPath = "./semaphore.wasm";
-    const zkeyPath = "./semaphore.zkey";
-    const vkeyPath = "./semaphore.vkey.json";
+    // const wasmPath = "./semaphore.wasm";
+    // const zkeyPath = "./semaphore.zkey";
+    // const vkeyPath = "./semaphore.vkey.json";
 
-    const worker = new Worker("./worker.js");
-    worker.postMessage([input]);
-    worker.onmessage = (e) => {
-        const { proof, publicSignals } = e.data;
-        console.log("PROOF SUCCESSFULLY GENERATED: ", proof);
-        const proofForTx = [
-            proof.pi_a[0],
-            proof.pi_a[1],
-            proof.pi_b[0][1],
-            proof.pi_b[0][0],
-            proof.pi_b[1][1],
-            proof.pi_b[1][0],
-            proof.pi_c[0],
-            proof.pi_c[1],
-          ];
-          return proofForTx;
-    }
+    const outputResponse = await axios.post("/api/generateProof", {
+        data: input
+    })
+
+    const proofForTx = outputResponse.data.proofForTx;
+    // console.log("In components", outputResponse.data.name)
+    return proofForTx;
+
+
+    // const result = await snarkjs.groth16.fullProve(
+    //     input,
+    //     "./semaphore.wasm",
+    //     "./semaphore.zkey"
+    //   );
+
+    // const worker = new Worker("worker.js");
+    // // console.log("Before posting input to worker")
+    // worker.postMessage([input]);
+    // // console.log("After posting input to worker")
+    // worker.onmessage = (e) => {
+    //     console.log("In onmessage")
+    //     const { proof, publicSignals } = e.data;
+    //     console.log("PROOF SUCCESSFULLY GENERATED: ", proof);
+    //     const proofForTx = [
+    //         proof.pi_a[0],
+    //         proof.pi_a[1],
+    //         proof.pi_b[0][1],
+    //         proof.pi_b[0][0],
+    //         proof.pi_b[1][1],
+    //         proof.pi_b[1][0],
+    //         proof.pi_c[0],
+    //         proof.pi_c[1],
+    //       ];
+    //       return proofForTx;
+    // }
     // // deploy sema contract
     // const PrivPoll = await hre.ethers.getContractFactory("PrivPoll");
     // // Verifier 16
