@@ -43,7 +43,7 @@ let myResponse: {
   deadline: 0,
 };
 
-const SEMAPHORE_CONTRACT = "0x3605A3A829422c06Fb53072ceF27aD556Fb9f650";
+const SEMAPHORE_CONTRACT = "0xEd5Eae6415C5502EE94768c653766CdEc48aFe16";
 
 // Generate a form poll that allows a user to enter FormValues and upload a .csv
 export default function GeneratePoll() {
