@@ -106,8 +106,10 @@ export default function GeneratePoll() {
     postData().then(async () => {
       setDbLoading(false);
       setContractLoading(true);
-      await contract?.createPoll(1, account.address, myResponse.rootHash, 16);      
-      // setContractLoading(false);
+      const tx = await contract?.createPoll(1, account.address, myResponse.rootHash, 16);     
+      const response = await tx.wait()
+      console.log(`Transaction response: ${response}`) 
+      setContractLoading(false);
     })
   }
 
@@ -118,29 +120,6 @@ export default function GeneratePoll() {
   // });
 
   //  const isReadToWrite = !isLoading && !isError && write != null;
-
-  function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>): void {
-    console.log(e.currentTarget.files![0]);
-    const file = e.target.files && e.target.files[0];
-    if (!file) {
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      if (e.target && e.target.result) {
-        const contents = e.target.result;
-        if (typeof contents == "string") {
-          const rows = contents.split("\n");
-          const values = rows.map((row) => row.split(","));
-          const flatValues = values.flat();
-          const addresses = flatValues;
-          setAddresses(addresses);
-        }
-      }
-    };
-    reader.readAsText(file);
-  }
 
   return (
     <>
