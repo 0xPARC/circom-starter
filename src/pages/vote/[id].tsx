@@ -5,7 +5,7 @@ import styles from '../../styles/Home.module.css'
 import styled from 'styled-components'
 import { BsFillPeopleFill } from 'react-icons/bs'
 import Header from '../../components/header'
-import { Card, CardHeader, CardBody, CardFooter, Heading, Button, Text, Grid, GridItem, Center, Input } from '@chakra-ui/react'
+import { Card, CardHeader, CardBody, CardFooter, Heading, Button, Text, Grid, GridItem, Center, Input, Textarea } from '@chakra-ui/react'
 import { Flex, Spacer } from '@chakra-ui/react'
 import { useState } from 'react'
 import { getAccount } from "@wagmi/core";
@@ -43,10 +43,40 @@ function PollDisplay({ poll }: { poll: IPoll }) {
   const [privateKey, setPrivateKey] = useState<string>("");
   const [yesSelected, setYesSelected] = useState(false);
   const [noSelected, setNoSelected] = useState(false);
+  const [proofForTx, setProofForTx] = useState<string[]>([]);
+  const [proofResponse, setProofResponse] = useState<string>("");
+  const [loadingProof, setLoadingProof] = useState<boolean>(false);
+  const [loadingSubmitVote, setLoadingSubmitVote] = useState<boolean>(false);
+
+
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     setYesSelected(e.currentTarget.textContent === "Yes" ? true : false);
     setNoSelected(e.currentTarget.textContent === "No" ? true : false);
+  }
+
+  const handleGenProof = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (account) {
+      // 1: Vote yes, 2: Poll ID
+      setLoadingProof(true);
+      const response = await generateProof(privateKey, publicKey as `0x${string}`, 1, 2)
+      setProofForTx(response);
+      setProofResponse("Proof generated! Check console for proof")
+      setLoadingProof(false);
+      // console.log("Proof in frontend", proofForTx)
+    }
+  }
+
+  const handleSubmitVote = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (account) {
+      // 1: Vote yes, 2: Poll ID
+      setLoadingSubmitVote(true);
+      const response = await generateProof(privateKey, publicKey as `0x${string}`, 1, 2)
+      setProofForTx(response);
+      setProofResponse("Proof generated! Check console for proof")
+      setLoadingSubmitVote(false);
+      // console.log("Proof in frontend", proofForTx)
+    }
   }
 
 
@@ -57,7 +87,8 @@ function PollDisplay({ poll }: { poll: IPoll }) {
                         "main nav"
                         "footer nav"
                         "extra extra"
-                        "extra extra"`}
+                        "extra extra"
+                        `}
         gridTemplateRows={'18% 2em 20% 9em'}
         gridTemplateColumns={'95% 2em '}
         // h='150%'
@@ -96,6 +127,7 @@ function PollDisplay({ poll }: { poll: IPoll }) {
               />
             </Flex>
         </Center>
+        <Spacer/>
         <Center>
             
             <Flex>
@@ -111,17 +143,33 @@ function PollDisplay({ poll }: { poll: IPoll }) {
                 <Button size='md' variant="outline" isActive={noSelected} colorScheme='red' onClick={handleClick} >No</Button>
             </Flex>
           </Center>
-            <Spacer/>
-            <Center>
-              <Button mt={5}
-                mb={10}
-                disabled={account? false: true}
-                onClick={account ? () => generateProof(privateKey, publicKey as `0x${string}`, 1, 47) : () => {console.log("Generated Proof!")}}
-                // onClick={account ? () => generateProof(privateKey, account.address as `0x${string}`, 1, poll.id) : () => {console.log("Generated Proof!")}}
-                loadingText='Submitting'
-                colorScheme='teal'
-                variant='outline'>Cast Vote</Button>
-            </Center>
+        <Spacer/>
+        <Center>
+          <Button mt={5}
+            mb={10}
+            disabled={(account && proofResponse=='')? false: true}
+            onClick={handleGenProof}
+            // onClick={account ? () => generateProof(privateKey, account.address as `0x${string}`, 1, poll.id) : () => {console.log("Generated Proof!")}}
+            loadingText='Generating Proof'
+            isLoading={loadingProof}
+            colorScheme='teal'
+            variant='outline'>Generate Proof</Button>
+          <Button mt={5}
+            mb={10}
+            disabled={(account && proofResponse)? false: true}
+            onClick={handleSubmitVote}
+            // onClick={account ? () => generateProof(privateKey, account.address as `0x${string}`, 1, poll.id) : () => {console.log("Generated Proof!")}}
+            loadingText='Submitting Vote'
+            isLoading={loadingSubmitVote}
+            colorScheme='teal'
+            variant='outline'>Submit Vote</Button>
+        </Center>
+
+        <Center>
+          <Flex>
+              <Text mb='8px'>Proof: {proofResponse}</Text>
+            </Flex>
+        </Center>
         </GridItem>
     </Grid>
 </Card>
