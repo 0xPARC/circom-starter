@@ -51,9 +51,4 @@ interface ISemaphoreGroups {
     /// @param groupId: Id of the group.
     /// @return Depth of the group tree.
     function getMerkleTreeDepth(uint256 groupId) external view returns (uint256);
-
-    // /// @dev Returns the number of tree leaves of a group.
-    // /// @param groupId: Id of the group.
-    // /// @return Number of tree leaves.
-    // function getNumberOfMerkleTreeLeaves(uint256 groupId) external view returns (uint256);
 }
