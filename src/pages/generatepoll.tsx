@@ -19,6 +19,7 @@ import {
   useSigner,
   useWaitForTransaction,
 } from "wagmi";
+import { time } from "console";
 
 interface FormValues {
   title: string;
@@ -51,8 +52,7 @@ export default function GeneratePoll() {
   const [addresses, setAddresses] = useState<string[]>([]);
   const [description, setDescription] = useState<string>("");
   const [groupDescription, setGroupDescription] = useState<string>("");
-  const [createdAt, setCreatedAt] = useState<number>(0);
-  const [deadline, setDeadline] = useState<number>(0);
+  const [duration, setDuration] = useState<number>();
   const [tempAddresses, setTempAddresses] = useState<string>("");
   const account = getAccount();
   const [dbLoading, setDbLoading] = useState(false);
@@ -76,8 +76,8 @@ export default function GeneratePoll() {
         addresses: addresses,
         description: description,
         groupDescription: groupDescription,
-        createdAt: createdAt,
-        deadline: deadline,
+        createdAt: Date.now(),
+        deadline: Date.now() + duration!,
       },
     };
 
@@ -122,7 +122,7 @@ export default function GeneratePoll() {
       if (!isError) {
         toast({
           title: "Poll created",
-          description: "We've created your poll!",
+          description: tx.hash,
           status: "success",
           duration: 5000,
           isClosable: true,
@@ -130,7 +130,7 @@ export default function GeneratePoll() {
       } else {
         toast({
           title: "Transaction failed",
-          description: "Transaction to create poll failed",
+          description: tx.hash,
           status: "error",
           duration: 5000,
           isClosable: true,
@@ -169,6 +169,11 @@ export default function GeneratePoll() {
                   placeholder="Group Description"
                   value={groupDescription}
                   onChange={(e) => setGroupDescription(e.target.value)}
+                />
+                <Input
+                  placeholder="Duration (Hours)"
+                  value={duration}
+                  onChange={(e) => setDuration(Number(e.target.value))}
                 />
                 <Input
                   placeholder="Public Addresses"
