@@ -407,6 +407,7 @@ describe("user 401", function () {
         merkleTreeDepth: "16",
       },
     ]);
+    
     await privPoll.deployed();
   });
   it("user 401 (pass)", async function () {
