@@ -55,82 +55,10 @@ contract Semaphore is ISemaphore, SemaphoreCore, SemaphoreGroups {
         _createGroup(groupId, merkleTreeRoot, merkleTreeDepth, zeroValue);
 
         groups[groupId].admin = admin;
-        groups[groupId].merkleRootDuration = 1 hours;
+        groups[groupId].merkleRootDuration = 24 hours;
 
         emit GroupAdminUpdated(groupId, address(0), admin);
     }
-
-    // /// @dev See {ISemaphore-createGroup}.
-    // function createGroup(
-    //     uint256 groupId,
-    //     uint256 merkleTreeDepth,
-    //     uint256 zeroValue,
-    //     address admin,
-    //     uint256 merkleTreeRootDuration
-    // ) external override onlySupportedMerkleTreeDepth(merkleTreeDepth) {
-    //     _createGroup(groupId, merkleTreeDepth, zeroValue);
-
-    //     groups[groupId].admin = admin;
-    //     groups[groupId].merkleRootDuration = merkleTreeRootDuration;
-
-    //     emit GroupAdminUpdated(groupId, address(0), admin);
-    // }
-
-    // /// @dev See {ISemaphore-updateGroupAdmin}.
-    // function updateGroupAdmin(uint256 groupId, address newAdmin) external override onlyGroupAdmin(groupId) {
-    //     groups[groupId].admin = newAdmin;
-
-    //     emit GroupAdminUpdated(groupId, _msgSender(), newAdmin);
-    // }
-
-    // /// @dev See {ISemaphore-addMember}.
-    // function addMember(uint256 groupId, uint256 identityCommitment) external override onlyGroupAdmin(groupId) {
-    //     _addMember(groupId, identityCommitment);
-
-    //     uint256 merkleTreeRoot = getMerkleTreeRoot(groupId);
-
-    //     groups[groupId].merkleRootCreationDates[merkleTreeRoot] = block.timestamp;
-    // }
-
-    // /// @dev See {ISemaphore-addMembers}.
-    // function addMembers(uint256 groupId, uint256[] calldata identityCommitments)
-    //     external
-    //     override
-    //     onlyGroupAdmin(groupId)
-    // {
-    //     for (uint8 i = 0; i < identityCommitments.length; ) {
-    //         _addMember(groupId, identityCommitments[i]);
-
-    //         unchecked {
-    //             ++i;
-    //         }
-    //     }
-
-    //     uint256 merkleTreeRoot = getMerkleTreeRoot(groupId);
-
-    //     groups[groupId].merkleRootCreationDates[merkleTreeRoot] = block.timestamp;
-    // }
-
-    // /// @dev See {ISemaphore-updateMember}.
-    // function updateMember(
-    //     uint256 groupId,
-    //     uint256 identityCommitment,
-    //     uint256 newIdentityCommitment,
-    //     uint256[] calldata proofSiblings,
-    //     uint8[] calldata proofPathIndices
-    // ) external override onlyGroupAdmin(groupId) {
-    //     _updateMember(groupId, identityCommitment, newIdentityCommitment, proofSiblings, proofPathIndices);
-    // }
-
-    // /// @dev See {ISemaphore-removeMember}.
-    // function removeMember(
-    //     uint256 groupId,
-    //     uint256 identityCommitment,
-    //     uint256[] calldata proofSiblings,
-    //     uint8[] calldata proofPathIndices
-    // ) external override onlyGroupAdmin(groupId) {
-    //     _removeMember(groupId, identityCommitment, proofSiblings, proofPathIndices);
-    // }
 
     /// @dev See {ISemaphore-verifyProof}.
     function verifyProof(
