@@ -9,7 +9,7 @@ const Home: NextPage = () => {
     <div className={styles.container}>
       <Header />
       <main className={styles.main}>
-        <Heading as='h1' size='xl'>ETH-Compatible Private Poll</Heading>
+        <Heading as='h1' size='xl'>zkPoll</Heading>
           <Polls />
       </main>
     </div>

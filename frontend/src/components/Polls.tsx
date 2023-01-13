@@ -121,7 +121,7 @@ export function Polls() {
          placeholder="Search"
          value={searchTerm}
          mt={3}
-         style={{ width: '60%'}}
+         style={{ width: '50%'}}
          onChange={(e) => setSearchTerm(e.target.value)}
        />
        </Center>

@@ -34,7 +34,7 @@ function mapPolls(polls: Poll[]) {
       description: poll.description,
       createdAt: new Date(poll.createdAt).toUTCString(),
       deadline: new Date(poll.deadline).toUTCString(),
-      active: Date.now() < poll.deadline.getMilliseconds()
+      active: Date.now() < poll.deadline.getTime()
     };
   });
 }
