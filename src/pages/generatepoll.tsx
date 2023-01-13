@@ -17,6 +17,7 @@ import {
   useSigner,
   useWaitForTransaction,
 } from "wagmi";
+import { split } from "ramda";
 
 interface FormValues {
   title: string;
@@ -66,11 +67,26 @@ export default function GeneratePoll() {
     signerOrProvider: signer,
   });
 
-  const postData = async () => {
+  const splitAddresses = (stringAddresses: string) => {
+    console.log("Splitting Addresses")
+    setTempAddresses(stringAddresses);
+    const split = stringAddresses.split(",");
+    if (split) {
+      setAddresses(split);
+    }
+    console.log("temp addresses");
+    // console.log(tempAddresses);
+    console.log("split addresses")
+    // console.log(stringAddresses);
+
+  };
+  const postData = async (addressesArr: string[]) => {
+    // Convert to 
+    console.log("Post addresses", addresses)
     const body = {
       data: {
         title: title,
-        addresses: addresses,
+        addresses: addressesArr,
         description: description,
         groupDescription: groupDescription,
         createdAt: Date.now(),
@@ -94,15 +110,12 @@ export default function GeneratePoll() {
     }
   };
 
-  function handleSubmit(e: { preventDefault: () => void }) {
+  async function handleSubmit(e: { preventDefault: () => void }, addressesArr: string[]) {
     setDbLoading(true);
+    console.log("Got into submit!")
     e.preventDefault();
-    const split = tempAddresses.split(",");
-    if (split) {
-      setAddresses(split);
-    }
 
-    postData().then(async () => {
+    await postData(addressesArr).then(async () => {
       setDbLoading(false);
       console.log("OK ROOT HASH", myResponse.rootHash);
       setContractLoading(true);
@@ -157,7 +170,7 @@ export default function GeneratePoll() {
             <CardBody>
               <FormControl
                 className={styles.generate}
-                onSubmit={(e) => handleSubmit(e)}
+                onSubmit={(e) => handleSubmit(e, addresses)}
               >
                 <Input
                   placeholder="Title"
@@ -182,19 +195,19 @@ export default function GeneratePoll() {
                 <Input
                   placeholder="Public Addresses"
                   value={tempAddresses}
-                  onChange={(e) => setTempAddresses(e.target.value)}
+                  onChange={(e) =>  splitAddresses(e.target.value)}
                 />
                 <Button
                   type="submit"
                   size="md"
-                  onClick={handleSubmit}
                   colorScheme="blue"
                   isLoading={contractLoading || dbLoading}
                   loadingText={
                     dbLoading ? "Generating merkle root" : "Submitting poll"
                   }
                   style={{marginTop: "2%"}}
-                >
+                  onClick={(e) => handleSubmit(e, addresses)}
+                  >
                   Submit
                 </Button>
               </FormControl>
