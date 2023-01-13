@@ -10,6 +10,7 @@ import {
   Center,
   Input,
   Box,
+  HStack,
 } from "@chakra-ui/react";
 import { Flex, Spacer } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
@@ -26,7 +27,8 @@ import {
 } from "wagmi";
 import testABI from "../../components/abi/test.json";
 import { Progress } from "@chakra-ui/react";
-import styles from '../../styles/Home.module.css'
+import styles from '../../styles/Home.module.css';
+import { BsFillPeopleFill } from 'react-icons/bs';
 
 interface IPoll {
   title: string;
@@ -208,7 +210,7 @@ function PollDisplay() {
   };
 
   return (
-    <Card variant={"elevated"} margin={8}>
+    <Card variant={"elevated"} margin={8} minH='md'>
       <Grid
         templateAreas={`"header header"
                         "main nav"
@@ -216,12 +218,12 @@ function PollDisplay() {
                         "extra extra"
                         "extra extra"
                         `}
-        gridTemplateRows={"8% 2em 20% 9em"}
+        gridTemplateRows={"8% 2em 15% 90%"}
         gridTemplateColumns={"95% 2em "}
         // h='150%'
         gap="1"
         padding={4}
-        margin={2}
+        margin={6}
         marginLeft={0}
       >
         <GridItem pl="2" area={"header"}>
@@ -253,9 +255,35 @@ function PollDisplay() {
         </GridItem>
         <GridItem pl="2" area={"footer"}>
           <Text>{poll.description}</Text>
+          <HStack mt={2}>
+          <BsFillPeopleFill/>
           <Text fontSize="xs">{poll.groupDescription}</Text>
+          </HStack>
         </GridItem>
+        
         <GridItem pl="2" area={"extra"}>
+        {yesVoteCount + noVoteCount > 0 ? (
+            <>
+              <Progress
+                colorScheme={"green"}
+                background={"red"}
+                height="10px"
+                rounded={"xl"}
+                mb={"1%"}
+                value={(100 * yesVoteCount) / (yesVoteCount + noVoteCount)}
+              />
+              <Text
+                color="gray.500"
+                fontWeight="semibold"
+                letterSpacing="wide"
+                fontSize="xs"
+                textTransform="uppercase"
+              >
+                Yes: {yesVoteCount} No: {noVoteCount}
+              </Text>
+            </>
+          ) : null}
+          <Spacer margin={6}/>
           <Input
             mr={4}
             mb={4}
@@ -268,7 +296,7 @@ function PollDisplay() {
           <Spacer />
           <Input
             mr={4}
-            mb={4}
+            mb={10}
             placeholder="Private Key"
             value={privateKey}
             onChange={(e) => setPrivateKey(e.target.value)}
@@ -323,27 +351,6 @@ function PollDisplay() {
               </Button>
             </Flex>
           </Center>
-          {yesVoteCount + noVoteCount > 0 ? (
-            <>
-              <Progress
-                colorScheme={"green"}
-                background={"red"}
-                height="10px"
-                rounded={"xl"}
-                mb={"1%"}
-                value={(100 * yesVoteCount) / (yesVoteCount + noVoteCount)}
-              />
-              <Text
-                color="gray.500"
-                fontWeight="semibold"
-                letterSpacing="wide"
-                fontSize="xs"
-                textTransform="uppercase"
-              >
-                Yes: {yesVoteCount} No: {noVoteCount}
-              </Text>
-            </>
-          ) : null}
           <Spacer />
         </GridItem>
       </Grid>

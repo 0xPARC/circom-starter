@@ -5,7 +5,9 @@ import theme from '../theme'
 export default function Document() {
   return (
     <Html lang="en">
-      <Head />
+      <Head>
+      <title>zkPoll</title>
+      </Head>
       <body>
         <ColorModeScript initialColorMode={theme.config.initialColorMode} />
         <Main />
