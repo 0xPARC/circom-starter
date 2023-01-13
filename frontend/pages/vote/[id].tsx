@@ -27,8 +27,8 @@ import {
 } from "wagmi";
 import testABI from "../../components/abi/test.json";
 import { Progress } from "@chakra-ui/react";
-import styles from '../../styles/Home.module.css';
-import { BsFillPeopleFill } from 'react-icons/bs';
+import styles from "../../styles/Home.module.css";
+import { BsFillPeopleFill } from "react-icons/bs";
 
 interface IPoll {
   title: string;
@@ -64,7 +64,8 @@ function PollDisplay() {
   const { data, isError, isLoading } = useWaitForTransaction({
     hash: `0x${txHash}`,
   });
-  console.log(id);
+  const [invalidKey, setInvalidKey] = useState<boolean>(false);
+  const Wallet = require("ethereumjs-wallet");
 
   const {
     data: resultData,
@@ -95,7 +96,25 @@ function PollDisplay() {
     votes: 1,
   });
 
+  // const handleKeys = async (e: string) => {
+  //   setPrivateKey(e);
+  //   // "64d87dfbf242dcbe088049ec74643da3fdd428be8e26974a76e4624ce3532117"
+  //   const pubKey = Wallet.fromPrivateKey(Buffer.from(privateKey, 'hex')).getAddress().toString('hex');
+  //   console.log("pubkey", pubKey);
+  //   setPublicKey(pubKey);
+  // }
+
   useEffect(() => {
+    try {
+      setPublicKey(
+        `0x${Wallet.fromPrivateKey(Buffer.from(privateKey, "hex"))
+          .getAddress()
+          .toString("hex")}`
+      );
+      setInvalidKey(false);
+    } catch (e) {
+      setInvalidKey(true);
+    }
     if (resultData) {
       setYesVoteCount(Number((resultData as number[])[0]));
       console.log("yes votes", yesVoteCount);
@@ -118,7 +137,7 @@ function PollDisplay() {
       setPoll(response);
     };
     postData();
-  }, [id, resultData]);
+  }, [id, resultData, privateKey]);
 
   const handleGenProof = async (e: React.MouseEvent<HTMLButtonElement>) => {
     if (account) {
@@ -126,8 +145,8 @@ function PollDisplay() {
       setLoadingProof(true);
       // Hardcode these differently depending on pollID
       const response = await generateProof(
-        privateKey,
-        publicKey as `0x${string}`,
+        `0x${privateKey}`,
+        publicKey,
         yesSelected ? 1 : 0,
         Number(id)
       );
@@ -174,8 +193,13 @@ function PollDisplay() {
   const handleSubmitVote = async (e: React.MouseEvent<HTMLButtonElement>) => {
     if (account) {
       setLoadingSubmitVote(true);
-      const response = await castVote(nullifierHash, proofForTx, yesSelected? 1: 0, Number(id));
-      const success = response[3]
+      const response = await castVote(
+        nullifierHash,
+        proofForTx,
+        yesSelected ? 1 : 0,
+        Number(id)
+      );
+      const success = response[3];
       const txHash = response[1];
       setTxHash(txHash);
       if (success) {
@@ -211,7 +235,7 @@ function PollDisplay() {
   };
 
   return (
-    <Card variant={"elevated"} margin={8} minH='s'>
+    <Card variant={"elevated"} margin={8} minH="s">
       <Grid
         templateAreas={`"header header"
                         "main nav"
@@ -239,11 +263,26 @@ function PollDisplay() {
             </Text>
             <Spacer />
             {poll.active ? (
-              <Button disabled={true} _disabled={{backgroundColor: "#651fff"}} _hover={{backgroundColor: "#651fff"}} size="xs" backgroundColor="#651fff" color={'white'}>
+              <Button
+                disabled={true}
+                _disabled={{ backgroundColor: "#651fff" }}
+                _hover={{ backgroundColor: "#651fff" }}
+                size="xs"
+                backgroundColor="#651fff"
+                color={"white"}
+              >
                 Active
               </Button>
             ) : (
-              <Button disabled={true} size="xs" _disabled={{backgroundColor: "#651fff"}} _hover={{backgroundColor: "#651fff"}} backgroundColor="#651fff" color={'white'} opacity={0.3}>
+              <Button
+                disabled={true}
+                size="xs"
+                _disabled={{ backgroundColor: "#651fff" }}
+                _hover={{ backgroundColor: "#651fff" }}
+                backgroundColor="#651fff"
+                color={"white"}
+                opacity={0.3}
+              >
                 Complete
               </Button>
             )}
@@ -257,13 +296,13 @@ function PollDisplay() {
         <GridItem pl="2" area={"footer"}>
           <Text>{poll.description}</Text>
           <HStack mt={2}>
-          <BsFillPeopleFill/>
-          <Text fontSize="xs">{poll.groupDescription}</Text>
+            <BsFillPeopleFill />
+            <Text fontSize="xs">{poll.groupDescription}</Text>
           </HStack>
         </GridItem>
-        
+
         <GridItem pl="2" area={"extra"}>
-        {yesVoteCount + noVoteCount > 0 ? (
+          {yesVoteCount + noVoteCount > 0 ? (
             <>
               <Progress
                 colorScheme={"green"}
@@ -284,16 +323,7 @@ function PollDisplay() {
               </Text>
             </>
           ) : null}
-          <Spacer margin={6}/>
-          <Input
-            mr={4}
-            mb={4}
-            textColor={"#242124"}
-            placeholder="Public Key"
-            value={publicKey}
-            onChange={(e) => setPublicKey(e.target.value)}
-            focusBorderColor={"#D7C3FF"}
-          />
+          <Spacer margin={6} />
           <Spacer />
           <Input
             mr={4}
@@ -328,7 +358,14 @@ function PollDisplay() {
               <Button
                 mb={3}
                 ml={4}
-                disabled={account && (yesSelected || noSelected) && proofResponse == "" ? false : true}
+                disabled={
+                  account &&
+                  (yesSelected || noSelected) &&
+                  proofResponse == "" &&
+                  !invalidKey
+                    ? false
+                    : true
+                }
                 onClick={handleGenProof}
                 loadingText="Generating Proof"
                 isLoading={loadingProof}
@@ -340,7 +377,9 @@ function PollDisplay() {
               <Button
                 mb={3}
                 ml={4}
-                disabled={account && proofResponse ? false : true}
+                disabled={
+                  account && proofResponse && !invalidKey ? false : true
+                }
                 onClick={handleSubmitVote}
                 loadingText="Submitting Vote"
                 isLoading={loadingSubmitVote}
@@ -361,11 +400,11 @@ function PollDisplay() {
 export default function GeneratePoll() {
   return (
     <>
-      <Header/>
+      <Header />
       <div className={styles.container}>
         <main className={styles.main}>
-          <PollDisplay/>
-      </main>
+          <PollDisplay />
+        </main>
       </div>
     </>
   );
