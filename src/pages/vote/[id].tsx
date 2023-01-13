@@ -1,45 +1,39 @@
-import { ConnectButton } from '@rainbow-me/rainbowkit'
-import Link from 'next/link'
-import * as React from 'react'
-import styles from '../../styles/Home.module.css'
-import styled from 'styled-components'
-import { BsFillPeopleFill } from 'react-icons/bs'
-import Header from '../../components/header'
-import { Card, CardHeader, CardBody, CardFooter, Heading, Button, Text, Grid, GridItem, Center, Input, Textarea } from '@chakra-ui/react'
-import { Flex, Spacer } from '@chakra-ui/react'
-import { useState } from 'react'
+import * as React from "react";
+import styled from "styled-components";
+import Header from "../../components/header";
+import {
+  Card,
+  Button,
+  Text,
+  Grid,
+  GridItem,
+  Center,
+  Input,
+} from "@chakra-ui/react";
+import { Flex, Spacer } from "@chakra-ui/react";
+import { useState, useEffect } from "react";
 import { getAccount } from "@wagmi/core";
-import { generateProof } from '../../components/generateProof'
-import { castVote } from '../../components/castVote'
-import { Progress } from '@chakra-ui/react'
+import { generateProof } from "../../components/generateProof";
+import { castVote } from "../../components/castVote";
+import { useToast } from "@chakra-ui/react";
+import { useRouter } from "next/router";
+import { useWaitForTransaction } from "wagmi";
 
 interface IPoll {
-  title: string
-  author: string
-  gdes: string
-  des: string
-  votes: number
-  id: number
-  createdAt: number
-  deadline: number
+  title: string;
+  author: string;
+  groupDescription: string;
+  description: string;
+  votes: number;
+  id: number;
+  createdAt: number;
+  deadline: number;
+  active: boolean;
 }
 
-const examplePoll: IPoll = {
-  title: 'Does pineapple belong on pizza?',
-  author: '0x71C7656EC7ab88b098defB751B7401B5f6d8976F',
-  gdes: 'A group for all pizza lovers',
-  des: 'A decade long debate, Pineapple on pizza remains a contentious. ',
-  votes: 10,
-  id: 1,
-  createdAt: 40234850,
-  deadline: 12345678,
-}
 const account = getAccount();
-console.log("ACCCOUNT");
-console.log(account.address);
 
-function PollDisplay({ poll }: { poll: IPoll }) {
-
+function PollDisplay() {
   const [publicKey, setPublicKey] = useState<string>("");
   const [privateKey, setPrivateKey] = useState<string>("");
   const [yesSelected, setYesSelected] = useState(false);
@@ -50,167 +44,244 @@ function PollDisplay({ poll }: { poll: IPoll }) {
   const [loadingProof, setLoadingProof] = useState<boolean>(false);
   const [loadingSubmitVote, setLoadingSubmitVote] = useState<boolean>(false);
   const [txHash, setTxHash] = useState<string>("");
-  const [submitVoteResponse, setSubmitVoteResponse] = useState<string>("");
+  const toast = useToast();
+  const router = useRouter()
+  const { id } = router.query
+  const { data, isError, isLoading } = useWaitForTransaction({
+    hash: `0x${txHash}`,
+  });
+  console.log(id)
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     setYesSelected(e.currentTarget.textContent === "Yes" ? true : false);
     setNoSelected(e.currentTarget.textContent === "No" ? true : false);
-  }
+  };
+
+  const [poll, setPoll] = useState<IPoll>({
+    id: -1,
+    title: "",
+    groupDescription: "",
+    description: "",
+    createdAt: 0,
+    deadline: 0,
+    active: false,
+    author: "",
+    votes: 1,
+  });
+
+  useEffect(() => {
+    if (!id) return
+    const postData = async () => {
+      const body = {
+        data: {
+          id,
+        },
+      };
+      console.log("GOT INTO POST DATA", body);
+      const response = await fetch("/api/getPoll", {
+        method: "POST",
+        body: JSON.stringify(body),
+      }).then(res => res.json());
+      console.log(response)
+      setPoll(response)
+    };
+    postData()
+  }, [id])
 
   const handleGenProof = async (e: React.MouseEvent<HTMLButtonElement>) => {
     if (account) {
       // 1: Vote yes, 1: Poll ID
       setLoadingProof(true);
       // Hardcode these differently depending on pollID
-      const response = await generateProof(privateKey, publicKey as `0x${string}`, 1, 1)
+      const response = await generateProof(
+        privateKey,
+        publicKey as `0x${string}`,
+        yesSelected ? 1 : 0,
+        Number(id)
+      );
       const proofForTx = response[0];
       const nullifierHash = response[1];
       setProofForTx(proofForTx);
       setNullifierHash(nullifierHash);
-      setProofResponse("Proof generated! Check console for proof")
+      toast({
+        title: "Proof generated!",
+        description: "Find proof in console.",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+        containerStyle: {
+          width: "700px",
+          maxWidth: "90%",
+        },
+      });
+      console.log("Proof Details: ", proofForTx)
       setLoadingProof(false);
-      // console.log("Proof in frontend", proofForTx)
+      setProofResponse(proofForTx);
+      console.log("SET TO THIS PROOF RESPONSE", proofResponse)
     }
-  }
+  };
 
   const handleSubmitVote = async (e: React.MouseEvent<HTMLButtonElement>) => {
     if (account) {
-      // 1: Vote yes, 2: Poll ID
       setLoadingSubmitVote(true);
-      const response = await castVote(nullifierHash, proofForTx, 1, 1)
+      const response = await castVote(nullifierHash, proofForTx, yesSelected? 1: 0, Number(id));
+      const success = response[3]
       const txHash = response[1];
       setTxHash(txHash);
-      setSubmitVoteResponse("Vote submitted! Tx below")
-      // setProofResponse("Proof generated! Check console for proof")
-      setLoadingSubmitVote(false);
-      // console.log("Proof in frontend", proofForTx)
-    }
-  }
+      if (success) {
+        toast({
+          title: "Vote casted!",
+          description: txHash,
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+          containerStyle: {
+            width: "700px",
+            maxWidth: "90%",
+          },
+        });
+      } else {
+        toast({
+          title: "Transaction failed",
+          description: txHash,
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+          containerStyle: {
+            width: "700px",
+            maxWidth: "90%",
+          },
+        });
+      }
 
+      setLoadingSubmitVote(false);
+      setProofResponse("");
+    }
+  };
 
   return (
-    <Card backgroundColor={'#f4f4f8'} variant={"elevated"} margin={8}>
-    <Grid
+    <Card backgroundColor={"#f4f4f8"} variant={"elevated"} margin={8}>
+      <Grid
         templateAreas={`"header header"
                         "main nav"
                         "footer nav"
                         "extra extra"
                         "extra extra"
                         `}
-        gridTemplateRows={'18% 2em 20% 9em'}
-        gridTemplateColumns={'95% 2em '}
+        gridTemplateRows={"18% 2em 20% 9em"}
+        gridTemplateColumns={"95% 2em "}
         // h='150%'
-        gap='1'
-        color='#242124'
+        gap="1"
+        color="#242124"
         padding={4}
         margin={2}
         marginLeft={0}
-        >
-        <GridItem pl='2' area={'header'} >
-            <Flex>
-            <Text fontSize='xs' color={'#666666'} fontFamily={'-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu'}>POSTED {poll.createdAt} | POLL ID {poll.id}</Text> 
-            <Spacer/>              
-            <Button size='xs' colorScheme='green'>Active</Button>
-            </Flex>
-        </GridItem>
-        <GridItem pl='2' area={'main'}>
-            <Text fontSize='2xl' fontWeight='700'>{poll.title}</Text>
-        </GridItem>
-        <GridItem pl='2' area={'footer'}>
-            <Text>{poll.des}</Text>
-            <Text fontSize='xs'>{poll.gdes}</Text>
-        </GridItem>
-        <GridItem pl='2' area={'nav'} marginTop={2}>
-            <BsFillPeopleFill color="black"/>
-            {poll.votes}
-        </GridItem>
-        <GridItem pl='2' area={'extra'}>
-        {/* <Progress value={20} size='xs' colorScheme='red' /> */}
-        <Center>
+      >
+        <GridItem pl="2" area={"header"}>
           <Flex>
-              <Input 
-              mr={4} 
-              placeholder='Enter your Public Key: '
-              value={publicKey}
-              onChange={(e) => setPublicKey(e.target.value)} 
-              mb={4}
-              />
-            </Flex>
-        </Center>
-        <Spacer/>
-        <Center>
-            
+            <Text
+              fontSize="xs"
+              color={"#666666"}
+              fontFamily={
+                '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu'
+              }
+            >
+              POLL ID {poll.id} | {poll.createdAt}
+            </Text>
+            <Spacer />
+            {poll.active ? (
+              <Button disabled={true} size="xs" colorScheme="yellow">
+                Active
+              </Button>
+            ) : (
+              <Button disabled={true} size="xs" colorScheme="green">
+                Complete
+              </Button>
+            )}
+          </Flex>
+        </GridItem>
+        <GridItem pl="2" area={"main"}>
+          <Text fontSize="2xl" fontWeight="700">
+            {poll.title}
+          </Text>
+        </GridItem>
+        <GridItem pl="2" area={"footer"}>
+          <Text>{poll.description}</Text>
+          <Text fontSize="xs">{poll.groupDescription}</Text>
+        </GridItem>
+        <GridItem pl="2" area={"extra"}>
+          <Input
+            mr={4}
+            mb={5}
+            placeholder="Public Key"
+            value={publicKey}
+            onChange={(e) => setPublicKey(e.target.value)}
+          />
+          <Spacer />
+
+          <Input
+            mr={4}
+            mb={5}
+            placeholder="Private Key"
+            value={privateKey}
+            onChange={(e) => setPrivateKey(e.target.value)}
+          />
+          <Spacer />
+          <Center>
             <Flex>
-                <Input 
-                mr={4} 
-                placeholder='Enter your Private Key: '
-                value={privateKey}
-                onChange={(e) => setPrivateKey(e.target.value)} 
-                />
-                {/* <Button size='md' colorScheme='teal' variant="outline" mr={4}>Yes</Button>
-                <Button size='md' colorScheme='red' variant="outline">No</Button> */}
-                <Button size='md' variant="outline" isActive={yesSelected} colorScheme='green' mr={4} onClick={handleClick} >Yes</Button>
-                <Button size='md' variant="outline" isActive={noSelected} colorScheme='red' onClick={handleClick} >No</Button>
+              <Button
+                size="md"
+                variant="outline"
+                isActive={yesSelected}
+                colorScheme="green"
+                mr={4}
+                onClick={handleClick}
+              >
+                Yes
+              </Button>
+              <Button
+                size="md"
+                variant="outline"
+                isActive={noSelected}
+                colorScheme="red"
+                onClick={handleClick}
+              >
+                No
+              </Button>
+              <Button
+                mb={10}
+                ml={4}
+                disabled={account && (yesSelected || noSelected) && proofResponse == "" ? false : true}
+                onClick={handleGenProof}
+                loadingText="Generating Proof"
+                isLoading={loadingProof}
+                colorScheme="teal"
+                variant="outline"
+              >
+                Generate Proof
+              </Button>
+              <Button
+                mb={10}
+                ml={4}
+                disabled={account && proofResponse ? false : true}
+                onClick={handleSubmitVote}
+                loadingText="Submitting Vote"
+                isLoading={loadingSubmitVote}
+                colorScheme="teal"
+                variant="outline"
+              >
+                Submit Vote
+              </Button>
             </Flex>
           </Center>
-        <Spacer/>
-        <Center>
-          <Button mt={5}
-            mb={10}
-            disabled={(account && proofResponse=='')? false: true}
-            onClick={handleGenProof}
-            // onClick={account ? () => generateProof(privateKey, account.address as `0x${string}`, 1, poll.id) : () => {console.log("Generated Proof!")}}
-            loadingText='Generating Proof'
-            isLoading={loadingProof}
-            colorScheme='teal'
-            variant='outline'>Generate Proof</Button>
-          <Button mt={5}
-            mb={10}
-            disabled={(account && proofResponse)? false: true}
-            onClick={handleSubmitVote}
-            // onClick={account ? () => generateProof(privateKey, account.address as `0x${string}`, 1, poll.id) : () => {console.log("Generated Proof!")}}
-            loadingText='Submitting Vote'
-            isLoading={loadingSubmitVote}
-            colorScheme='teal'
-            variant='outline'>Submit Vote</Button>
-        </Center>
-
-        <Center>
-          <Flex>
-              <Text mb='8px'>Proof: {proofResponse}</Text>
-            </Flex>
-        </Center>
+          <Spacer />
+          <Center></Center>
+          <Center></Center>
         </GridItem>
-    </Grid>
-</Card>
-  )
+      </Grid>
+    </Card>
+  );
 }
-
-// export const getStaticPaths = async () => {
-//     const res = await fetch('');
-//     const data = await res.json();
-
-//     const paths = data.map((poll: { id: any; }) => {
-//         return {
-//             params: { id: poll.id.toString() }
-//         }
-//     })
-
-//     return {
-//         paths,
-//         fallback: false,
-//     }
-// }
-
-// export const getStaticProps = async (context: { params: { id: any; }; }) => {
-//     const id = context.params.id;
-//     const res = await fetch('' + id);
-//     const data = res.json();
-
-//     return {
-//         props: { poll: data }
-//     }
-// }
 
 const StyledDiv = styled.div`
   transition: all 0.1s ease-in-out;
@@ -222,19 +293,15 @@ const StyledDiv = styled.div`
   }
 `;
 
-
 export default function GeneratePoll() {
-  const polls = [examplePoll, examplePoll, examplePoll]
-
   return (
     <div>
-    <Header />
-    <Center>
-      <StyledDiv>
-        <PollDisplay poll={examplePoll} />
-      </StyledDiv>
-    </Center>
+      <Header />
+      <Center>
+        <StyledDiv>
+          <PollDisplay />
+        </StyledDiv>
+      </Center>
     </div>
-
-  )
+  );
 }

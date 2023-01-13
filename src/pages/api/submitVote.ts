@@ -76,9 +76,6 @@ export default async function handler(
     pollId = data.pollId
   }
 
-
-  
-
   var outputData = await relayVote(nullifierHash, vote, proof, pollId)
 
   return res.status(200).json({ name: "Voted!", txHash: outputData.txHash, pollId: pollId, success: outputData.success })

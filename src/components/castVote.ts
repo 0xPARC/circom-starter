@@ -12,7 +12,7 @@ async function castVote(nullifierHash: string, proof: string[], vote: number, po
         }
     })
     // console.log("In components", outputResponse.data.name)
-    return [response.data.name, response.data.txHash, response.data.pollId];
+    return [response.data.name, response.data.txHash, response.data.pollId, response.data.success];
 
 }
 

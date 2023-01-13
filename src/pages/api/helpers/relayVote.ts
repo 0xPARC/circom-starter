@@ -67,7 +67,5 @@ export async function relayVote(nullifier: string, vote: number, proof: string, 
     }
 
 
-
     // Relay vote to smart contract
-
 }
