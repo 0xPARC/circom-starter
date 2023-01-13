@@ -38,9 +38,9 @@ export default function Header() {
         bg="bg-surface"
         boxShadow={useColorModeValue("sm", "sm-dark")}
       >
-        <Container py={{ base: "4", lg: "5" }} marginLeft={0}>
-          <HStack justify="space-between" style={{'width': '300%'}}>
-          <Image src='https://i.imgur.com/tfKjK4c.png' width={24} h={6} alt="ZKPoll"/>
+        <Container py={{ base: "4", lg: "5" }}>
+          <HStack spacing="10" justify="space-between">
+            {/* <Logo /> */}
           {/* <img src={require(logo).def} width={20} alt="ZKPoll"/> */}
           <HStack justify="space-between">
             {isDesktop ? (
