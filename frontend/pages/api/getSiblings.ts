@@ -1,8 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
-import {getSiblingsAndPathIndices, verifyAddressInTree} from './helpers/merkle'
-import prisma from '../../lib/prisma'
-import { Prisma } from '@prisma/client'
+import {getSiblingsAndPathIndices} from './helpers/merkle'
 
 /** 
  * @description: This is the API endpoint for getting the siblings & path indices of an address in a specified merkle tree.
@@ -67,9 +65,11 @@ export default async function handler(
   console.log(outputData.siblings)
   console.log(outputData.pathIndices)
   if (outputData.isValidPollId == false) {
-    return res.status(400).json({ name: "invalid poll id", siblings: [], pathIndices: [] })
+    return res.status(200).json({ name: "invalid poll id", siblings: [], pathIndices: [] })
+  } else if (outputData.siblings.length == 0) {
+    return res.status(200).json({ name: "invalid address for poll", siblings: [], pathIndices: [] })
   } else {
-    return res.status(200).json({ name: "address in tree", siblings: outputData.siblings, pathIndices: outputData.pathIndices })
+    return res.status(200).json({ name: "", siblings: outputData.siblings, pathIndices: outputData.pathIndices })
   }
   
   

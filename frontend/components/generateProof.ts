@@ -11,6 +11,13 @@ async function generateProof(identityNullifier: string, publicKey: string, vote:
         }
     })
 
+    if (response.data.name == "invalid poll id") {
+            return ["There is no poll corresponding to this poll ID.", [], ""]
+    } else if (response.data.name == "invalid address for poll") {
+        return ["This address is not eligible for this poll.", [], ""]
+    }
+    
+
     const siblings = response.data.siblings;
     const pathIndices = response.data.pathIndices;
 
