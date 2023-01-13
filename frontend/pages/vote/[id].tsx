@@ -26,6 +26,7 @@ import {
 } from "wagmi";
 import testABI from "../../components/abi/test.json";
 import { Progress } from "@chakra-ui/react";
+import styles from '../../styles/Home.module.css'
 
 interface IPoll {
   title: string;
