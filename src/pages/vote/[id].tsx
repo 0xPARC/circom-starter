@@ -105,7 +105,7 @@ function PollDisplay() {
       setNullifierHash(nullifierHash);
       toast({
         title: "Proof generated!",
-        description: proofForTx,
+        description: "Find proof in console.",
         status: "success",
         duration: 5000,
         isClosable: true,
@@ -114,9 +114,10 @@ function PollDisplay() {
           maxWidth: "90%",
         },
       });
+      console.log("Proof Details: ", proofForTx)
       setLoadingProof(false);
-      setProofResponse(proofResponse);
-      console.log("SET TO THIS PROOF RESPONSE")
+      setProofResponse(proofForTx);
+      console.log("SET TO THIS PROOF RESPONSE", proofResponse)
     }
   };
 
@@ -137,31 +138,31 @@ function PollDisplay() {
           maxWidth: "90%",
         },
       });
-      if (!isError) {
-        toast({
-          title: "Poll created",
-          description: txHash,
-          status: "success",
-          duration: 5000,
-          isClosable: true,
-          containerStyle: {
-            width: '700px',
-            maxWidth: '90%',
-          },
-        });
-      } else {
-        toast({
-          title: "Transaction failed",
-          description: txHash,
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-          containerStyle: {
-            width: '700px',
-            maxWidth: '90%',
-          },
-        });
-      }
+      // if (!isError) {
+      //   toast({
+      //     title: "Poll created",
+      //     description: txHash,
+      //     status: "success",
+      //     duration: 5000,
+      //     isClosable: true,
+      //     containerStyle: {
+      //       width: '700px',
+      //       maxWidth: '90%',
+      //     },
+      //   });
+      // } else {
+      //   toast({
+      //     title: "Transaction failed",
+      //     description: txHash,
+      //     status: "error",
+      //     duration: 5000,
+      //     isClosable: true,
+      //     containerStyle: {
+      //       width: '700px',
+      //       maxWidth: '90%',
+      //     },
+      //   });
+      // }
       setLoadingSubmitVote(false);
     }
   };

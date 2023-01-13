@@ -42,8 +42,6 @@ export async function relayVote(nullifier: string, vote: number, proof: string, 
     const receipt = await tx.wait();
     console.log(receipt);
 
-
     // Relay vote to smart contract
-
     return {txHash: receipt.transactionHash}
 }
