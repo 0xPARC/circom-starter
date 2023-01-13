@@ -45,7 +45,7 @@ function PollCard({ poll }: { poll: IPoll }) {
                 '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu'
               }
             >
-              POSTED {poll.createdAt.toString()} | POLL ID {poll.id}
+              POLL ID {poll.id} | {poll.createdAt}
             </Text>
             <Spacer />
             {poll.active ? (
@@ -68,10 +68,6 @@ function PollCard({ poll }: { poll: IPoll }) {
           <Text>{poll.description}</Text>
           <Text fontSize="xs">{poll.groupDescription}</Text>
         </GridItem>
-        {/* <GridItem pl="2" area={"nav"} marginTop={2}>
-          <BsFillPeopleFill color="black" />
-          {2}
-        </GridItem> */}
       </Grid>
     </Card>
   );

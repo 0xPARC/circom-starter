@@ -194,7 +194,7 @@ function PollDisplay() {
                 '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu'
               }
             >
-              POSTED {poll.createdAt} | POLL ID {poll.id}
+              POLL ID {poll.id} | {poll.createdAt}
             </Text>
             <Spacer />
             {poll.active ? (
