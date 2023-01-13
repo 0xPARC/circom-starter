@@ -37,7 +37,7 @@ export async function relayVote(nullifier: string, vote: number, proof: string, 
     const tx = await contract.castVote(strVote, nullifier, pollId.toString(), proof,
         {
           from: relayer,
-          gasLimit: '2000000'
+          gasLimit: '3000000'
         })
     const receipt = await tx.wait();
     console.log(receipt);

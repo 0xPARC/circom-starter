@@ -124,6 +124,11 @@ export default async function handler(
     const { proof, publicSignals } = await snarkjs.groth16.fullProve(input, wasm, zKey);
     console.log("public signals: ", publicSignals)
     console.log(proof)
+    if ("pi_a" in proof == false) {
+        res.status(400).json({
+            name: "Proof not generated", proofForTx: [], nullifierHash: ""
+        })
+    }
     const proofForTx = [
         proof.pi_a[0],
         proof.pi_a[1],
