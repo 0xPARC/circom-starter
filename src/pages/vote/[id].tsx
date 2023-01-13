@@ -206,7 +206,7 @@ function PollDisplay() {
                         "extra extra"
                         "extra extra"
                         `}
-        gridTemplateRows={"18% 2em 20% 9em"}
+        gridTemplateRows={"8% 2em 20% 9em"}
         gridTemplateColumns={"95% 2em "}
         // h='150%'
         gap="1"
@@ -250,7 +250,7 @@ function PollDisplay() {
         <GridItem pl="2" area={"extra"}>
           <Input
             mr={4}
-            mb={5}
+            mb={4}
             placeholder="Public Key"
             value={publicKey}
             onChange={(e) => setPublicKey(e.target.value)}
@@ -258,7 +258,7 @@ function PollDisplay() {
           <Spacer />
           <Input
             mr={4}
-            mb={5}
+            mb={4}
             placeholder="Private Key"
             value={privateKey}
             onChange={(e) => setPrivateKey(e.target.value)}
@@ -277,6 +277,7 @@ function PollDisplay() {
                 Yes
               </Button>
               <Button
+                mb={3}
                 size="md"
                 variant="outline"
                 isActive={noSelected}
@@ -286,7 +287,7 @@ function PollDisplay() {
                 No
               </Button>
               <Button
-                mb={10}
+                mb={3}
                 ml={4}
                 disabled={
                   account && proofResponse == "" && (yesSelected || noSelected)
@@ -302,7 +303,7 @@ function PollDisplay() {
                 Generate Proof
               </Button>
               <Button
-                mb={10}
+                mb={3}
                 ml={4}
                 disabled={account && proofResponse ? false : true}
                 onClick={handleSubmitVote}
@@ -315,43 +316,28 @@ function PollDisplay() {
               </Button>
             </Flex>
           </Center>
-          <GridItem area={"main"}>
-            <Center>
-              <Flex>
-                <Box w="40%" p={4} color="white">
-                  {yesVoteCount + noVoteCount > 0 ? (
-                    <PieChart
-                      data={[
-                        { title: "Yes", value: yesVoteCount, color: "green" },
-                        { title: "No", value: noVoteCount, color: "red" },
-                      ]}
-                    />
-                  ) : null}
-                </Box>
-                <Text
-                  color="gray.500"
-                  fontWeight="semibold"
-                  letterSpacing="wide"
-                  fontSize="xs"
-                  textTransform="uppercase"
-                  ml="2"
-                >
-                  Yes Votes: {yesVoteCount}
-                </Text>
-                <Text
-                  color="gray.500"
-                  fontWeight="semibold"
-                  letterSpacing="wide"
-                  fontSize="xs"
-                  textTransform="uppercase"
-                  ml="2"
-                >
-                  No Votes: {noVoteCount}
-                </Text>
-              </Flex>
-            </Center>
-          </GridItem>
-          <Spacer />;
+          {yesVoteCount + noVoteCount > 0 ? (
+            <>
+              <Progress
+                colorScheme={"green"}
+                background={"red"}
+                height="10px"
+                rounded={"xl"}
+                mb={"1%"}
+                value={(100 * yesVoteCount) / (yesVoteCount + noVoteCount)}
+              />
+              <Text
+                color="gray.500"
+                fontWeight="semibold"
+                letterSpacing="wide"
+                fontSize="xs"
+                textTransform="uppercase"
+              >
+                Yes: {yesVoteCount} No: {noVoteCount}
+              </Text>
+            </>
+          ) : null}
+          <Spacer />
         </GridItem>
       </Grid>
     </Card>
