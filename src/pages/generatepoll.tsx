@@ -52,6 +52,7 @@ export default function GeneratePoll() {
   const [groupDescription, setGroupDescription] = useState<string>("");
   const [duration, setDuration] = useState<number>();
   const [tempAddresses, setTempAddresses] = useState<string>("");
+  // const [pollId, setPollId] = useState<number>(1);
   const account = getAccount();
   const [dbLoading, setDbLoading] = useState(false);
   const [contractLoading, setContractLoading] = useState(false);
@@ -89,7 +90,7 @@ export default function GeneratePoll() {
         addresses: addressesArr,
         description: description,
         groupDescription: groupDescription,
-        createdAt:Date.now(),
+        createdAt: Date.now(),
         deadline: Date.now() + (3600000 * duration!),
       },
     };
@@ -106,7 +107,8 @@ export default function GeneratePoll() {
       const temp = await response.json();
       console.log('Success! ', temp)
       myResponse = temp;
-      return temp;
+      return myResponse.pollId;
+      // return temp;
     } else {
       console.warn("Server returned error status: " + response.status);
     }
@@ -117,47 +119,50 @@ export default function GeneratePoll() {
     console.log("Got into submit!")
     e.preventDefault();
 
-    await postData(addressesArr).then(async () => {
-      setDbLoading(false);
-      console.log("OK ROOT HASH", myResponse.rootHash);
-      setContractLoading(true);
-      const tx = await contract?.createPoll(
-        1,
-        account.address,
-        myResponse.rootHash,
-        16
-      );
-      const response = await tx.wait();
-      setHash(tx.hash);
-      console.log("tx", tx.hash);
-      if (!isError) {
-        toast({
-          title: "Poll created",
-          description: tx.hash,
-          status: "success",
-          duration: 5000,
-          isClosable: true,
-          containerStyle: {
-            width: '700px',
-            maxWidth: '90%',
-          },
-        });
-      } else {
-        toast({
-          title: "Transaction failed",
-          description: tx.hash,
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-          containerStyle: {
-            width: '700px',
-            maxWidth: '90%',
-          },
-        });
-      }
-      setContractLoading(false);
-      console.log(`Transaction response: `, response);
-    });
+    const pollId = await postData(addressesArr)
+
+    setDbLoading(false);
+    console.log("OK ROOT HASH", myResponse.rootHash);
+    setContractLoading(true);
+    console.log("Poll ID for Smart Contract: ", pollId)
+    const tx = await contract?.createPoll(
+      // 1,
+      pollId,
+      account.address,
+      myResponse.rootHash,
+      16
+    );
+    const response = await tx.wait();
+    setHash(tx.hash);
+    console.log("tx", tx.hash);
+    if (!isError) {
+      toast({
+        title: "Poll created",
+        description: tx.hash,
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+        containerStyle: {
+          width: '700px',
+          maxWidth: '90%',
+        },
+      });
+    } else {
+      toast({
+        title: "Transaction failed",
+        description: tx.hash,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        containerStyle: {
+          width: '700px',
+          maxWidth: '90%',
+        },
+      });
+    }
+    setContractLoading(false);
+    console.log(`Transaction response: `, response);
+
   }
 
   return (
