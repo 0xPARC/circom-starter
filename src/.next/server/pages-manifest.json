@@ -1,8 +1,0 @@
-{
-  "/_app": "pages/_app.js",
-  "/_error": "pages/_error.js",
-  "/_document": "pages/_document.js",
-  "/generatepoll": "pages/generatepoll.js",
-  "/": "pages/index.js",
-  "/api/getPolls": "pages/api/getPolls.js"
-}
