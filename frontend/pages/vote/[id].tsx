@@ -26,6 +26,7 @@ import {
 } from "wagmi";
 import testABI from "../../components/abi/test.json";
 import { Progress } from "@chakra-ui/react";
+import styles from '../../styles/Home.module.css'
 
 interface IPoll {
   title: string;
@@ -208,7 +209,7 @@ function PollDisplay() {
   };
 
   return (
-    <Card backgroundColor={"#f4f4f8"} variant={"elevated"} margin={8}>
+    <Card variant={"elevated"} margin={8}>
       <Grid
         templateAreas={`"header header"
                         "main nav"
@@ -220,7 +221,6 @@ function PollDisplay() {
         gridTemplateColumns={"95% 2em "}
         // h='150%'
         gap="1"
-        color="#242124"
         padding={4}
         margin={2}
         marginLeft={0}
@@ -229,7 +229,6 @@ function PollDisplay() {
           <Flex>
             <Text
               fontSize="xs"
-              color={"#666666"}
               fontFamily={
                 '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu'
               }
@@ -238,11 +237,11 @@ function PollDisplay() {
             </Text>
             <Spacer />
             {poll.active ? (
-              <Button disabled={true} size="xs" colorScheme="yellow">
+              <Button disabled={true} _disabled={{backgroundColor: "#651fff"}} _hover={{backgroundColor: "#651fff"}} size="xs" backgroundColor="#651fff" color={'white'}>
                 Active
               </Button>
             ) : (
-              <Button disabled={true} size="xs" colorScheme="green">
+              <Button disabled={true} size="xs" _disabled={{backgroundColor: "#651fff"}} _hover={{backgroundColor: "#651fff"}} backgroundColor="#651fff" color={'white'} opacity={0.3}>
                 Complete
               </Button>
             )}
@@ -261,9 +260,11 @@ function PollDisplay() {
           <Input
             mr={4}
             mb={4}
+            textColor={"#242124"}
             placeholder="Public Key"
             value={publicKey}
             onChange={(e) => setPublicKey(e.target.value)}
+            focusBorderColor={"#D7C3FF"}
           />
           <Spacer />
           <Input
@@ -272,6 +273,7 @@ function PollDisplay() {
             placeholder="Private Key"
             value={privateKey}
             onChange={(e) => setPrivateKey(e.target.value)}
+            focusBorderColor={"#C4A7FF"}
           />
           <Spacer />
           <Center>
@@ -350,25 +352,15 @@ function PollDisplay() {
   );
 }
 
-const StyledDiv = styled.div`
-  transition: all 0.1s ease-in-out;
-  border-radius: 8px;
-  border: 1px solid #eaeaea;
-
-  &:hover {
-    border-color: #0d76fc;
-  }
-`;
-
 export default function GeneratePoll() {
   return (
     <>
-      <Header />
-      <Center>
-        <StyledDiv>
-          <PollDisplay />
-        </StyledDiv>
-      </Center>
+      <Header/>
+      <div className={styles.container}>
+        <main className={styles.main}>
+          <PollDisplay/>
+      </main>
+      </div>
     </>
   );
 }
