@@ -17,6 +17,7 @@ import {
   useSigner,
   useWaitForTransaction,
 } from "wagmi";
+import { split } from "ramda";
 
 interface FormValues {
   title: string;
@@ -51,6 +52,7 @@ export default function GeneratePoll() {
   const [groupDescription, setGroupDescription] = useState<string>("");
   const [duration, setDuration] = useState<number>();
   const [tempAddresses, setTempAddresses] = useState<string>("");
+  // const [pollId, setPollId] = useState<number>(1);
   const account = getAccount();
   const [dbLoading, setDbLoading] = useState(false);
   const [contractLoading, setContractLoading] = useState(false);
@@ -66,14 +68,29 @@ export default function GeneratePoll() {
     signerOrProvider: signer,
   });
 
-  const postData = async () => {
+  const splitAddresses = (stringAddresses: string) => {
+    console.log("Splitting Addresses")
+    setTempAddresses(stringAddresses);
+    const split = stringAddresses.split(",");
+    if (split) {
+      setAddresses(split);
+    }
+    console.log("temp addresses");
+    // console.log(tempAddresses);
+    console.log("split addresses")
+    // console.log(stringAddresses);
+
+  };
+  const postData = async (addressesArr: string[]) => {
+    // Convert to 
+    console.log("Post addresses", addresses)
     const body = {
       data: {
         title: title,
-        addresses: addresses,
+        addresses: addressesArr,
         description: description,
         groupDescription: groupDescription,
-        createdAt:Date.now(),
+        createdAt: Date.now(),
         deadline: Date.now() + (3600000 * duration!),
       },
     };
@@ -90,61 +107,62 @@ export default function GeneratePoll() {
       const temp = await response.json();
       console.log('Success! ', temp)
       myResponse = temp;
-      return temp;
+      return myResponse.pollId;
+      // return temp;
     } else {
       console.warn("Server returned error status: " + response.status);
     }
   };
 
-  function handleSubmit(e: { preventDefault: () => void }) {
+  async function handleSubmit(e: { preventDefault: () => void }, addressesArr: string[]) {
     setDbLoading(true);
+    console.log("Got into submit!")
     e.preventDefault();
-    const split = tempAddresses.split(",");
-    if (split) {
-      setAddresses(split);
-    }
 
-    postData().then(async () => {
-      setDbLoading(false);
-      console.log("OK ROOT HASH", myResponse.rootHash);
-      setContractLoading(true);
-      const tx = await contract?.createPoll(
-        1,
-        account.address,
-        myResponse.rootHash,
-        16
-      );
-      const response = await tx.wait();
-      setHash(tx.hash);
-      console.log("tx", tx.hash);
-      if (!isError) {
-        toast({
-          title: "Poll created",
-          description: tx.hash,
-          status: "success",
-          duration: 5000,
-          isClosable: true,
-          containerStyle: {
-            width: '700px',
-            maxWidth: '90%',
-          },
-        });
-      } else {
-        toast({
-          title: "Transaction failed",
-          description: tx.hash,
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-          containerStyle: {
-            width: '700px',
-            maxWidth: '90%',
-          },
-        });
-      }
-      setContractLoading(false);
-      console.log(`Transaction response: `, response);
-    });
+    const pollId = await postData(addressesArr)
+
+    setDbLoading(false);
+    console.log("OK ROOT HASH", myResponse.rootHash);
+    setContractLoading(true);
+    console.log("Poll ID for Smart Contract: ", pollId)
+    const tx = await contract?.createPoll(
+      // 1,
+      pollId,
+      account.address,
+      myResponse.rootHash,
+      16
+    );
+    const response = await tx.wait();
+    setHash(tx.hash);
+    console.log("tx", tx.hash);
+    if (!isError) {
+      toast({
+        title: "Poll created",
+        description: tx.hash,
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+        containerStyle: {
+          width: '700px',
+          maxWidth: '90%',
+        },
+      });
+    } else {
+      toast({
+        title: "Transaction failed",
+        description: tx.hash,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        containerStyle: {
+          width: '700px',
+          maxWidth: '90%',
+        },
+      });
+    }
+    setContractLoading(false);
+    console.log(`Transaction response: `, response);
+
   }
 
   return (
@@ -159,7 +177,7 @@ export default function GeneratePoll() {
             <CardBody>
               <FormControl
                 className={styles.generate}
-                onSubmit={(e) => handleSubmit(e)}
+                onSubmit={(e) => handleSubmit(e, addresses)}
               >
                 <Input
                   placeholder="Title"
@@ -184,19 +202,19 @@ export default function GeneratePoll() {
                 <Input
                   placeholder="Public Addresses"
                   value={tempAddresses}
-                  onChange={(e) => setTempAddresses(e.target.value)}
+                  onChange={(e) =>  splitAddresses(e.target.value)}
                 />
                 <Button
                   type="submit"
                   size="md"
-                  onClick={handleSubmit}
                   colorScheme="blue"
                   isLoading={contractLoading || dbLoading}
                   loadingText={
                     dbLoading ? "Generating merkle root" : "Submitting poll"
                   }
                   style={{marginTop: "2%"}}
-                >
+                  onClick={(e) => handleSubmit(e, addresses)}
+                  >
                   Submit
                 </Button>
               </FormControl>
