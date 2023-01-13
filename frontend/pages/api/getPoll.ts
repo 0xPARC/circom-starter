@@ -1,11 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
-import {
-  getSiblingsAndPathIndices,
-  verifyAddressInTree,
-} from "./helpers/merkle";
 import prisma from "../../lib/prisma";
-import { Poll, Prisma } from "@prisma/client";
 
 /**
  * @description: This is the API endpoint for getting the siblings & path indices of an address in a specified merkle tree.
