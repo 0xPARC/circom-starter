@@ -38,7 +38,7 @@ export default function Header() {
         bg="bg-surface"
         boxShadow={useColorModeValue('sm', 'sm-dark')}
       >
-        <Container py={{ base: '4', lg: '5' }} maxWidth='60%'>
+        <Container py={{ base: '4', lg: '5' }} maxWidth='90%'>
           <HStack justify="space-between">
             {/* <Logo /> */}
             {/* <img src={require(logo).def} width={20} alt="ZKPoll"/> */}
