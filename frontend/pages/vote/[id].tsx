@@ -191,8 +191,9 @@ function PollDisplay() {
           },
         });
       } else {
+        // TODO: Add error checking if the transaction fails due to proof verifying incorrectly
         toast({
-          title: "Transaction failed",
+          title: "Transaction failed: Cannot vote twice!",
           description: txHash,
           status: "error",
           duration: 5000,

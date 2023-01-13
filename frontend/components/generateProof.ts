@@ -40,7 +40,7 @@ async function generateProof(identityNullifier: string, publicKey: string, vote:
     const proofForTx = outputResponse.data.proofForTx;
     const nullifierHash = outputResponse.data.nullifierHash;
     // console.log("In components", outputResponse.data.name)
-    return [proofForTx, nullifierHash];
+    return ["", proofForTx, nullifierHash];
 
 
     // const result = await snarkjs.groth16.fullProve(
