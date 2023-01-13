@@ -75,22 +75,8 @@ export default async function handler(
     pollId = data.pollId
   }
 
-
-  
-
   var outputData = await relayVote(nullifierHash, vote, proof, pollId)
 
   return res.status(200).json({ name: "Voted!", txHash: outputData.txHash, pollId: pollId })
-
-//   if (outputData.isValidPollId == false) {
-//     return res.status(400).json({ name: "invalid poll id", inTree: false, pollId: pollId })
-//   } else {
-//     if (outputData.inTree == true) {
-//       return res.status(200).json({ name: "address in tree", inTree: true, pollId: pollId })
-//     } else {
-//       return res.status(200).json({ name: "address not in tree", inTree: false, pollId: pollId })
-//     }
-//   }
-  
   
 }
