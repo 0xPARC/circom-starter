@@ -179,26 +179,31 @@ export default function GeneratePoll() {
                   placeholder="Title"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
+                  focusBorderColor={"#9B72F2"}
                 />
                 <Input
                   placeholder="Additional Description"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
+                  focusBorderColor={"#9B72F2"}
                 />
                 <Input
                   placeholder="Group Description"
                   value={groupDescription}
                   onChange={(e) => setGroupDescription(e.target.value)}
+                  focusBorderColor={"#9B72F2"}
                 />
                 <Input
                   placeholder="Duration (Hours)"
                   value={duration}
                   onChange={(e) => setDuration(Number(e.target.value))}
+                  focusBorderColor={"#9B72F2"}
                 />
                 <Input
                   placeholder="Public Addresses"
                   value={tempAddresses}
                   onChange={(e) =>  splitAddresses(e.target.value)}
+                  focusBorderColor={"#9B72F2"}
                 />
                 <Button
                   type="submit"
@@ -210,6 +215,8 @@ export default function GeneratePoll() {
                   }
                   style={{marginTop: "2%"}}
                   onClick={(e) => handleSubmit(e, addresses)}
+                  backgroundColor={"#8f00ff"}
+                  _hover={{ backgroundColor: "#5b0a91" }}
                   >
                   Submit
                 </Button>
