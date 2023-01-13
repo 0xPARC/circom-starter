@@ -7,6 +7,7 @@ import { publicProvider } from 'wagmi/providers/public'
 import '../styles/globals.css'
 import { ChakraProvider } from '@chakra-ui/react'
 import theme from '../theme'
+import Head from 'next/head'
 
 const { chains, provider, webSocketProvider } = configureChains(
   [goerli],
@@ -27,6 +28,10 @@ const wagmiClient = createClient({
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
+    <>
+    <Head>
+      <title>zkPoll</title>
+    </Head>
     <ChakraProvider theme={theme}>
       <WagmiConfig client={wagmiClient}>
         <RainbowKitProvider chains={chains}>
@@ -34,6 +39,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         </RainbowKitProvider>
       </WagmiConfig>
     </ChakraProvider>
+    </>
   )
 }
 
