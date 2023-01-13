@@ -40,13 +40,10 @@ module.exports = {
         // No protocol, so it defaults to groth16
       },
       {
-<<<<<<< HEAD
         name: "ecdsa-semaphore",
         // No protocol, so it defaults to groth16
       },
       {
-=======
->>>>>>> beea02666f1a9df73db89dfc208e1b7d0039143e
         name: "split-bits",
         // No protocol, so it defaults to groth16
       },
