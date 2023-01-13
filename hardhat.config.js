@@ -19,8 +19,7 @@ module.exports = {
   },
   circom: {
     inputBasePath: "./circuits",
-    ptau: "https://hermezptau.blob.core.windows.net/ptau/powersOfTau28_hez_final_20.ptau",
-    // ptau: "./ptau/pot20_final.ptau",
+    ptau: "https://hermezptau.blob.core.windows.net/ptau/powersOfTau28_hez_final_21.ptau",
     circuits: [
       {
         name: "division",
@@ -41,10 +40,13 @@ module.exports = {
         // No protocol, so it defaults to groth16
       },
       {
+<<<<<<< HEAD
         name: "ecdsa-semaphore",
         // No protocol, so it defaults to groth16
       },
       {
+=======
+>>>>>>> beea02666f1a9df73db89dfc208e1b7d0039143e
         name: "split-bits",
         // No protocol, so it defaults to groth16
       },
