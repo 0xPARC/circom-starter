@@ -18,6 +18,7 @@ import { none } from 'ramda';
 type Data = {
     name: string
     proofForTx: string[]
+    nullifierHash: string
 }
 
 type Proof = {
@@ -43,7 +44,7 @@ export default async function handler(
 ) {
     if (req.method !== 'POST') {
         res.status(405).json({
-        name: "POST endpoint", proofForTx: []
+        name: "POST endpoint", proofForTx: [], nullifierHash: ""
         })
     }
     if (typeof req.body == 'string') {
@@ -53,7 +54,7 @@ export default async function handler(
     }
     if ("data" in body == false) {
         res.status(400).json({
-            name: "No Data", proofForTx: []
+            name: "No Data", proofForTx: [], nullifierHash: ""
         })
     }
     var data = body.data
@@ -63,35 +64,35 @@ export default async function handler(
     // Required fields!
     if ("identityNullifier" in data == false) {
         res.status(400).json({
-            name: "Must pass in nullifier", proofForTx: []
+            name: "Must pass in nullifier", proofForTx: [], nullifierHash: ""
         })
     } else {
         identityNullifier = data.identityNullifier
     }
     if ("treePathIndices" in data == false) {
         res.status(400).json({
-            name: "Must pass in tree path indices", proofForTx: []
+            name: "Must pass in tree path indices", proofForTx: [], nullifierHash: ""
         })
     } else {
         treePathIndices = data.treePathIndices
     }
     if ("treeSiblings" in data == false) {
         res.status(400).json({
-            name: "Must pass in vote", proofForTx: []
+            name: "Must pass in vote", proofForTx: [], nullifierHash: ""
         })
     } else {
         treeSiblings = data.treeSiblings
     }
     if ("externalNullifier" in data == false) {
         res.status(400).json({
-            name: "Must pass in a poll id", proofForTx: []
+            name: "Must pass in a poll id", proofForTx: [], nullifierHash: ""
         })
     } else {
         externalNullifier = data.externalNullifier
     }
     if ("signalHash" in data == false) {
         res.status(400).json({
-            name: "Must pass in a signal hash", proofForTx: []
+            name: "Must pass in a signal hash", proofForTx: [], nullifierHash: ""
         })
     } else {
         signalHash = data.signalHash
@@ -107,14 +108,13 @@ export default async function handler(
     }
 
     // const path = __dirname
-    console.log(__dirname)
     // const wasmPath = "./semaphore.wasm";
     // const zkeyPath = "./semaphore.zkey";
     // const vkeyPath = "./semaphore.vkey.json";
 
     const proofKeysDirectory = path.join(process.cwd(), 'proofKeys')
 
-    console.log(input)
+    console.log("Proof Input: ", input)
 
     const wasm = await fs.readFile(proofKeysDirectory + '/semaphore.wasm')
     const zKey = await fs.readFile(proofKeysDirectory + '/semaphore.zkey')
@@ -122,7 +122,12 @@ export default async function handler(
 
     const { proof, publicSignals } = await snarkjs.groth16.fullProve(input, wasm, zKey);
     console.log("public signals: ", publicSignals)
-    console.log(proof)
+    console.log("proof output: ", proof)
+    if ("pi_a" in proof == false) {
+        res.status(400).json({
+            name: "Proof not generated", proofForTx: [], nullifierHash: ""
+        })
+    }
     const proofForTx = [
         proof.pi_a[0],
         proof.pi_a[1],
@@ -134,7 +139,7 @@ export default async function handler(
         proof.pi_c[1],
       ];
 
-    return res.status(200).json({ name: "Voted!", proofForTx: proofForTx})
+    return res.status(200).json({ name: "Voted!", proofForTx: proofForTx, nullifierHash: publicSignals[1]})
 
 }
 //   if (outputData.isValidPollId == false) {

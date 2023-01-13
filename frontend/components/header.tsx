@@ -10,9 +10,9 @@ import {
   useBreakpointValue,
   useColorMode,
   useColorModeValue,
+  Image
 } from "@chakra-ui/react";
 import { FiMenu } from "react-icons/fi";
-//   import { Logo } from './Logo'
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useRouter } from "next/router";
 import { DarkModeSwitch } from 'react-toggle-dark-mode';
@@ -41,6 +41,8 @@ export default function Header() {
         <Container py={{ base: "4", lg: "5" }}>
           <HStack spacing="10" justify="space-between">
             {/* <Logo /> */}
+          {/* <img src={require(logo).def} width={20} alt="ZKPoll"/> */}
+          <HStack justify="space-between">
             {isDesktop ? (
               <Flex justify="space-between" flex="1">
                 <ButtonGroup variant="link" spacing="8">
@@ -53,7 +55,7 @@ export default function Header() {
                     </Button>
                   ))}
                 </ButtonGroup>
-                <HStack spacing="3">
+                <HStack ml={4} mr={4}>
                   <ConnectButton />
                 </HStack>
               </Flex>
@@ -72,6 +74,7 @@ export default function Header() {
                   sunColor="white"
                   moonColor="black"
                 />
+          </HStack>
           </HStack>
         </Container>
       </Box>

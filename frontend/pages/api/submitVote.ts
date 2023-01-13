@@ -12,12 +12,13 @@ type Data = {
   name: string
   txHash: string
   pollId: number
+  success: boolean
 }
 
 /** 
  * @function: handler
  * @description: This is the handler for the API endpoint.
- * @param {string} req.body.data.nullifier - The nullifier to submit to the smart contract.
+ * @param {string} req.body.data.nullifierHash - The nullifier to submit to the smart contract.
  * @param {number} req.body.data.vote - The vote to submit to the smart contract {0,1}.
  * @param {string} req.body.data.proof - The ZK-proof of the vote.
  * @param {number} req.body.data.pollId - The poll id to submit to the smart contract.
@@ -28,7 +29,7 @@ export default async function handler(
 ) {
   if (req.method !== 'POST') {
     res.status(405).json({
-      name: "POST endpoint", txHash: "", pollId: -1
+      name: "POST endpoint", txHash: "", pollId: -1, success: false
     })
   }
   if (typeof req.body == 'string') {
@@ -38,49 +39,46 @@ export default async function handler(
   }
   if ("data" in body == false) {
     res.status(400).json({
-      name: "No data", txHash: "", pollId: -1
+      name: "No data", txHash: "", pollId: -1, success: false
     })
   }
   var data = body.data
 
-  var nullifier, vote, proof, pollId
+  var nullifierHash, vote, proof, pollId
 
   // Required fields!
-  if ("nullifier" in data == false) {
+  if ("nullifierHash" in data == false) {
     res.status(400).json({
-      name: "Must pass in nullifier", txHash: "", pollId: -1
+      name: "Must pass in nullifierHash", txHash: "", pollId: -1, success: false
     })
   } else {
-    nullifier = data.nullifier
+    nullifierHash = data.nullifierHash
   }
   if ("proof" in data == false) {
     res.status(400).json({
-      name: "Must pass in a proof", txHash: "", pollId: -1
+      name: "Must pass in a proof", txHash: "", pollId: -1, success: false
     })
   } else {
     vote = data.vote
   }
   if ("vote" in data == false) {
     res.status(400).json({
-      name: "Must pass in a vote", txHash: "", pollId: -1
+      name: "Must pass in a vote", txHash: "", pollId: -1, success: false
     })
   } else {
     proof = data.proof
   }
   if ("pollId" in data == false) {
     res.status(400).json({
-      name: "Must pass in a poll id", txHash: "", pollId: -1
+      name: "Must pass in a poll id", txHash: "", pollId: -1, success: false
     })
   } else {
     pollId = data.pollId
   }
 
+  var outputData = await relayVote(nullifierHash, vote, proof, pollId)
 
-  
-
-  var outputData = await relayVote(nullifier, vote, proof, pollId)
-
-  return res.status(200).json({ name: "Voted!", txHash: outputData.txHash, pollId: pollId })
+  return res.status(200).json({ name: "Voted!", txHash: outputData.txHash, pollId: pollId, success: outputData.success })
 
 //   if (outputData.isValidPollId == false) {
 //     return res.status(400).json({ name: "invalid poll id", inTree: false, pollId: pollId })

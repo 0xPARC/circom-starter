@@ -350,6 +350,21 @@ describe("user 101", function () {
       proof.pi_c[0],
       proof.pi_c[1],
     ];
+    console.log(proofForTx)
+
+    // const contractProofForTx = [
+    //   '4162220409527237065352797216195900651011636425549923258068529799673969247617',
+    //   '6420471206849550143313613503847350351031733090336710951337110496919073183917',
+    //   '13315330991909142217852976644278028559073531735183489896160858827059448222593',
+    //   '20108647067663938709539752602115475123832128901697910199680358834008266735018',
+    //   '10289380589003181816201053375182155574162089476599698855855435765819666757999',
+    //   '1972616014216011584676028593589251034817056695004873827471431572169088914060',
+    //   '18953439321805704146504029906924311877526082186501852019022201803533191068113',
+    //   '12555186062169447814306556420783600513240713304096410250075009286328331920930'
+    // ]
+    // const contractNullifier = '2570728153758525455068681255560397293445847326980545556667885052648074786431'
+    // const contractPollId = '1'
+    // const contractVote = "0x0000000000000000000000000000000000000000000000000000000000000001";
 
     // console.log("Check 9: ")
 
@@ -374,6 +389,15 @@ describe("user 101", function () {
     const vote =
       "0x0000000000000000000000000000000000000000000000000000000000000001";
 
+    // const receipt = await privPoll.castVote(
+    //   contractVote,
+    //   contractNullifier,
+    //   contractPollId,
+    //   contractProofForTx,
+    //   {
+    //     from: coordinator,
+    //   }
+    // );
     const receipt = await privPoll.castVote(
       vote,
       nullifier,
@@ -383,6 +407,8 @@ describe("user 101", function () {
         from: coordinator,
       }
     );
+
+    // console.log(receipt);
 
     await privPoll.endPoll(pollId);
   });
@@ -559,6 +585,7 @@ describe("user 401", function () {
     const vote =
       "0x0000000000000000000000000000000000000000000000000000000000000001";
 
+    // Nullifier Hash not checking correctly
     const castVoteReceipt = await privPoll.castVote(
       vote,
       nullifier,

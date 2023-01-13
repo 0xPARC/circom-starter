@@ -31,8 +31,9 @@ async function generateProof(identityNullifier: string, publicKey: string, vote:
     })
 
     const proofForTx = outputResponse.data.proofForTx;
+    const nullifierHash = outputResponse.data.nullifierHash;
     // console.log("In components", outputResponse.data.name)
-    return proofForTx;
+    return [proofForTx, nullifierHash];
 
 
     // const result = await snarkjs.groth16.fullProve(
@@ -61,38 +62,8 @@ async function generateProof(identityNullifier: string, publicKey: string, vote:
     //       ];
     //       return proofForTx;
     // }
-    // // deploy sema contract
-    // const PrivPoll = await hre.ethers.getContractFactory("PrivPoll");
-    // // Verifier 16
-    // const verifierAddress = "0xA5253ba39381Aa99c4C2C5A4D5C2deC036d06629";
-    // const privPoll = await PrivPoll.deploy([
-    //   {
-    //     merkleTreeDepth: 16,
-    //     contractAddress: verifierAddress,
-    //   },
-    // ]);
-    // await privPoll.deployed();
-   
-    // console.log(`Poll contract has been deployed to: ${privPoll.address}`);
-}
-    
-    // let verifier;
-    // let privPoll;
-    // const SemaphoreVerifier = await ethers.getContractFactory("VerifyPoll");
-    // verifier = await SemaphoreVerifier.deploy();
-    // await verifier.deployed();
 
-    // const PrivPoll = await ethers.getContractFactory("PrivPoll");
-    
-    // privPoll = await PrivPoll.deploy([
-    //     {
-    //       contractAddress: verifier.address,
-    //       merkleTreeDepth: "16",
-    //     },
-    //   ]);
-    // await privPoll.deployed();
-    // console.log('Verifier deployed to:', verifier.address);
-    // console.log('Poll deployed to:', privPoll.address);
+}
 
 
 // We recommend this pattern to be able to use async/await everywhere

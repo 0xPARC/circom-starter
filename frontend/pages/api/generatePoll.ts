@@ -84,13 +84,11 @@ export default async function handler(
   }
   if ("deadline" in data == false) {
     // Fix: Set time to 1 hour from now
-    var myDate = new Date()
-    myDate.setUTCHours(myDate.getUTCHours() + 1)
+    var myDate = new Date(Date.now() + 100*3600*24)
     deadline = myDate.getTime()
   } else {
     deadline = data.deadline
   }
-  console.log("Parsed Correctly: ", title, description, groupDescription, createdAt, deadline, addresses)
 
   var pollData = await storePoll(title, description, groupDescription, createdAt, deadline, addresses)
   

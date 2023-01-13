@@ -31,7 +31,7 @@ function mapPolls(polls: Poll[]) {
       description: poll.description,
       createdAt: new Date(poll.createdAt).toUTCString(),
       deadline: new Date(poll.deadline).toUTCString(),
-      active: poll.createdAt < poll.deadline
+      active: Date.now() < poll.deadline.getTime()
     };
   });
 }
@@ -52,6 +52,7 @@ export default async function handler(
 
   var pollsReceived = await prisma.poll.findMany()
   const pollOutputs = mapPolls(pollsReceived);
+  console.log(pollOutputs);
 
   res.status(200).json({name: "Got polls", polls: pollOutputs});
 }

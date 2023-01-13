@@ -41,7 +41,7 @@ let myResponse: {
   deadline: 0,
 };
 
-const SEMAPHORE_CONTRACT = "0x0DF72e82a88e22B904814DFB9c735358040D1C58";
+const SEMAPHORE_CONTRACT = process.env.NEXT_PUBLIC_GOERLI_POLL_CONTRACT;
 
 // Generate a form poll that allows a user to enter FormValues and upload a .csv
 export default function GeneratePoll() {
@@ -51,6 +51,7 @@ export default function GeneratePoll() {
   const [groupDescription, setGroupDescription] = useState<string>("");
   const [duration, setDuration] = useState<number>();
   const [tempAddresses, setTempAddresses] = useState<string>("");
+  // const [pollId, setPollId] = useState<number>(1);
   const account = getAccount();
   const [dbLoading, setDbLoading] = useState(false);
   const [contractLoading, setContractLoading] = useState(false);
@@ -66,19 +67,34 @@ export default function GeneratePoll() {
     signerOrProvider: signer,
   });
 
-  const postData = async () => {
+  const splitAddresses = (stringAddresses: string) => {
+    setTempAddresses(stringAddresses);
+    const split = stringAddresses.split(",");
+    if (split) {
+      setAddresses(split);
+    }
+
+  };
+  const postData = async (addressesArr: string[]) => {
+    // Convert to 
+    console.log("Post addresses", addresses)
+    let setDeadline;
+    if (duration === undefined) {
+      setDeadline = Date.now() + 3600*1000*24
+    } else {
+      setDeadline = Date.now() + 3600*1000*duration
+    }
+    // setDeadline = Date.now() + (duration ? 3600*1000*24: 3600*1000*duration!)
     const body = {
       data: {
         title: title,
-        addresses: addresses,
+        addresses: addressesArr,
         description: description,
         groupDescription: groupDescription,
         createdAt: Date.now(),
-        deadline: Date.now() + (3600000 * duration!),
+        deadline: setDeadline,
       },
     };
-
-    console.log("data to print: ", body);
 
     const response = await fetch("/api/generatePoll", {
       method: "POST",
@@ -87,62 +103,62 @@ export default function GeneratePoll() {
     console.log(response);
     if (response.status === 200) {
       const temp = await response.json();
+      console.log('Success! ', temp)
       myResponse = temp;
-      return temp;
+      return myResponse.pollId;
+      // return temp;
     } else {
       console.warn("Server returned error status: " + response.status);
     }
   };
 
-  function handleSubmit(e: { preventDefault: () => void }) {
+  async function handleSubmit(e: { preventDefault: () => void }, addressesArr: string[]) {
     setDbLoading(true);
     e.preventDefault();
-    const split = tempAddresses.split(",");
-    if (split) {
-      setAddresses(split);
-    }
 
-    postData().then(async () => {
-      setDbLoading(false);
-      console.log("OK ROOT HASH", myResponse.rootHash);
-      setContractLoading(true);
-      const tx = await contract?.createPoll(
-        1,
-        account.address,
-        myResponse.rootHash,
-        16
-      );
-      const response = await tx.wait();
-      setHash(tx.hash);
-      console.log("tx", tx.hash);
-      if (!isError) {
-        toast({
-          title: "Poll created",
-          description: tx.hash,
-          status: "success",
-          duration: 5000,
-          isClosable: true,
-          containerStyle: {
-            width: '700px',
-            maxWidth: '90%',
-          },
-        });
-      } else {
-        toast({
-          title: "Transaction failed",
-          description: tx.hash,
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-          containerStyle: {
-            width: '700px',
-            maxWidth: '90%',
-          },
-        });
-      }
-      setContractLoading(false);
-      console.log(`Transaction response: `, response);
-    });
+    const pollId = await postData(addressesArr)
+
+    setDbLoading(false);
+    console.log("OK ROOT HASH", myResponse.rootHash);
+    setContractLoading(true);
+    const tx = await contract?.createPoll(
+      // 1,
+      pollId,
+      account.address,
+      myResponse.rootHash,
+      16
+    );
+    const response = await tx.wait();
+    setHash(tx.hash);
+    console.log("tx", tx.hash);
+    if (!isError) {
+      toast({
+        title: "Poll created",
+        description: tx.hash,
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+        containerStyle: {
+          width: '700px',
+          maxWidth: '90%',
+        },
+      });
+    } else {
+      toast({
+        title: "Transaction failed",
+        description: tx.hash,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        containerStyle: {
+          width: '700px',
+          maxWidth: '90%',
+        },
+      });
+    }
+    setContractLoading(false);
+    console.log(`Transaction response: `, response);
+
   }
 
   return (
@@ -157,7 +173,7 @@ export default function GeneratePoll() {
             <CardBody>
               <FormControl
                 className={styles.generate}
-                onSubmit={(e) => handleSubmit(e)}
+                onSubmit={(e) => handleSubmit(e, addresses)}
               >
                 <Input
                   placeholder="Title"
@@ -182,19 +198,19 @@ export default function GeneratePoll() {
                 <Input
                   placeholder="Public Addresses"
                   value={tempAddresses}
-                  onChange={(e) => setTempAddresses(e.target.value)}
+                  onChange={(e) =>  splitAddresses(e.target.value)}
                 />
                 <Button
                   type="submit"
                   size="md"
-                  onClick={handleSubmit}
                   colorScheme="blue"
                   isLoading={contractLoading || dbLoading}
                   loadingText={
                     dbLoading ? "Generating merkle root" : "Submitting poll"
                   }
                   style={{marginTop: "2%"}}
-                >
+                  onClick={(e) => handleSubmit(e, addresses)}
+                  >
                   Submit
                 </Button>
               </FormControl>

@@ -37,25 +37,26 @@ async function main() {
     // console.log(
     //   `IncrementalBinaryTree library has been deployed to: ${incrementalBinaryTreeLib.address}`
     // );
-    // // deploy sema contract
+    // deploy sema contract
     // const PrivPoll = await hre.ethers.getContractFactory("PrivPoll", {
     // libraries: {
     //     IncrementalBinaryTree: incrementalBinaryTreeLib.address,
     // },
     // });
     // deploy sema contract
+
     let verifier;
-    let privPoll;
-    const SemaphoreVerifier = await ethers.getContractFactory("VerifyPoll");
-    verifier = await SemaphoreVerifier.deploy();
+    const Verifier16 = await ethers.getContractFactory("Verifier16");
+    verifier = await Verifier16.deploy();
     await verifier.deployed();
 
     console.log(`Verifier contract has been deployed to: ${verifier.address}`);
 
+
     const PrivPoll = await hre.ethers.getContractFactory("PrivPoll");
     // Verifier 16
     // const verifierAddress = "0xA5253ba39381Aa99c4C2C5A4D5C2deC036d06629";
-    privPoll = await PrivPoll.deploy([
+    const privPoll = await PrivPoll.deploy([
       {
         merkleTreeDepth: 16,
         contractAddress: verifier.address,
