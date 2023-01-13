@@ -17,51 +17,47 @@ describe.only("testing a simple poll", function () {
     coordinator = accounts[0].address;
 
     // Deploy the verifier contract
-    const SemaphoreVerifier = await ethers.getContractFactory("VerifyPoll");
+    const SemaphoreVerifier = await ethers.getContractFactory(
+      "ECDSASemaphoreVerifier16"
+    );
+    console.log("got ecdsa verifier contract");
     verifier = await SemaphoreVerifier.deploy();
     await verifier.deployed();
+    console.log("verifier deployed");
 
     // Deploy the voting contract and pass in the verifier contract
     const PrivPoll = await ethers.getContractFactory("PrivPoll");
+    console.log("got contract PrivPoll");
     privPoll = await PrivPoll.deploy([
       {
         contractAddress: verifier.address,
-        merkleTreeDepth: "0",
+        merkleTreeDepth: "16",
       },
     ]);
     await privPoll.deployed();
+    console.log("privPoll deployed");
   });
 
   it("should create a poll", async function () {
     // Create a poll
     const merkleRoot =
-      "0x0000000000000000000000000000000000000000000000000000000000000123";
-    const merkleTreeDepth = "0";
+      "18336434020280204688574480229350786401679346558913537968467856337459799406395";
+    const merkleTreeDepth = "16";
     const pollId = "1";
     await privPoll.createPoll(pollId, coordinator, merkleRoot, merkleTreeDepth);
-  });
-
-  it("should start a poll", async function () {
-    // Create a poll
-    const merkleRoot =
-      "0x0000000000000000000000000000000000000000000000000000000000000123";
-    const merkleTreeDepth = "0";
-    const pollId = "1";
-    await privPoll.createPoll(pollId, coordinator, merkleRoot, merkleTreeDepth);
-
-    // Start the poll
-    await privPoll.startPoll(pollId, { from: coordinator });
   });
 
   it("should cast a vote", async function () {
     // Create a poll
     const merkleRoot =
-      "0x0000000000000000000000000000000000000000000000000000000000000123";
-    const merkleTreeDepth = "0";
+      "18336434020280204688574480229350786401679346558913537968467856337459799406395";
+    const merkleTreeDepth = "16";
     const pollId = "1";
     await privPoll.createPoll(pollId, coordinator, merkleRoot, merkleTreeDepth);
+    console.log("poll created");
     // Start the poll
-    await privPoll.startPoll(pollId, { from: coordinator });
+    // await privPoll.startPoll(pollId, { from: coordinator });
+    // console.log("poll started");
 
     let circuit;
     let poseidon;
@@ -71,20 +67,51 @@ describe.only("testing a simple poll", function () {
     const sampleInput = {
       identityNullifier:
         "29980590644713171901284555306875329217885936229213536076981879180646816393547",
-      treePathIndices: ["0", "0"],
+      treePathIndices: [
+        "0",
+        "1",
+        "0",
+        "1",
+        "1",
+        "1",
+        "1",
+        "1",
+        "1",
+        "1",
+        "1",
+        "1",
+        "1",
+        "1",
+        "1",
+        "1",
+      ],
       treeSiblings: [
-        "0x8c564eaA1654be9Dfc68d09972EF86b12e0f6232",
-        "3262392604832476992964505822550551305044316855163773416541209973901164748821",
+        "721217597761491358077856116362363787603688993368",
+        "20553600951042130467022246090001516947989984500035100828661445470569916925403",
+        "14376321156333623292442833001262029886166557808034230636694718418309264470582",
+        "8988132251678213623745359597150773786086744623371262342331165355577271880267",
+        "5101361658164783800162950277964947086522384365207151283079909745362546177817",
+        "11552819453851113656956689238827707323483753486799384854128595967739676085386",
+        "10483540708739576660440356112223782712680507694971046950485797346645134034053",
+        "7389929564247907165221817742923803467566552273918071630442219344496852141897",
+        "6373467404037422198696850591961270197948259393735756505350173302460761391561",
+        "14340012938942512497418634250250812329499499250184704496617019030530171289909",
+        "10566235887680695760439252521824446945750533956882759130656396012316506290852",
+        "14058207238811178801861080665931986752520779251556785412233046706263822020051",
+        "1841804857146338876502603211473795482567574429038948082406470282797710112230",
+        "6068974671277751946941356330314625335924522973707504316217201913831393258319",
+        "10344803844228993379415834281058662700959138333457605334309913075063427817480",
+        "19613055433354010593181510296481106659265254887405599851386217491513440263534",
       ],
       signalHash: "1",
-      externalNullifier: "0",
+      externalNullifier: "1",
     };
     const sanityCheck = true;
 
     poseidon = await buildPoseidon();
-    console.log("poseidon set up");
+    console.log("poseidon built");
     circuit = await hre.circuitTest.setup("ecdsa-semaphore");
-    console.log("circuit set up");
+    console.log("circuit built");
     const witness = await circuit.calculateLabeledWitness(
       sampleInput,
       sanityCheck
@@ -94,11 +121,6 @@ describe.only("testing a simple poll", function () {
       witness,
       "main.identityNullifier",
       sampleInput.identityNullifier
-    );
-    assert.propertyVal(
-      witness,
-      "main.identityTrapdoor",
-      sampleInput.identityTrapdoor
     );
     assert.propertyVal(witness, "main.signalHash", sampleInput.signalHash);
     assert.propertyVal(
@@ -115,24 +137,13 @@ describe.only("testing a simple poll", function () {
       String(parseInt(sampleInput.signalHash) ** 2)
     );
 
-    const poseidonSecret = poseidon(
-      [sampleInput.identityNullifier, sampleInput.identityTrapdoor],
-      poseidonKey,
-      poseidonNumOutputs
-    );
-    assert.propertyVal(
-      witness,
-      "main.secret",
-      String(poseidon.F.toObject(poseidonSecret))
-    );
-
-    const poseidonIdentityCommitment = poseidon([poseidonSecret]);
-
     assert.propertyVal(
       witness,
       "main.root",
-      String(poseidon.F.toObject(poseidonIdentityCommitment))
+      "18336434020280204688574480229350786401679346558913537968467856337459799406395"
     );
+
+    console.log("calculated root correctly");
 
     const poseidonNullifierHash = poseidon(
       [sampleInput.externalNullifier, sampleInput.identityNullifier],
@@ -142,10 +153,12 @@ describe.only("testing a simple poll", function () {
     const nullifier = String(poseidon.F.toObject(poseidonNullifierHash));
     assert.propertyVal(witness, "main.nullifierHash", nullifier);
 
+    console.log("nullifier hash computed correctly");
+
     const { proof, publicSignals } = await snarkjs.groth16.fullProve(
       sampleInput,
-      "/Users/jbel/priv-poll/circuits/build/ecdsa-semaphore_js/ecdsa-semaphore.wasm",
-      "/Users/jbel/priv-poll/circuits/build/ecdsa-semaphore_js/ecdsa-semaphore_0000.zkey"
+      "/Users/jbel/priv-poll/circuits/build_16/ecdsa-semaphore_js/ecdsa-semaphore_16.wasm",
+      "/Users/jbel/priv-poll/circuits/build_16/ecdsa-semaphore_js/ecdsa-semaphore_16.zkey"
     );
 
     console.log("generated proof");
@@ -163,7 +176,7 @@ describe.only("testing a simple poll", function () {
 
     // Read the contents of the JSON file into a string
     const vkeyStr = fs.readFileSync(
-      "/Users/jbel/priv-poll/circuits/build/ecdsa-semaphore_js/ecdsa-semaphore.vkey.json",
+      "/Users/jbel/priv-poll/circuits/build_16/ecdsa-semaphore_js/ecdsa-semaphore_16.vkey.json",
       "utf8"
     );
 

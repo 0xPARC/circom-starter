@@ -4,7 +4,6 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "@nomiclabs/hardhat-waffle": "^2.0.3",
     "@openzeppelin/contracts": "^4.8.0",
     "@openzeppelin/test-environment": "^0.1.9",
     "@openzeppelin/test-helpers": "^0.5.16",
@@ -17,11 +16,12 @@
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.2.1",
     "@nomiclabs/hardhat-etherscan": "^3.1.4",
+    "@nomiclabs/hardhat-waffle": "^2.0.3",
     "chai": "^4.3.6",
     "circomlib": "^2.0.3",
     "circomlibjs": "^0.1.7",
     "ethereum-waffle": "^3.4.4",
-    "hardhat": "^2.12.5",
+    "hardhat": "^2.12.6",
     "hardhat-circom": "^3.3.2",
     "ts-node": "^10.9.1"
   },

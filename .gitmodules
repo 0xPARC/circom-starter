@@ -1,0 +1,3 @@
+[submodule "circuits/packages/circom-ecdsa"]
+	path = circuits/packages/circom-ecdsa
+	url = https://github.com/0xPARC/circom-ecdsa/

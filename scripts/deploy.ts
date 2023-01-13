@@ -44,13 +44,21 @@ async function main() {
     // },
     // });
     // deploy sema contract
+    let verifier;
+    let privPoll;
+    const SemaphoreVerifier = await ethers.getContractFactory("VerifyPoll");
+    verifier = await SemaphoreVerifier.deploy();
+    await verifier.deployed();
+
+    console.log(`Verifier contract has been deployed to: ${verifier.address}`);
+
     const PrivPoll = await hre.ethers.getContractFactory("PrivPoll");
     // Verifier 16
-    const verifierAddress = "0xA5253ba39381Aa99c4C2C5A4D5C2deC036d06629";
-    const privPoll = await PrivPoll.deploy([
+    // const verifierAddress = "0xA5253ba39381Aa99c4C2C5A4D5C2deC036d06629";
+    privPoll = await PrivPoll.deploy([
       {
         merkleTreeDepth: 16,
-        contractAddress: verifierAddress,
+        contractAddress: verifier.address,
       },
     ]);
     await privPoll.deployed();

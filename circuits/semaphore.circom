@@ -2,38 +2,40 @@ pragma circom 2.0.0;
 
 include "../node_modules/circomlib/circuits/poseidon.circom";
 include "./tree.circom";
+include "./split-bits.circom";
+include "./packages/circom-ecdsa/circuits/eth_addr.circom";
 
-// Hash identityNullifier and identityTrapdoor using the the Poseidon hash function
-template CalculateSecret() {
-    // User's nullifier: ETH private key
-    signal input identityNullifier;
-    // Leave this null
-    signal input identityTrapdoor;
+// // Hash identityNullifier and identityTrapdoor using the the Poseidon hash function
+// template CalculateSecret() {
+//     // User's nullifier: ETH private key
+//     signal input identityNullifier;
+//     // Leave this null
+//     signal input identityTrapdoor;
 
-    signal output out;
+//     signal output out;
 
-    component poseidon = Poseidon(2);
+//     component poseidon = Poseidon(2);
 
-    poseidon.inputs[0] <== identityNullifier;
-    poseidon.inputs[1] <== identityTrapdoor;
+//     poseidon.inputs[0] <== identityNullifier;
+//     poseidon.inputs[1] <== identityTrapdoor;
 
-    out <== poseidon.out;
-}
+//     out <== poseidon.out;
+// }
 
 
-// Hash secret using the Poseidon hash function (future: public key)
-template CalculateIdentityCommitment() {
-    // secret = private key
-    signal input secret;
+// // Hash secret using the Poseidon hash function (future: public key)
+// template CalculateIdentityCommitment() {
+//     // secret = private key
+//     signal input secret;
 
-    signal output out;
+//     signal output out;
 
-    component poseidon = Poseidon(1);
+//     component poseidon = Poseidon(1);
 
-    poseidon.inputs[0] <== secret;
+//     poseidon.inputs[0] <== secret;
 
-    out <== poseidon.out;
-}
+//     out <== poseidon.out;
+// }
 
 // Hash externalNullifier and identityNullifier using the Poseidon hash function
 template CalculateNullifierHash() {
@@ -54,10 +56,10 @@ template CalculateNullifierHash() {
 
 // nLevels must be < 32.
 template Semaphore(nLevels) {
-    // Private key
+    // Private key (integer mod p)
     signal input identityNullifier;
-    // Null
-    signal input identityTrapdoor;
+    // // Null
+    // signal input identityTrapdoor;
     // Indices of the path of the merkle tree to this leaf
     signal input treePathIndices[nLevels];
     // Siblings up the path
@@ -70,22 +72,34 @@ template Semaphore(nLevels) {
     signal output root;
     signal output nullifierHash;
 
-    component calculateSecret = CalculateSecret();
-    calculateSecret.identityNullifier <== identityNullifier;
-    calculateSecret.identityTrapdoor <== identityTrapdoor;
+    component splitBits = Split4(64, 64, 64, 64);
+    splitBits.in <== identityNullifier;
 
-    signal secret;
-    secret <== calculateSecret.out;
+    signal splitIdentityNullifier[4];
+    splitIdentityNullifier <== splitBits.chunks;
 
-    component calculateIdentityCommitment = CalculateIdentityCommitment();
-    calculateIdentityCommitment.secret <== secret;
+    // component calculateSecret = CalculateSecret();
+    // calculateSecret.identityNullifier <== identityNullifier;
+    // calculateSecret.identityTrapdoor <== identityTrapdoor;
+
+    // signal secret;
+    // secret <== calculateSecret.out;
+
+    // component calculateIdentityCommitment = CalculateIdentityCommitment();
+    // calculateIdentityCommitment.secret <== secret;
+
+
+    component privToPub = PrivKeyToAddr(64, 4);
+    privToPub.privkey <== splitIdentityNullifier;
+    signal address;
+    address <== privToPub.addr;
 
     component calculateNullifierHash = CalculateNullifierHash();
     calculateNullifierHash.externalNullifier <== externalNullifier;
     calculateNullifierHash.identityNullifier <== identityNullifier;
 
     component inclusionProof = MerkleTreeInclusionProof(nLevels);
-    inclusionProof.leaf <== calculateIdentityCommitment.out;
+    inclusionProof.leaf <== address;
 
     for (var i = 0; i < nLevels; i++) {
         inclusionProof.siblings[i] <== treeSiblings[i];
@@ -94,7 +108,7 @@ template Semaphore(nLevels) {
 
     root <== inclusionProof.root;
 
-    // Dummy square to prevent tampering signalHash.
+    // Dummy square to prevent tampering signalHash (i.e. cannot replay proof with different vote signalHash).
     signal signalHashSquared;
     signalHashSquared <== signalHash * signalHash;
 
