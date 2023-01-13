@@ -1,3 +1,7 @@
+# This branch contains a working version of the Semaphore contracts (though the state of the DB will be out of sync)
+
+Deployed Contract on Goerli: 0x6CB9b7F41F7f242e538Eee4bA83004975d4bfCB6
+
 # circom-starter
 
 A basic circom project using [Hardhat](https://github.com/nomiclabs/hardhat) and [hardhat-circom](https://github.com/projectsophon/hardhat-circom). This combines the multiple steps of the [Circom](https://github.com/iden3/circom) and [SnarkJS](https://github.com/iden3/snarkjs) workflow into your [Hardhat](https://hardhat.org) workflow.

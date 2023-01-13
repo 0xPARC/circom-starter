@@ -26,7 +26,6 @@ import {
 } from "wagmi";
 import testABI from "../../components/abi/test.json";
 import { Progress } from "@chakra-ui/react";
-import { PieChart } from "react-minimal-pie-chart";
 
 interface IPoll {
   title: string;
@@ -107,7 +106,7 @@ function PollDisplay() {
           id,
         },
       };
-      console.log("GOT INTO POST DATA", body);
+      // console.log("GOT INTO POST DATA", body);
       const response = await fetch("/api/getPoll", {
         method: "POST",
         body: JSON.stringify(body),
@@ -129,24 +128,42 @@ function PollDisplay() {
         yesSelected ? 1 : 0,
         Number(id)
       );
-      const proofForTx = response[0];
-      const nullifierHash = response[1];
-      setProofForTx(proofForTx);
-      setNullifierHash(nullifierHash);
-      toast({
-        title: "Proof generated!",
-        description: "Find proof in console.",
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-        containerStyle: {
-          width: "700px",
-          maxWidth: "90%",
-        },
-      });
-      console.log("Proof Details: ", proofForTx);
+      const msgResponse = response[0];
+      const proofForTx = response[1];
+      const nullifierHash = response[2];
+
+      // TOAST HANDLING
+      if (msgResponse === "") {
+        setProofForTx(proofForTx);
+        setNullifierHash(nullifierHash);
+        toast({
+          title: "Proof generated!",
+          description: "Find proof in console.",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+          containerStyle: {
+            width: "700px",
+            maxWidth: "90%",
+          },
+        });
+        console.log("Proof Details: ", proofForTx);
+        setProofResponse(proofForTx);
+      } else {
+        toast({
+          title: "Failed to generate proof!",
+          description: msgResponse,
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+          containerStyle: {
+            width: "700px",
+            maxWidth: "90%",
+          },
+        });
+      }
+
       setLoadingProof(false);
-      setProofResponse(proofForTx);
       console.log("SET TO THIS PROOF RESPONSE", proofResponse);
     }
   };
