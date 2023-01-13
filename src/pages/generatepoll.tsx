@@ -73,12 +73,13 @@ export default function GeneratePoll() {
         addresses: addresses,
         description: description,
         groupDescription: groupDescription,
-        createdAt: Date.now(),
+        createdAt:Date.now(),
         deadline: Date.now() + (3600000 * duration!),
       },
     };
 
     console.log("data to print: ", body);
+    console.log('deadline is SET TO: ', Date.now() + (3600000 * duration!))
 
     const response = await fetch("/api/generatePoll", {
       method: "POST",
@@ -87,6 +88,7 @@ export default function GeneratePoll() {
     console.log(response);
     if (response.status === 200) {
       const temp = await response.json();
+      console.log('Success! ', temp)
       myResponse = temp;
       return temp;
     } else {

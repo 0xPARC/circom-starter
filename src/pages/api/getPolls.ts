@@ -24,6 +24,9 @@ type Data = {
 
 function mapPolls(polls: Poll[]) {
   return polls.map(poll => {
+    console.log('Deadline', poll.deadline.getUTCMilliseconds)
+    console.log('Date.now() ', Date.now())
+    console.log('ACTIVE', Date.now() < poll.deadline.getMilliseconds())
     return {
       id: poll.id,
       title: poll.title,
@@ -31,7 +34,7 @@ function mapPolls(polls: Poll[]) {
       description: poll.description,
       createdAt: new Date(poll.createdAt).toUTCString(),
       deadline: new Date(poll.deadline).toUTCString(),
-      active: poll.createdAt < poll.deadline
+      active: Date.now() < poll.deadline.getMilliseconds()
     };
   });
 }
@@ -52,6 +55,7 @@ export default async function handler(
 
   var pollsReceived = await prisma.poll.findMany()
   const pollOutputs = mapPolls(pollsReceived);
+  console.log(pollOutputs);
 
   res.status(200).json({name: "Got polls", polls: pollOutputs});
 }

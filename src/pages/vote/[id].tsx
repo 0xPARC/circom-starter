@@ -11,7 +11,7 @@ import { useState } from 'react'
 import { getAccount } from "@wagmi/core";
 import { generateProof } from '../../components/generateProof'
 import { castVote } from '../../components/castVote'
-
+import { Progress } from '@chakra-ui/react'
 
 interface IPoll {
   title: string
@@ -51,11 +51,6 @@ function PollDisplay({ poll }: { poll: IPoll }) {
   const [loadingSubmitVote, setLoadingSubmitVote] = useState<boolean>(false);
   const [txHash, setTxHash] = useState<string>("");
   const [submitVoteResponse, setSubmitVoteResponse] = useState<string>("");
-
-
-
-
-
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     setYesSelected(e.currentTarget.textContent === "Yes" ? true : false);
@@ -130,6 +125,7 @@ function PollDisplay({ poll }: { poll: IPoll }) {
             {poll.votes}
         </GridItem>
         <GridItem pl='2' area={'extra'}>
+        {/* <Progress value={20} size='xs' colorScheme='red' /> */}
         <Center>
           <Flex>
               <Input 
@@ -137,6 +133,7 @@ function PollDisplay({ poll }: { poll: IPoll }) {
               placeholder='Enter your Public Key: '
               value={publicKey}
               onChange={(e) => setPublicKey(e.target.value)} 
+              mb={4}
               />
             </Flex>
         </Center>
