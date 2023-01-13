@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { Card, Button, Text, Grid, GridItem } from "@chakra-ui/react";
 import { Flex, Spacer } from "@chakra-ui/react";
-import { CheckCircleIcon, TimeIcon } from "@chakra-ui/icons";
 
 interface IPoll {
   title: string;
@@ -50,9 +49,13 @@ function PollCard({ poll }: { poll: IPoll }) {
             </Text>
             <Spacer />
             {poll.active ? (
-              <Button disabled={true} size="xs" colorScheme="yellow">Active</Button>
+              <Button disabled={true} size="xs" colorScheme="yellow">
+                Active
+              </Button>
             ) : (
-              <Button disabled={true} size="xs" colorScheme="green">Complete</Button>
+              <Button disabled={true} size="xs" colorScheme="green">
+                Complete
+              </Button>
             )}
           </Flex>
         </GridItem>
@@ -96,8 +99,13 @@ export function Polls() {
     <>
       <div>
         {polls.map((p) => (
-          <Link href={"/vote/" + p.id} key={p.id}>
-            <PollCard poll={p} />
+          <Link
+            href={{
+              pathname: "/vote/" + p.id,
+              query: p.id.toString()
+            }}
+          >
+            <PollCard poll={p} key={p.id}/>
           </Link>
         ))}
       </div>

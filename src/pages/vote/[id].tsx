@@ -17,38 +17,28 @@ import {
   Textarea,
 } from "@chakra-ui/react";
 import { Flex, Spacer } from "@chakra-ui/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { getAccount } from "@wagmi/core";
 import { generateProof } from "../../components/generateProof";
 import { castVote } from "../../components/castVote";
 import { useToast } from "@chakra-ui/react";
+import { useRouter } from "next/router";
 
 interface IPoll {
   title: string;
   author: string;
-  gdes: string;
-  des: string;
+  groupDescription: string;
+  description: string;
   votes: number;
   id: number;
   createdAt: number;
   deadline: number;
+  active: boolean;
 }
 
-const examplePoll: IPoll = {
-  title: "Does pineapple belong on pizza?",
-  author: "0x71C7656EC7ab88b098defB751B7401B5f6d8976F",
-  gdes: "A group for all pizza lovers",
-  des: "A decade long debate, Pineapple on pizza remains a contentious. ",
-  votes: 10,
-  id: 1,
-  createdAt: 40234850,
-  deadline: 12345678,
-};
 const account = getAccount();
-console.log("ACCCOUNT");
-console.log(account.address);
 
-function PollDisplay({ poll }: { poll: IPoll }) {
+function PollDisplay() {
   const [publicKey, setPublicKey] = useState<string>("");
   const [privateKey, setPrivateKey] = useState<string>("");
   const [yesSelected, setYesSelected] = useState(false);
@@ -61,11 +51,46 @@ function PollDisplay({ poll }: { poll: IPoll }) {
   const [txHash, setTxHash] = useState<string>("");
   const [submitVoteResponse, setSubmitVoteResponse] = useState<string>("");
   const toast = useToast();
+  const router = useRouter()
+  const { id } = router.query
+  console.log(id)
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     setYesSelected(e.currentTarget.textContent === "Yes" ? true : false);
     setNoSelected(e.currentTarget.textContent === "No" ? true : false);
   };
+
+  const [poll, setPoll] = useState<IPoll>({
+    id: -1,
+    title: "",
+    groupDescription: "",
+    description: "",
+    createdAt: 0,
+    deadline: 0,
+    active: false,
+    author: "",
+    votes: 1,
+  });
+
+  let pollCount = 0;
+  useEffect(() => {
+    if (!id) return
+    const postData = async () => {
+      const body = {
+        data: {
+          id,
+        },
+      };
+      console.log("GOT INTO POST DATA", body);
+      const response = await fetch("/api/getPoll", {
+        method: "POST",
+        body: JSON.stringify(body),
+      }).then(res => res.json());
+      console.log(response)
+      setPoll(response)
+    };
+    postData()
+  }, [id])
 
   const handleGenProof = async (e: React.MouseEvent<HTMLButtonElement>) => {
     if (account) {
@@ -174,9 +199,15 @@ function PollDisplay({ poll }: { poll: IPoll }) {
               POSTED {poll.createdAt} | POLL ID {poll.id}
             </Text>
             <Spacer />
-            <Button size="xs" colorScheme="green">
-              Active
-            </Button>
+            {poll.active ? (
+              <Button disabled={true} size="xs" colorScheme="yellow">
+                Active
+              </Button>
+            ) : (
+              <Button disabled={true} size="xs" colorScheme="green">
+                Complete
+              </Button>
+            )}
           </Flex>
         </GridItem>
         <GridItem pl="2" area={"main"}>
@@ -185,12 +216,8 @@ function PollDisplay({ poll }: { poll: IPoll }) {
           </Text>
         </GridItem>
         <GridItem pl="2" area={"footer"}>
-          <Text>{poll.des}</Text>
-          <Text fontSize="xs">{poll.gdes}</Text>
-        </GridItem>
-        <GridItem pl="2" area={"nav"} marginTop={2}>
-          <BsFillPeopleFill color="black" />
-          {poll.votes}
+          <Text>{poll.description}</Text>
+          <Text fontSize="xs">{poll.groupDescription}</Text>
         </GridItem>
         <GridItem pl="2" area={"extra"}>
           <Input
@@ -205,15 +232,10 @@ function PollDisplay({ poll }: { poll: IPoll }) {
           <Input
             mr={4}
             mb={5}
-            placeholder="Burner Private Key"
+            placeholder="Private Key"
             value={privateKey}
             onChange={(e) => setPrivateKey(e.target.value)}
           />
-          {/* <Center>
-            <Flex>
-             
-            </Flex>
-          </Center> */}
           <Spacer />
           <Center>
             <Flex>
@@ -287,7 +309,7 @@ export default function GeneratePoll() {
       <Header />
       <Center>
         <StyledDiv>
-          <PollDisplay poll={examplePoll} />
+          <PollDisplay />
         </StyledDiv>
       </Center>
     </div>
