@@ -94,9 +94,10 @@ console.log("INPUT", typeof b.data.id)
   });
 
   if (poll != null) {
-    res
-      .status(200)
-      .json({
+    console.log("97: THIS IS THE DATE", Date.now())
+    console.log("98: THIS IS THE TIME", poll.deadline.getTime())
+
+    res.status(200).json({
         name: "poll found!",
         id: poll.id,
         title: poll.title,
@@ -104,7 +105,7 @@ console.log("INPUT", typeof b.data.id)
         description: poll.description,
         createdAt: poll.createdAt.toString(),
         deadline: poll.deadline.toString(),
-        active: Date.now() < poll.deadline.getMilliseconds(),
+        active: Date.now() < poll.deadline.getTime(),
       });
   } else {
     res.status(400).json({

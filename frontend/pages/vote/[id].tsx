@@ -154,46 +154,38 @@ function PollDisplay() {
   const handleSubmitVote = async (e: React.MouseEvent<HTMLButtonElement>) => {
     if (account) {
       setLoadingSubmitVote(true);
-      const response = await castVote(nullifierHash, proofForTx, 1, Number(id));
+      const response = await castVote(nullifierHash, proofForTx, yesSelected? 1: 0, Number(id));
+      const success = response[3]
       const txHash = response[1];
       setTxHash(txHash);
-      toast({
-        title: "Vote casted!",
-        description: txHash,
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-        containerStyle: {
-          width: "700px",
-          maxWidth: "90%",
-        },
-      });
-      // if (!isError) {
-      //   toast({
-      //     title: "Poll created",
-      //     description: txHash,
-      //     status: "success",
-      //     duration: 5000,
-      //     isClosable: true,
-      //     containerStyle: {
-      //       width: '700px',
-      //       maxWidth: '90%',
-      //     },
-      //   });
-      // } else {
-      //   toast({
-      //     title: "Transaction failed",
-      //     description: txHash,
-      //     status: "error",
-      //     duration: 5000,
-      //     isClosable: true,
-      //     containerStyle: {
-      //       width: '700px',
-      //       maxWidth: '90%',
-      //     },
-      //   });
-      // }
+      if (success) {
+        toast({
+          title: "Vote casted!",
+          description: txHash,
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+          containerStyle: {
+            width: "700px",
+            maxWidth: "90%",
+          },
+        });
+      } else {
+        toast({
+          title: "Transaction failed",
+          description: txHash,
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+          containerStyle: {
+            width: "700px",
+            maxWidth: "90%",
+          },
+        });
+      }
+
       setLoadingSubmitVote(false);
+      setProofResponse("");
     }
   };
 
@@ -289,11 +281,7 @@ function PollDisplay() {
               <Button
                 mb={3}
                 ml={4}
-                disabled={
-                  account && proofResponse == "" && (yesSelected || noSelected)
-                    ? false
-                    : true
-                }
+                disabled={account && (yesSelected || noSelected) && proofResponse == "" ? false : true}
                 onClick={handleGenProof}
                 loadingText="Generating Proof"
                 isLoading={loadingProof}
@@ -356,13 +344,13 @@ const StyledDiv = styled.div`
 
 export default function GeneratePoll() {
   return (
-    <div>
+    <>
       <Header />
       <Center>
         <StyledDiv>
           <PollDisplay />
         </StyledDiv>
       </Center>
-    </div>
+    </>
   );
 }

@@ -83,6 +83,13 @@ export default function GeneratePoll() {
   const postData = async (addressesArr: string[]) => {
     // Convert to 
     console.log("Post addresses", addresses)
+    let setDeadline;
+    if (duration === undefined) {
+      setDeadline = Date.now() + 3600*1000*24
+    } else {
+      setDeadline = Date.now() + 3600*1000*duration
+    }
+    // setDeadline = Date.now() + (duration ? 3600*1000*24: 3600*1000*duration!)
     const body = {
       data: {
         title: title,
@@ -90,12 +97,12 @@ export default function GeneratePoll() {
         description: description,
         groupDescription: groupDescription,
         createdAt: Date.now(),
-        deadline: Date.now() + (3600000 * duration!),
+        deadline: setDeadline,
       },
     };
 
     console.log("data to print: ", body);
-    console.log('deadline is SET TO: ', Date.now() + (3600000 * duration!))
+    console.log('deadline is SET TO: ', setDeadline)
 
     const response = await fetch("/api/generatePoll", {
       method: "POST",
