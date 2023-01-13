@@ -85,13 +85,10 @@ export default async function handler(
   if ("deadline" in data == false) {
     // Fix: Set time to 1 hour from now
     var myDate = new Date(Date.now() + 100*3600*24)
-    // console.log("THIS IS THE DATE FOR THE OBJECT", myDate.getTime())
     deadline = myDate.getTime()
   } else {
-    // console.log("WHY IS DEADLINE GOING HERE", new Date(data.deadline))
     deadline = data.deadline
   }
-  // console.log("Parsed Correctly: ", title, description, groupDescription, createdAt, deadline, addresses)
 
   var pollData = await storePoll(title, description, groupDescription, createdAt, deadline, addresses)
   

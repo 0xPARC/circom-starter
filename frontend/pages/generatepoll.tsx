@@ -69,16 +69,11 @@ export default function GeneratePoll() {
   });
 
   const splitAddresses = (stringAddresses: string) => {
-    console.log("Splitting Addresses")
     setTempAddresses(stringAddresses);
     const split = stringAddresses.split(",");
     if (split) {
       setAddresses(split);
     }
-    console.log("temp addresses");
-    // console.log(tempAddresses);
-    console.log("split addresses")
-    // console.log(stringAddresses);
 
   };
   const postData = async (addressesArr: string[]) => {
@@ -102,9 +97,6 @@ export default function GeneratePoll() {
       },
     };
 
-    console.log("data to print: ", body);
-    console.log('deadline is SET TO: ', setDeadline)
-
     const response = await fetch("/api/generatePoll", {
       method: "POST",
       body: JSON.stringify(body),
@@ -123,7 +115,6 @@ export default function GeneratePoll() {
 
   async function handleSubmit(e: { preventDefault: () => void }, addressesArr: string[]) {
     setDbLoading(true);
-    console.log("Got into submit!")
     e.preventDefault();
 
     const pollId = await postData(addressesArr)
@@ -131,7 +122,6 @@ export default function GeneratePoll() {
     setDbLoading(false);
     console.log("OK ROOT HASH", myResponse.rootHash);
     setContractLoading(true);
-    console.log("Poll ID for Smart Contract: ", pollId)
     const tx = await contract?.createPoll(
       // 1,
       pollId,

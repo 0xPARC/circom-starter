@@ -108,14 +108,13 @@ export default async function handler(
     }
 
     // const path = __dirname
-    console.log(__dirname)
     // const wasmPath = "./semaphore.wasm";
     // const zkeyPath = "./semaphore.zkey";
     // const vkeyPath = "./semaphore.vkey.json";
 
     const proofKeysDirectory = path.join(process.cwd(), 'proofKeys')
 
-    console.log(input)
+    console.log("Proof Input: ", input)
 
     const wasm = await fs.readFile(proofKeysDirectory + '/semaphore.wasm')
     const zKey = await fs.readFile(proofKeysDirectory + '/semaphore.zkey')
@@ -123,7 +122,7 @@ export default async function handler(
 
     const { proof, publicSignals } = await snarkjs.groth16.fullProve(input, wasm, zKey);
     console.log("public signals: ", publicSignals)
-    console.log(proof)
+    console.log("proof output: ", proof)
     if ("pi_a" in proof == false) {
         res.status(400).json({
             name: "Proof not generated", proofForTx: [], nullifierHash: ""

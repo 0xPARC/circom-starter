@@ -1,5 +1,4 @@
 import axios from "axios";
-// const snarkjs = require("snarkjs");
 // TODO: Change the storage of the Merkle Tree to an S3 Bucket
 async function castVote(nullifierHash: string, proof: string[], vote: number, pollId: number) {
     console.log("Casting vote")
@@ -11,7 +10,6 @@ async function castVote(nullifierHash: string, proof: string[], vote: number, po
             pollId: pollId
         }
     })
-    // console.log("In components", outputResponse.data.name)
     return [response.data.name, response.data.txHash, response.data.pollId, response.data.success];
 
 }

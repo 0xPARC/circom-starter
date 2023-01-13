@@ -24,9 +24,6 @@ type Data = {
 
 function mapPolls(polls: Poll[]) {
   return polls.map(poll => {
-    console.log('Deadline', poll.deadline.getUTCMilliseconds)
-    console.log('Date.now() ', Date.now())
-    console.log('ACTIVE', Date.now() < poll.deadline.getMilliseconds())
     return {
       id: poll.id,
       title: poll.title,
