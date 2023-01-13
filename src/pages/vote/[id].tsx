@@ -1,20 +1,14 @@
 import * as React from "react";
 import styled from "styled-components";
-import { BsFillPeopleFill } from "react-icons/bs";
 import Header from "../../components/header";
 import {
   Card,
-  CardHeader,
-  CardBody,
-  CardFooter,
-  Heading,
   Button,
   Text,
   Grid,
   GridItem,
   Center,
   Input,
-  Textarea,
 } from "@chakra-ui/react";
 import { Flex, Spacer } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
@@ -23,6 +17,7 @@ import { generateProof } from "../../components/generateProof";
 import { castVote } from "../../components/castVote";
 import { useToast } from "@chakra-ui/react";
 import { useRouter } from "next/router";
+import { useWaitForTransaction } from "wagmi";
 
 interface IPoll {
   title: string;
@@ -49,10 +44,12 @@ function PollDisplay() {
   const [loadingProof, setLoadingProof] = useState<boolean>(false);
   const [loadingSubmitVote, setLoadingSubmitVote] = useState<boolean>(false);
   const [txHash, setTxHash] = useState<string>("");
-  const [submitVoteResponse, setSubmitVoteResponse] = useState<string>("");
   const toast = useToast();
   const router = useRouter()
   const { id } = router.query
+  const { data, isError, isLoading } = useWaitForTransaction({
+    hash: `0x${txHash}`,
+  });
   console.log(id)
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -72,7 +69,6 @@ function PollDisplay() {
     votes: 1,
   });
 
-  let pollCount = 0;
   useEffect(() => {
     if (!id) return
     const postData = async () => {
@@ -100,8 +96,8 @@ function PollDisplay() {
       const response = await generateProof(
         privateKey,
         publicKey as `0x${string}`,
-        1,
-        1
+        yesSelected ? 1 : 0,
+        Number(id)
       );
       const proofForTx = response[0];
       const nullifierHash = response[1];
@@ -119,13 +115,15 @@ function PollDisplay() {
         },
       });
       setLoadingProof(false);
+      setProofResponse(proofResponse);
+      console.log("SET TO THIS PROOF RESPONSE")
     }
   };
 
   const handleSubmitVote = async (e: React.MouseEvent<HTMLButtonElement>) => {
     if (account) {
       setLoadingSubmitVote(true);
-      const response = await castVote(nullifierHash, proofForTx, 1, 1);
+      const response = await castVote(nullifierHash, proofForTx, 1, Number(id));
       const txHash = response[1];
       setTxHash(txHash);
       toast({
@@ -139,32 +137,31 @@ function PollDisplay() {
           maxWidth: "90%",
         },
       });
-      // if (!isError) {
-      //   toast({
-      //     title: "Poll created",
-      //     description: tx.hash,
-      //     status: "success",
-      //     duration: 5000,
-      //     isClosable: true,
-      //     containerStyle: {
-      //       width: '700px',
-      //       maxWidth: '90%',
-      //     },
-      //   });
-      // } else {
-      //   toast({
-      //     title: "Transaction failed",
-      //     description: tx.hash,
-      //     status: "error",
-      //     duration: 5000,
-      //     isClosable: true,
-      //     containerStyle: {
-      //       width: '700px',
-      //       maxWidth: '90%',
-      //     },
-      //   });
-      // }
-      // setSubmitVoteResponse("Vote submitted! Tx below")
+      if (!isError) {
+        toast({
+          title: "Poll created",
+          description: txHash,
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+          containerStyle: {
+            width: '700px',
+            maxWidth: '90%',
+          },
+        });
+      } else {
+        toast({
+          title: "Transaction failed",
+          description: txHash,
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+          containerStyle: {
+            width: '700px',
+            maxWidth: '90%',
+          },
+        });
+      }
       setLoadingSubmitVote(false);
     }
   };
@@ -261,7 +258,7 @@ function PollDisplay() {
               <Button
                 mb={10}
                 ml={4}
-                disabled={account && proofResponse == "" ? false : true}
+                disabled={account && proofResponse == "" && (yesSelected || noSelected) ? false : true}
                 onClick={handleGenProof}
                 loadingText="Generating Proof"
                 isLoading={loadingProof}
