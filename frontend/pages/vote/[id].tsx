@@ -211,7 +211,7 @@ function PollDisplay() {
   };
 
   return (
-    <Card variant={"elevated"} margin={8} minH='md'>
+    <Card variant={"elevated"} margin={8} minH='s'>
       <Grid
         templateAreas={`"header header"
                         "main nav"
@@ -219,7 +219,7 @@ function PollDisplay() {
                         "extra extra"
                         "extra extra"
                         `}
-        gridTemplateRows={"8% 2em 15% 90%"}
+        gridTemplateRows={"8% 2em 16% 90%"}
         gridTemplateColumns={"95% 2em "}
         // h='150%'
         gap="1"
@@ -297,13 +297,12 @@ function PollDisplay() {
           <Spacer />
           <Input
             mr={4}
-            mb={10}
+            mb={6}
             placeholder="Private Key"
             value={privateKey}
             onChange={(e) => setPrivateKey(e.target.value)}
             focusBorderColor={"#C4A7FF"}
           />
-          <Spacer />
           <Center>
             <Flex>
               <Button
