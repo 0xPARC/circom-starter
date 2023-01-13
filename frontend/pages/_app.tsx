@@ -8,11 +8,17 @@ import '../styles/globals.css'
 import { ChakraProvider } from '@chakra-ui/react'
 import theme from '../theme'
 import Head from 'next/head'
+import '@fontsource/raleway/400.css'
+import '@fontsource/open-sans/700.css'
+import '@fontsource/ibm-plex-mono'
+import {Roboto} from '@next/font/google'
+
 
 const { chains, provider, webSocketProvider } = configureChains(
   [goerli],
   [publicProvider()],
 )
+
 
 const { connectors } = getDefaultWallets({
   appName: 'RainbowKit App',
