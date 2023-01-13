@@ -30,6 +30,9 @@ template MerkleTreeInclusionProof(nLevels) {
 
         mux[i].s <== pathIndices[i];
 
+        // if pathIndices = 0, out[0] = hashes, out[1] = siblings
+        // path index indicates where you are in the path
+
         poseidons[i].inputs[0] <== mux[i].out[0];
         poseidons[i].inputs[1] <== mux[i].out[1];
 
@@ -38,3 +41,16 @@ template MerkleTreeInclusionProof(nLevels) {
 
     root <== hashes[nLevels];
 }
+
+
+// template MultiMux1(n) {
+//     signal input c[n][2];  // Constants
+//     signal input s;   // Selector
+//     signal output out[n];
+
+//     for (var i=0; i<n; i++) {
+
+//         out[i] <== (c[i][1] - c[i][0])*s + c[i][0];
+
+//     }
+// }

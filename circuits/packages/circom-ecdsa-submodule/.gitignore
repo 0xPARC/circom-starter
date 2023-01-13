@@ -1,0 +1,8 @@
+build/
+node_modules/
+pot*.ptau
+__pycache__
+.DS_Store
+
+*.swp
+*~

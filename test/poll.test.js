@@ -79,6 +79,7 @@ describe("testing a simple poll", function () {
       sampleInput,
       sanityCheck
     );
+
     assert.propertyVal(
       witness,
       "main.identityNullifier",
