@@ -20,10 +20,9 @@ interface IPoll {
 function PollCard({ poll }: { poll: IPoll }) {
   return (
     <Card
-      backgroundColor={"#f4f4f8"}
       variant={"elevated"}
       margin={8}
-      _hover={{ background: "white" }}
+      _hover={{ backgroundColor: 'rgba(69, 72, 94, 0.2)' }}
     >
       <Grid
         templateAreas={`"header header"
@@ -33,7 +32,6 @@ function PollCard({ poll }: { poll: IPoll }) {
         gridTemplateColumns={"95% 2em"}
         h="150px"
         gap="1"
-        color="#242124"
         padding={4}
         margin={2}
         marginLeft={0}
@@ -42,7 +40,6 @@ function PollCard({ poll }: { poll: IPoll }) {
           <Flex>
             <Text
               fontSize="xs"
-              color={"#666666"}
               fontFamily={
                 '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu'
               }
@@ -51,14 +48,15 @@ function PollCard({ poll }: { poll: IPoll }) {
             </Text>
             <Spacer />
             {poll.active ? (
-              <Button disabled={true} size="xs" colorScheme="yellow">
-                Active
-              </Button>
-            ) : (
-              <Button disabled={true} size="xs" colorScheme="green">
-                Complete
-              </Button>
+              <Button disabled={true} _disabled={{backgroundColor: "#651fff"}} _hover={{backgroundColor: "#651fff"}} size="xs" backgroundColor="#651fff" color={'white'}>
+              Active
+            </Button>
+          ) : (
+            <Button disabled={true} size="xs" _disabled={{backgroundColor: "#651fff"}} _hover={{backgroundColor: "#651fff"}} backgroundColor="#651fff" color={'white'} opacity={0.3}>
+              Complete
+            </Button>
             )}
+            <Spacer />
           </Flex>
         </GridItem>
         <GridItem pl="2" area={"main"}>
@@ -79,6 +77,7 @@ export function Polls() {
   const [polls, setPolls] = useState<IPoll[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filteredPolls, setFilteredPolls] = useState<IPoll[]>([]);
+  // const [borderColor, setBorderColor] = useState("transparent");
 
 
   const debouncedSearchTerm = debounce((value: string) => setSearchTerm(value), 500);
@@ -123,6 +122,8 @@ export function Polls() {
          mt={3}
          style={{ width: '50%'}}
          onChange={(e) => setSearchTerm(e.target.value)}
+          _hover={{borderColor:"#9B72F2", borderWidth: "1px"}}
+          focusBorderColor={"#9B72F2"}
        />
        </Center>
        <Button

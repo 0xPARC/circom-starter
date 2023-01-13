@@ -136,14 +136,26 @@ export async function getSiblingsAndPathIndices(address: string, pollId: number)
     var siblings = []
     // console.log(await merkleTree.leafToPathIndices.length)
     // console.log(merkleTree.leafToPathElements[address])
-    var BigIntAddress = BigInt(address).toString()
-    console.log(BigIntAddress)
-    var BigIntSiblings = merkleTree.leafToPathElements[BigIntAddress]
-    console.log(BigIntSiblings)
-    for (var i = 0; i < BigIntSiblings.length; i++) {
-      siblings.push(BigIntSiblings[i].toString())
+    // console.log(BigIntAddress)
+    let BigIntAddress = "";
+    
+    // Not in valid format!
+    try {
+        BigIntAddress = BigInt(address).toString()
+    } catch (e) {
+        return {isValidPollId: true, siblings: [], pathIndices: []}
     }
-    return {isValidPollId: true, siblings: siblings, pathIndices: merkleTree.leafToPathIndices[BigIntAddress]}
+    if (BigIntAddress in merkleTree.leafToPathElements == false) {
+        return {isValidPollId: true, siblings: [], pathIndices: []}
+    } else {
+        
+        var BigIntSiblings = merkleTree.leafToPathElements[BigIntAddress]
+        console.log(BigIntSiblings)
+        for (var i = 0; i < BigIntSiblings.length; i++) {
+        siblings.push(BigIntSiblings[i].toString())
+        }
+        return {isValidPollId: true, siblings: siblings, pathIndices: merkleTree.leafToPathIndices[BigIntAddress]}
+    }
 }
 
 /** 

@@ -10,6 +10,7 @@ import {
   Center,
   Input,
   Box,
+  HStack,
 } from "@chakra-ui/react";
 import { Flex, Spacer } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
@@ -26,7 +27,8 @@ import {
 } from "wagmi";
 import testABI from "../../components/abi/test.json";
 import { Progress } from "@chakra-ui/react";
-import { PieChart } from "react-minimal-pie-chart";
+import styles from '../../styles/Home.module.css';
+import { BsFillPeopleFill } from 'react-icons/bs';
 
 interface IPoll {
   title: string;
@@ -107,7 +109,7 @@ function PollDisplay() {
           id,
         },
       };
-      console.log("GOT INTO POST DATA", body);
+      // console.log("GOT INTO POST DATA", body);
       const response = await fetch("/api/getPoll", {
         method: "POST",
         body: JSON.stringify(body),
@@ -129,24 +131,42 @@ function PollDisplay() {
         yesSelected ? 1 : 0,
         Number(id)
       );
-      const proofForTx = response[0];
-      const nullifierHash = response[1];
-      setProofForTx(proofForTx);
-      setNullifierHash(nullifierHash);
-      toast({
-        title: "Proof generated!",
-        description: "Find proof in console.",
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-        containerStyle: {
-          width: "700px",
-          maxWidth: "90%",
-        },
-      });
-      console.log("Proof Details: ", proofForTx);
+      const msgResponse = response[0];
+      const proofForTx = response[1];
+      const nullifierHash = response[2];
+
+      // TOAST HANDLING
+      if (msgResponse === "") {
+        setProofForTx(proofForTx);
+        setNullifierHash(nullifierHash);
+        toast({
+          title: "Proof generated!",
+          description: "Find proof in console.",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+          containerStyle: {
+            width: "700px",
+            maxWidth: "90%",
+          },
+        });
+        console.log("Proof Details: ", proofForTx);
+        setProofResponse(proofForTx);
+      } else {
+        toast({
+          title: "Failed to generate proof!",
+          description: msgResponse,
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+          containerStyle: {
+            width: "700px",
+            maxWidth: "90%",
+          },
+        });
+      }
+
       setLoadingProof(false);
-      setProofResponse(proofForTx);
       console.log("SET TO THIS PROOF RESPONSE", proofResponse);
     }
   };
@@ -171,8 +191,9 @@ function PollDisplay() {
           },
         });
       } else {
+        // TODO: Add error checking if the transaction fails due to proof verifying incorrectly
         toast({
-          title: "Transaction failed",
+          title: "Transaction failed: Cannot vote twice!",
           description: txHash,
           status: "error",
           duration: 5000,
@@ -190,7 +211,7 @@ function PollDisplay() {
   };
 
   return (
-    <Card backgroundColor={"#f4f4f8"} variant={"elevated"} margin={8}>
+    <Card variant={"elevated"} margin={8} minH='md'>
       <Grid
         templateAreas={`"header header"
                         "main nav"
@@ -198,20 +219,18 @@ function PollDisplay() {
                         "extra extra"
                         "extra extra"
                         `}
-        gridTemplateRows={"8% 2em 20% 9em"}
+        gridTemplateRows={"8% 2em 15% 90%"}
         gridTemplateColumns={"95% 2em "}
         // h='150%'
         gap="1"
-        color="#242124"
         padding={4}
-        margin={2}
+        margin={6}
         marginLeft={0}
       >
         <GridItem pl="2" area={"header"}>
           <Flex>
             <Text
               fontSize="xs"
-              color={"#666666"}
               fontFamily={
                 '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu'
               }
@@ -220,11 +239,11 @@ function PollDisplay() {
             </Text>
             <Spacer />
             {poll.active ? (
-              <Button disabled={true} size="xs" colorScheme="yellow">
+              <Button disabled={true} _disabled={{backgroundColor: "#651fff"}} _hover={{backgroundColor: "#651fff"}} size="xs" backgroundColor="#651fff" color={'white'}>
                 Active
               </Button>
             ) : (
-              <Button disabled={true} size="xs" colorScheme="green">
+              <Button disabled={true} size="xs" _disabled={{backgroundColor: "#651fff"}} _hover={{backgroundColor: "#651fff"}} backgroundColor="#651fff" color={'white'} opacity={0.3}>
                 Complete
               </Button>
             )}
@@ -237,23 +256,52 @@ function PollDisplay() {
         </GridItem>
         <GridItem pl="2" area={"footer"}>
           <Text>{poll.description}</Text>
+          <HStack mt={2}>
+          <BsFillPeopleFill/>
           <Text fontSize="xs">{poll.groupDescription}</Text>
+          </HStack>
         </GridItem>
+        
         <GridItem pl="2" area={"extra"}>
+        {yesVoteCount + noVoteCount > 0 ? (
+            <>
+              <Progress
+                colorScheme={"green"}
+                background={"red"}
+                height="10px"
+                rounded={"xl"}
+                mb={"1%"}
+                value={(100 * yesVoteCount) / (yesVoteCount + noVoteCount)}
+              />
+              <Text
+                color="gray.500"
+                fontWeight="semibold"
+                letterSpacing="wide"
+                fontSize="xs"
+                textTransform="uppercase"
+              >
+                Yes: {yesVoteCount} No: {noVoteCount}
+              </Text>
+            </>
+          ) : null}
+          <Spacer margin={6}/>
           <Input
             mr={4}
             mb={4}
+            textColor={"#242124"}
             placeholder="Public Key"
             value={publicKey}
             onChange={(e) => setPublicKey(e.target.value)}
+            focusBorderColor={"#D7C3FF"}
           />
           <Spacer />
           <Input
             mr={4}
-            mb={4}
+            mb={10}
             placeholder="Private Key"
             value={privateKey}
             onChange={(e) => setPrivateKey(e.target.value)}
+            focusBorderColor={"#C4A7FF"}
           />
           <Spacer />
           <Center>
@@ -304,27 +352,6 @@ function PollDisplay() {
               </Button>
             </Flex>
           </Center>
-          {yesVoteCount + noVoteCount > 0 ? (
-            <>
-              <Progress
-                colorScheme={"green"}
-                background={"red"}
-                height="10px"
-                rounded={"xl"}
-                mb={"1%"}
-                value={(100 * yesVoteCount) / (yesVoteCount + noVoteCount)}
-              />
-              <Text
-                color="gray.500"
-                fontWeight="semibold"
-                letterSpacing="wide"
-                fontSize="xs"
-                textTransform="uppercase"
-              >
-                Yes: {yesVoteCount} No: {noVoteCount}
-              </Text>
-            </>
-          ) : null}
           <Spacer />
         </GridItem>
       </Grid>
@@ -332,25 +359,15 @@ function PollDisplay() {
   );
 }
 
-const StyledDiv = styled.div`
-  transition: all 0.1s ease-in-out;
-  border-radius: 8px;
-  border: 1px solid #eaeaea;
-
-  &:hover {
-    border-color: #0d76fc;
-  }
-`;
-
 export default function GeneratePoll() {
   return (
     <>
-      <Header />
-      <Center>
-        <StyledDiv>
-          <PollDisplay />
-        </StyledDiv>
-      </Center>
+      <Header/>
+      <div className={styles.container}>
+        <main className={styles.main}>
+          <PollDisplay/>
+      </main>
+      </div>
     </>
   );
 }
