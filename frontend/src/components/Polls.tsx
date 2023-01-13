@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { Card, Button, Text, Grid, GridItem } from "@chakra-ui/react";
+import { Card, Button, Text, Grid, GridItem, FormControl, Center, Input } from "@chakra-ui/react";
 import { Flex, Spacer } from "@chakra-ui/react";
+ import { CheckCircleIcon, TimeIcon } from "@chakra-ui/icons";
+ import { debounce } from "lodash";
 
 interface IPoll {
   title: string;
@@ -75,6 +77,12 @@ function PollCard({ poll }: { poll: IPoll }) {
 
 export function Polls() {
   const [polls, setPolls] = useState<IPoll[]>([]);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [filteredPolls, setFilteredPolls] = useState<IPoll[]>([]);
+
+
+  const debouncedSearchTerm = debounce((value: string) => setSearchTerm(value), 500);
+
   useEffect(() => {
     async function getPolls() {
       const response = await fetch("/api/getPolls", {
@@ -83,6 +91,7 @@ export function Polls() {
       console.log(response);
       if (response.status === 200) {
         const temp = await response.json();
+        setFilteredPolls(temp.polls);
         setPolls(temp.polls);
       } else {
         console.warn("Server returned error status: " + response.status);
@@ -91,10 +100,46 @@ export function Polls() {
     getPolls();
   }, []);
 
+  useEffect(() => {
+    setFilteredPolls(
+      polls.filter((poll) =>
+        poll.title.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    );
+  }, [searchTerm]);
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    debouncedSearchTerm(searchTerm);
+  }
+
   return (
     <>
+      <FormControl>
+       <Center>
+       <Input
+         placeholder="Search"
+         value={searchTerm}
+         mt={3}
+         style={{ width: '60%'}}
+         onChange={(e) => setSearchTerm(e.target.value)}
+       />
+       </Center>
+       <Button
+         type="submit"
+         size="md"
+         colorScheme="blue"
+         style={{ display: 'none' }}
+         onClick={(e) => {
+           e.preventDefault();
+           debouncedSearchTerm(searchTerm);}}
+       >
+         Submit
+       </Button>
+     </FormControl>
+
       <div>
-        {polls.map((p) => (
+        {filteredPolls.map((p) => (
           <Link
             href={{
               pathname: "/vote/" + p.id,
