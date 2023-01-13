@@ -17,7 +17,6 @@ import {
   useSigner,
   useWaitForTransaction,
 } from "wagmi";
-import { split } from "ramda";
 
 interface FormValues {
   title: string;

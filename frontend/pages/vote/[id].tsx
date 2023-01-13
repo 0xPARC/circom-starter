@@ -9,6 +9,7 @@ import {
   GridItem,
   Center,
   Input,
+  Box,
 } from "@chakra-ui/react";
 import { Flex, Spacer } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
@@ -17,7 +18,15 @@ import { generateProof } from "../../components/generateProof";
 import { castVote } from "../../components/castVote";
 import { useToast } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import { useWaitForTransaction } from "wagmi";
+import {
+  useContract,
+  useWaitForTransaction,
+  useSigner,
+  useContractRead,
+} from "wagmi";
+import testABI from "../../components/abi/test.json";
+import { Progress } from "@chakra-ui/react";
+import { PieChart } from "react-minimal-pie-chart";
 
 interface IPoll {
   title: string;
@@ -32,6 +41,7 @@ interface IPoll {
 }
 
 const account = getAccount();
+const SEMAPHORE_CONTRACT = process.env.NEXT_PUBLIC_GOERLI_POLL_CONTRACT;
 
 function PollDisplay() {
   const [publicKey, setPublicKey] = useState<string>("");
@@ -43,14 +53,28 @@ function PollDisplay() {
   const [proofResponse, setProofResponse] = useState<string>("");
   const [loadingProof, setLoadingProof] = useState<boolean>(false);
   const [loadingSubmitVote, setLoadingSubmitVote] = useState<boolean>(false);
+  const [yesVoteCount, setYesVoteCount] = useState<number>(0);
+  const [noVoteCount, setNoVoteCount] = useState<number>(0);
   const [txHash, setTxHash] = useState<string>("");
   const toast = useToast();
-  const router = useRouter()
-  const { id } = router.query
+  const router = useRouter();
+  const { id } = router.query;
   const { data, isError, isLoading } = useWaitForTransaction({
     hash: `0x${txHash}`,
   });
-  console.log(id)
+  console.log(id);
+
+  const {
+    data: resultData,
+    isError: isResultError,
+    isLoading: isResultLoading,
+  } = useContractRead({
+    address: SEMAPHORE_CONTRACT,
+    abi: testABI,
+    functionName: "getPollState",
+    args: [id],
+  });
+  console.log("RESULT DATA", resultData);
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     setYesSelected(e.currentTarget.textContent === "Yes" ? true : false);
@@ -70,7 +94,13 @@ function PollDisplay() {
   });
 
   useEffect(() => {
-    if (!id) return
+    if (resultData) {
+      setYesVoteCount(Number((resultData as number[])[0]));
+      console.log("yes votes", yesVoteCount);
+      setNoVoteCount(Number((resultData as number[])[1]));
+      console.log("no votes", noVoteCount);
+    }
+    if (!id) return;
     const postData = async () => {
       const body = {
         data: {
@@ -81,12 +111,12 @@ function PollDisplay() {
       const response = await fetch("/api/getPoll", {
         method: "POST",
         body: JSON.stringify(body),
-      }).then(res => res.json());
-      console.log(response)
-      setPoll(response)
+      }).then((res) => res.json());
+      console.log(response);
+      setPoll(response);
     };
-    postData()
-  }, [id])
+    postData();
+  }, [id, resultData]);
 
   const handleGenProof = async (e: React.MouseEvent<HTMLButtonElement>) => {
     if (account) {
@@ -114,10 +144,10 @@ function PollDisplay() {
           maxWidth: "90%",
         },
       });
-      console.log("Proof Details: ", proofForTx)
+      console.log("Proof Details: ", proofForTx);
       setLoadingProof(false);
       setProofResponse(proofForTx);
-      console.log("SET TO THIS PROOF RESPONSE", proofResponse)
+      console.log("SET TO THIS PROOF RESPONSE", proofResponse);
     }
   };
 
@@ -168,7 +198,7 @@ function PollDisplay() {
                         "extra extra"
                         "extra extra"
                         `}
-        gridTemplateRows={"18% 2em 20% 9em"}
+        gridTemplateRows={"8% 2em 20% 9em"}
         gridTemplateColumns={"95% 2em "}
         // h='150%'
         gap="1"
@@ -212,16 +242,15 @@ function PollDisplay() {
         <GridItem pl="2" area={"extra"}>
           <Input
             mr={4}
-            mb={5}
+            mb={4}
             placeholder="Public Key"
             value={publicKey}
             onChange={(e) => setPublicKey(e.target.value)}
           />
           <Spacer />
-
           <Input
             mr={4}
-            mb={5}
+            mb={4}
             placeholder="Private Key"
             value={privateKey}
             onChange={(e) => setPrivateKey(e.target.value)}
@@ -240,6 +269,7 @@ function PollDisplay() {
                 Yes
               </Button>
               <Button
+                mb={3}
                 size="md"
                 variant="outline"
                 isActive={noSelected}
@@ -249,7 +279,7 @@ function PollDisplay() {
                 No
               </Button>
               <Button
-                mb={10}
+                mb={3}
                 ml={4}
                 disabled={account && (yesSelected || noSelected) && proofResponse == "" ? false : true}
                 onClick={handleGenProof}
@@ -261,7 +291,7 @@ function PollDisplay() {
                 Generate Proof
               </Button>
               <Button
-                mb={10}
+                mb={3}
                 ml={4}
                 disabled={account && proofResponse ? false : true}
                 onClick={handleSubmitVote}
@@ -274,9 +304,28 @@ function PollDisplay() {
               </Button>
             </Flex>
           </Center>
+          {yesVoteCount + noVoteCount > 0 ? (
+            <>
+              <Progress
+                colorScheme={"green"}
+                background={"red"}
+                height="10px"
+                rounded={"xl"}
+                mb={"1%"}
+                value={(100 * yesVoteCount) / (yesVoteCount + noVoteCount)}
+              />
+              <Text
+                color="gray.500"
+                fontWeight="semibold"
+                letterSpacing="wide"
+                fontSize="xs"
+                textTransform="uppercase"
+              >
+                Yes: {yesVoteCount} No: {noVoteCount}
+              </Text>
+            </>
+          ) : null}
           <Spacer />
-          <Center></Center>
-          <Center></Center>
         </GridItem>
       </Grid>
     </Card>
@@ -295,13 +344,13 @@ const StyledDiv = styled.div`
 
 export default function GeneratePoll() {
   return (
-    <div>
+    <>
       <Header />
       <Center>
         <StyledDiv>
           <PollDisplay />
         </StyledDiv>
       </Center>
-    </div>
+    </>
   );
 }
