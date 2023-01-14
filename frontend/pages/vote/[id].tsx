@@ -139,7 +139,9 @@ function PollDisplay() {
       setPoll(response);
       setPollLoaded(true);
     };
-    postData();
+    postData().then(
+      (res) => console.log("AFTER POST DATA: ", (yesSelected || noSelected), !invalidKey, poll.active ),
+    );
   }, [id, resultData, privateKey]);
 
   const handleGenProof = async (e: React.MouseEvent<HTMLButtonElement>) => {
