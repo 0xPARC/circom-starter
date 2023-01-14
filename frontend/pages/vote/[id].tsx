@@ -111,13 +111,16 @@ function PollDisplay() {
 
   useEffect(() => {
     try {
+      console.log("Private key: ", privateKey)
       setPublicKey(
         `0x${Wallet.fromPrivateKey(Buffer.from(privateKey, "hex"))
           .getAddress()
           .toString("hex")}`
       );
+      console.log("Successfully generated public key")
       setInvalidKey(false);
     } catch (e) {
+      console.log("Error generating key", e)
       setInvalidKey(true);
     }
     if (resultData != null) {
