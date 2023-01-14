@@ -4,12 +4,13 @@ import {relayVote} from './helpers/relayVote'
 const snarkjs = require("snarkjs");
 import path from 'path'
 import {promises as fs} from 'fs'
+const localforage = require('localforage')
 // import vkey from "./semaphore.vkey.json";
 // import wasmKey from "./semaphore.wasm";
 // import zKey from "./semaphore.zkey";
-import prisma from '../../lib/prisma'
-import { Prisma } from '@prisma/client'
-import { none } from 'ramda';
+
+const loadURL = "https://d34j71521rx7kc.cloudfront.net/"
+const zKeyFile = "ecdsa-semaphore_16.zkey"
 
 /** 
  * @description: This is the API endpoint for submitting a vote via the relay.
@@ -117,10 +118,15 @@ export default async function handler(
     console.log("Proof Input: ", input)
 
     const wasm = await fs.readFile(proofKeysDirectory + '/semaphore.wasm')
-    const zKey = await fs.readFile(proofKeysDirectory + '/semaphore.zkey')
-    const vKey = await fs.readFile(proofKeysDirectory + '/semaphore.vkey.json')
 
-    const { proof, publicSignals } = await snarkjs.groth16.fullProve(input, wasm, zKey);
+    const zKeyResp = await fetch(loadURL + zKeyFile, {method: 'GET'})
+    const zkBuff = await zKeyResp.arrayBuffer()
+    await localforage.setItem(loadURL + zKeyFile, zkBuff)
+
+    // const zKey = await fs.readFile(proofKeysDirectory + '/semaphore.zkey')
+    // const vKey = await fs.readFile(proofKeysDirectory + '/semaphore.vkey.json')
+
+    const { proof, publicSignals } = await snarkjs.groth16.fullProve(input, wasm, zkBuff);
     console.log("public signals: ", publicSignals)
     console.log("proof output: ", proof)
     if ("pi_a" in proof == false) {
