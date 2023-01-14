@@ -25,6 +25,7 @@
     "dotenv": "^16.0.3",
     "eslint": "8.31.0",
     "eslint-config-next": "13.1.1",
+    "ethereumjs-wallet": "^1.0.2",
     "ethers": "^5.7.2",
     "framer-motion": "^6.5.1",
     "keccak256": "^1.0.6",
