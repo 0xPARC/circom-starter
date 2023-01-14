@@ -44,7 +44,6 @@ export default function Header() {
           <HStack justify="space-between">
             {/* <Logo /> */}
             <HStack justify="space-between">
-              {isDesktop ? (
                 <Flex justify="space-between" flex="1">
                   <ButtonGroup variant="link" spacing="8">
                     {[0, 1].map((pageIndex) => (
@@ -57,13 +56,12 @@ export default function Header() {
                     ))}
                   </ButtonGroup>
                 </Flex>
-              ) : (
-                <IconButton
+                {/* <IconButton
                   variant="ghost"
                   icon={<FiMenu fontSize="1.25rem" />}
                   aria-label="Open Menu"
-                />
-              )}
+                  
+                /> */}
             </HStack>
             <HStack alignContent={'center'}>
             {/* <img src='https://i.imgur.com/okZ0qOy.png' width={40} alt="ZKPoll"/> */}
