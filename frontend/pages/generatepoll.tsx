@@ -3,6 +3,7 @@ import styles from "../styles/Home.module.css";
 import { useState } from "react";
 import Header from "../components/header";
 import testABI from "../components/abi/test.json";
+import { generatePollinDB } from "../components/generatePoll";
 import { getAccount } from "@wagmi/core";
 import {
   Grid,
@@ -81,31 +82,30 @@ export default function GeneratePoll() {
   const postData = async (addressesArr: string[]) => {
     let setDeadline;
     setDeadline = Date.now() + 3600 * 1000 * duration;
-    const body = {
-      data: {
-        title: title,
-        addresses: addressesArr,
-        description: description,
-        groupDescription: groupDescription,
-        createdAt: Date.now(),
-        deadline: setDeadline,
-      },
-    };
+    // const body = {
+    //   data: {
+    //     title: title,
+    //     addresses: addressesArr,
+    //     description: description,
+    //     groupDescription: groupDescription,
+    //     createdAt: Date.now(),
+    //     deadline: setDeadline,
+    //   },
+    // };
 
-    const response = await fetch("/api/generatePoll", {
-      method: "POST",
-      body: JSON.stringify(body),
-    });
-    console.log(response);
-    if (response.status === 200) {
-      const temp = await response.json();
-      console.log("Success! ", temp);
-      myResponse = temp;
-      return myResponse.pollId;
-      // return temp;
-    } else {
-      console.warn("Server returned error status: " + response.status);
-    }
+    const dbOutput = await generatePollinDB(title, addressesArr, description, groupDescription, Date.now(), setDeadline);
+    console.log("In pages: ", dbOutput)
+    return dbOutput
+    // console.log(response);
+    // if (response.status === 200) {
+    //   const temp = await response.json();
+    //   console.log("Success! ", temp);
+    //   myResponse = temp;
+    //   return myResponse.pollId;
+    //   // return temp;
+    // } else {
+    //   console.warn("Server returned error status: " + response.status);
+    // }
   };
 
   async function handleSubmit(
@@ -115,16 +115,18 @@ export default function GeneratePoll() {
     setDbLoading(true);
     e.preventDefault();
 
-    const pollId = await postData(addressesArr);
-
+    const responseArr = await postData(addressesArr);
+    // console.log(responseArr)
+    // const pollId = responseArr[1];
+    // const rootHash = responseArr[0];
     setDbLoading(false);
-    console.log("OK ROOT HASH", myResponse.rootHash);
+    console.log("OK ROOT HASH", responseArr.rootHash);
     setContractLoading(true);
     const tx = await contract?.createPoll(
       // 1,
-      pollId,
+      responseArr.pollId,
       account.address,
-      myResponse.rootHash,
+      responseArr.rootHash,
       16
     );
     const response = await tx.wait();
