@@ -1,4 +1,4 @@
-import { getDefaultWallets, RainbowKitProvider } from '@rainbow-me/rainbowkit'
+import { getDefaultWallets, RainbowKitProvider, midnightTheme } from '@rainbow-me/rainbowkit'
 import '@rainbow-me/rainbowkit/styles.css'
 import type { AppProps } from 'next/app'
 import { configureChains, createClient, WagmiConfig } from 'wagmi'
@@ -40,7 +40,7 @@ function MyApp({ Component, pageProps }: AppProps) {
     </Head>
     <ChakraProvider theme={theme}>
       <WagmiConfig client={wagmiClient}>
-        <RainbowKitProvider chains={chains}>
+        <RainbowKitProvider chains={chains} theme={midnightTheme()} coolMode>
           <Component {...pageProps} />
         </RainbowKitProvider>
       </WagmiConfig>

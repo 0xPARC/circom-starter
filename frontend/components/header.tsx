@@ -16,6 +16,7 @@ import { FiMenu } from 'react-icons/fi'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { useRouter } from 'next/router'
 import { DarkModeSwitch } from 'react-toggle-dark-mode'
+import { CustomConnect } from './CustomConnectButton'
 
 export default function Header() {
   const isDesktop = useBreakpointValue({ base: false, lg: true })
@@ -67,7 +68,8 @@ export default function Header() {
             <HStack verticalAlign={'top'}>
 
             <HStack ml={4} mr={4}>
-              <ConnectButton />
+              {/* <ConnectButton /> */}
+              <CustomConnect/>
             </HStack>
             <DarkModeSwitch
               style={{ marginRight: '2', marginTop: '0' }}
