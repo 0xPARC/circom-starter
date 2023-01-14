@@ -53,7 +53,7 @@ function PollCard({ poll }: { poll: IPoll }) {
                 '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu'
               }
             >
-              POLL ID {poll.id} | {poll.createdAt}
+              DEADLINE: {poll.deadline.toLocaleString()}
             </Text>
             <Spacer />
             {poll.active ? (

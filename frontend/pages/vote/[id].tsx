@@ -249,8 +249,7 @@ function PollDisplay() {
                       "extra extra"
                       `}
             gridTemplateRows={"8% 2em 16% 90%"}
-            gridTemplateColumns={"95% 2em "}
-            // h='150%'
+            gridTemplateColumns={"95% 2em ="}
             gap="1"
             padding={4}
             marginTop={4}
@@ -266,7 +265,7 @@ function PollDisplay() {
                     '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu'
                   }
                 >
-                  POLL ID {poll.id} | {poll.createdAt}
+                  DEADLINE: {poll.deadline.toLocaleString()}
                 </Text>
                 <Spacer />
                 {poll.active ? (
@@ -330,95 +329,103 @@ function PollDisplay() {
                   </Text>
                 </>
               ) : null}
-              <Spacer margin={6} />
-              <Spacer />
-              <Input
-                mr={4}
-                mb={6}
-                placeholder="Private Key"
-                value={privateKey}
-                onChange={(e) => setPrivateKey(e.target.value)}
-                focusBorderColor={"#C4A7FF"}
-              />
-              <Center>
-                <Flex>
-                  <Button
-                    size="md"
-                    variant="outline"
-                    isActive={yesSelected}
-                    colorScheme="green"
-                    mr={4}
-                    onClick={handleClick}
-                  >
-                    Yes
-                  </Button>
-                  <Button
-                    size="md"
-                    variant="outline"
-                    isActive={noSelected}
-                    colorScheme="red"
-                    onClick={handleClick}
-                  >
-                    No
-                  </Button>
-                  <Button
-                    ml={4}
-                    disabled={
-                      account && (yesSelected || noSelected) && !invalidKey
-                        ? false
-                        : true
-                    }
-                    onClick={handleGenProof}
-                    loadingText="Generating Proof"
-                    isLoading={loadingProof}
-                    colorScheme="teal"
-                    variant="outline"
-                  >
-                    Generate Proof
-                  </Button>
-                  <Button
-                    ml={4}
-                    disabled={
-                      account && proofResponse && !invalidKey ? false : true
-                    }
-                    onClick={handleSubmitVote}
-                    loadingText="Submitting Vote"
-                    isLoading={loadingSubmitVote}
-                    colorScheme="teal"
-                    variant="outline"
-                  >
-                    Submit Vote
-                  </Button>
-                </Flex>
-              </Center>
-              {proofResponse == "" ? null : (
+              {poll.active ? (
                 <>
-                  <Text
-                    onClick={onOpen}
-                    fontSize="xs"
-                    mt={3}
-                    textAlign={"center"}
-                  >
-                    ↗ Inspect ZK Proof
-                  </Text>
+                  <Spacer margin={6} />
+                  <Spacer />
+                  <Input
+                    mr={4}
+                    mb={6}
+                    placeholder="Private Key"
+                    value={privateKey}
+                    onChange={(e) => setPrivateKey(e.target.value)}
+                    focusBorderColor={"#C4A7FF"}
+                  />
+                  <Center>
+                    <Flex>
+                      <Button
+                        size="md"
+                        variant="outline"
+                        isActive={yesSelected}
+                        colorScheme="green"
+                        mr={4}
+                        onClick={handleClick}
+                      >
+                        Yes
+                      </Button>
+                      <Button
+                        size="md"
+                        variant="outline"
+                        isActive={noSelected}
+                        colorScheme="red"
+                        onClick={handleClick}
+                      >
+                        No
+                      </Button>
+                      <Button
+                        ml={4}
+                        disabled={
+                          account && (yesSelected || noSelected) && !invalidKey
+                            ? false
+                            : true
+                        }
+                        onClick={handleGenProof}
+                        loadingText="Generating Proof"
+                        isLoading={loadingProof}
+                        colorScheme="teal"
+                        variant="outline"
+                      >
+                        Generate Proof
+                      </Button>
+                      <Button
+                        ml={4}
+                        disabled={
+                          account && proofResponse && !invalidKey ? false : true
+                        }
+                        onClick={handleSubmitVote}
+                        loadingText="Submitting Vote"
+                        isLoading={loadingSubmitVote}
+                        colorScheme="teal"
+                        variant="outline"
+                      >
+                        Submit Vote
+                      </Button>
+                    </Flex>
+                  </Center>
+                  {proofResponse == "" ? null : (
+                    <>
+                      <Text
+                        onClick={onOpen}
+                        fontSize="xs"
+                        mt={3}
+                        textAlign={"center"}
+                      >
+                        ↗ Inspect ZK Proof
+                      </Text>
 
-                  <Modal isOpen={isOpen} onClose={onClose}>
-                    <ModalOverlay />
-                    <ModalContent>
-                      <ModalHeader>ZKP of Vote</ModalHeader>
-                      <ModalCloseButton />
-                      <ModalBody>{JSON.stringify(proofResponse)}</ModalBody>
+                      <Modal isOpen={isOpen} onClose={onClose}>
+                        <ModalOverlay />
+                        <ModalContent>
+                          <ModalHeader>ZKP of Vote</ModalHeader>
+                          <ModalCloseButton />
+                          <ModalBody>{JSON.stringify(proofResponse)}</ModalBody>
 
-                      <ModalFooter>
-                        <Button colorScheme="purple" mr={3} onClick={onClose}>
-                          Close
-                        </Button>
-                      </ModalFooter>
-                    </ModalContent>
-                  </Modal>
+                          <ModalFooter>
+                            <Button
+                              colorScheme="purple"
+                              mr={3}
+                              onClick={onClose}
+                            >
+                              Close
+                            </Button>
+                          </ModalFooter>
+                        </ModalContent>
+                      </Modal>
+                    </>
+                  )}
+                  <Spacer />
                 </>
-              )}
-              <Spacer />
+              ) : null}
             </GridItem>
           </Grid>
         </Card>
