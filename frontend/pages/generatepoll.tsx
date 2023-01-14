@@ -217,9 +217,10 @@ export default function GeneratePoll() {
                   onClick={(e) => handleSubmit(e, addresses)}
                   backgroundColor={"#8f00ff"}
                   _hover={{ backgroundColor: "#5b0a91" }}
+                  color={"white"}
                   disabled={!account.isConnected}
                   >
-                  Submit
+                  Generate
                 </Button>
               </FormControl>
             </CardBody>
