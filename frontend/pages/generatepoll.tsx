@@ -79,15 +79,8 @@ export default function GeneratePoll() {
   };
 
   const postData = async (addressesArr: string[]) => {
-    // Convert to
-    console.log("Post addresses", addresses);
     let setDeadline;
-    if (duration === undefined) {
-      setDeadline = Date.now() + 3600 * 1000 * 24;
-    } else {
-      setDeadline = Date.now() + 3600 * 1000 * duration;
-    }
-    // setDeadline = Date.now() + (duration ? 3600*1000*24: 3600*1000*duration!)
+    setDeadline = Date.now() + 3600 * 1000 * duration;
     const body = {
       data: {
         title: title,
@@ -204,8 +197,8 @@ export default function GeneratePoll() {
                   onChange={(e) => splitAddresses(e.target.value)}
                   focusBorderColor={"#9B72F2"}
                 />
-                <Grid templateColumns="repeat(7, 1fr)" gap={3} ml={1}>
-                  <GridItem colSpan={5} w="100%" h="10">
+                <Grid templateColumns="repeat(10, 1fr)" gap={3} ml={1}>
+                  <GridItem colSpan={7} w="100%" h="10">
                     {" "}
                     <Slider
                       id="slider"
@@ -233,10 +226,8 @@ export default function GeneratePoll() {
                       </Tooltip>
                     </Slider>
                   </GridItem>
-                  <GridItem colSpan={2} w="100%" h="10" mt={3}>
-                      <Text fontSize={"2xl"} fontWeight="700" color={"darkGray"}>
-                      {"Duration: " + duration + " hours"}
-                    </Text>
+                  <GridItem colSpan={3} w="100%" h="10" mt={1}>
+                  {"Duration: " + duration + " hr"}
                   </GridItem>
                 </Grid>
                 <Button
