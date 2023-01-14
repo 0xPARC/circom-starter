@@ -2,7 +2,7 @@ module.exports = [
     [
         {
         merkleTreeDepth: 16,
-        contractAddress: "0x447ed1FBa7BAB926bd5fcce7520cB9a4C04023Ef",
+        contractAddress: "0xfAFC69D0D7B9E1259e92295F5CAF71b51C5d5e9B",
         }
     ]
 ];

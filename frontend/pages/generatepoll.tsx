@@ -3,20 +3,22 @@ import styles from "../styles/Home.module.css";
 import { useState } from "react";
 import Header from "../components/header";
 import testABI from "../components/abi/test.json";
+import { generatePollinDB } from "../components/generatePoll";
 import { getAccount } from "@wagmi/core";
-import { useToast } from "@chakra-ui/react";
 import {
-  FormControl,
-  Input,
-  Button,
-  Heading,
+  Grid,
+  GridItem,
+  Slider,
+  SliderFilledTrack,
+  SliderThumb,
+  SliderTrack,
+  Tooltip,
+  useToast,
+  Text,
 } from "@chakra-ui/react";
+import { FormControl, Input, Button, Heading } from "@chakra-ui/react";
 import { Card, CardBody } from "@chakra-ui/react";
-import {
-  useContract,
-  useSigner,
-  useWaitForTransaction,
-} from "wagmi";
+import { useContract, useSigner, useWaitForTransaction } from "wagmi";
 
 interface FormValues {
   title: string;
@@ -49,7 +51,7 @@ export default function GeneratePoll() {
   const [addresses, setAddresses] = useState<string[]>([]);
   const [description, setDescription] = useState<string>("");
   const [groupDescription, setGroupDescription] = useState<string>("");
-  const [duration, setDuration] = useState<number>();
+  const [duration, setDuration] = useState<number>(5);
   const [tempAddresses, setTempAddresses] = useState<string>("");
   // const [pollId, setPollId] = useState<number>(1);
   const account = getAccount();
@@ -58,6 +60,8 @@ export default function GeneratePoll() {
   const { data: signer } = useSigner();
   const toast = useToast();
   const [currHash, setHash] = useState();
+  const [showTooltip, setShowTooltip] = React.useState(false);
+
   const { data, isError, isLoading } = useWaitForTransaction({
     hash: currHash,
   });
@@ -73,59 +77,56 @@ export default function GeneratePoll() {
     if (split) {
       setAddresses(split);
     }
-
   };
+
   const postData = async (addressesArr: string[]) => {
-    // Convert to 
-    console.log("Post addresses", addresses)
     let setDeadline;
-    if (duration === undefined) {
-      setDeadline = Date.now() + 3600*1000*24
-    } else {
-      setDeadline = Date.now() + 3600*1000*duration
-    }
-    // setDeadline = Date.now() + (duration ? 3600*1000*24: 3600*1000*duration!)
-    const body = {
-      data: {
-        title: title,
-        addresses: addressesArr,
-        description: description,
-        groupDescription: groupDescription,
-        createdAt: Date.now(),
-        deadline: setDeadline,
-      },
-    };
+    setDeadline = Date.now() + 3600 * 1000 * duration;
+    // const body = {
+    //   data: {
+    //     title: title,
+    //     addresses: addressesArr,
+    //     description: description,
+    //     groupDescription: groupDescription,
+    //     createdAt: Date.now(),
+    //     deadline: setDeadline,
+    //   },
+    // };
 
-    const response = await fetch("/api/generatePoll", {
-      method: "POST",
-      body: JSON.stringify(body),
-    });
-    console.log(response);
-    if (response.status === 200) {
-      const temp = await response.json();
-      console.log('Success! ', temp)
-      myResponse = temp;
-      return myResponse.pollId;
-      // return temp;
-    } else {
-      console.warn("Server returned error status: " + response.status);
-    }
+    const dbOutput = await generatePollinDB(title, addressesArr, description, groupDescription, Date.now(), setDeadline);
+    console.log("In pages: ", dbOutput)
+    return dbOutput
+    // console.log(response);
+    // if (response.status === 200) {
+    //   const temp = await response.json();
+    //   console.log("Success! ", temp);
+    //   myResponse = temp;
+    //   return myResponse.pollId;
+    //   // return temp;
+    // } else {
+    //   console.warn("Server returned error status: " + response.status);
+    // }
   };
 
-  async function handleSubmit(e: { preventDefault: () => void }, addressesArr: string[]) {
+  async function handleSubmit(
+    e: { preventDefault: () => void },
+    addressesArr: string[]
+  ) {
     setDbLoading(true);
     e.preventDefault();
 
-    const pollId = await postData(addressesArr)
-
+    const responseArr = await postData(addressesArr);
+    // console.log(responseArr)
+    // const pollId = responseArr[1];
+    // const rootHash = responseArr[0];
     setDbLoading(false);
-    console.log("OK ROOT HASH", myResponse.rootHash);
+    console.log("OK ROOT HASH", responseArr.rootHash);
     setContractLoading(true);
     const tx = await contract?.createPoll(
       // 1,
-      pollId,
+      responseArr.pollId,
       account.address,
-      myResponse.rootHash,
+      responseArr.rootHash,
       16
     );
     const response = await tx.wait();
@@ -139,8 +140,8 @@ export default function GeneratePoll() {
         duration: 5000,
         isClosable: true,
         containerStyle: {
-          width: '700px',
-          maxWidth: '90%',
+          width: "700px",
+          maxWidth: "90%",
         },
       });
     } else {
@@ -151,24 +152,20 @@ export default function GeneratePoll() {
         duration: 5000,
         isClosable: true,
         containerStyle: {
-          width: '700px',
-          maxWidth: '90%',
+          width: "700px",
+          maxWidth: "90%",
         },
       });
     }
     setContractLoading(false);
     console.log(`Transaction response: `, response);
-
   }
 
   return (
-    <>
+    <div className={styles.container}>
       <Header />
       <div className={styles.container}>
         <main className={styles.main}>
-          <Heading as="h1" size="xl">
-            Generate a Poll
-          </Heading>
           <Card variant={"elevated"} style={{ width: "40%", marginTop: "1%" }}>
             <CardBody>
               <FormControl
@@ -179,27 +176,59 @@ export default function GeneratePoll() {
                   placeholder="Title"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
+                  focusBorderColor={"#9B72F2"}
                 />
                 <Input
                   placeholder="Additional Description"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
+                  focusBorderColor={"#9B72F2"}
                 />
                 <Input
                   placeholder="Group Description"
                   value={groupDescription}
                   onChange={(e) => setGroupDescription(e.target.value)}
-                />
-                <Input
-                  placeholder="Duration (Hours)"
-                  value={duration}
-                  onChange={(e) => setDuration(Number(e.target.value))}
+                  focusBorderColor={"#9B72F2"}
                 />
                 <Input
                   placeholder="Public Addresses"
                   value={tempAddresses}
-                  onChange={(e) =>  splitAddresses(e.target.value)}
+                  onChange={(e) => splitAddresses(e.target.value)}
+                  focusBorderColor={"#9B72F2"}
                 />
+                <Grid templateColumns="repeat(10, 1fr)" gap={3} ml={1}>
+                  <GridItem colSpan={7} w="100%" h="10">
+                    {" "}
+                    <Slider
+                      id="slider"
+                      defaultValue={5}
+                      min={0}
+                      max={24}
+                      mt={3}
+                      colorScheme="purple"
+                      onChange={(v) => setDuration(v)}
+                      onMouseEnter={() => setShowTooltip(true)}
+                      onMouseLeave={() => setShowTooltip(false)}
+                    >
+                      <SliderTrack>
+                        <SliderFilledTrack />
+                      </SliderTrack>
+                      <Tooltip
+                        hasArrow
+                        bg="#9B72F2"
+                        color="white"
+                        placement="top"
+                        isOpen={showTooltip}
+                        label={duration}
+                      >
+                        <SliderThumb />
+                      </Tooltip>
+                    </Slider>
+                  </GridItem>
+                  <GridItem colSpan={3} w="100%" h="10" mt={1}>
+                  {"Duration: " + duration + " hr"}
+                  </GridItem>
+                </Grid>
                 <Button
                   type="submit"
                   size="md"
@@ -208,16 +237,19 @@ export default function GeneratePoll() {
                   loadingText={
                     dbLoading ? "Generating merkle root" : "Submitting poll"
                   }
-                  style={{marginTop: "2%"}}
                   onClick={(e) => handleSubmit(e, addresses)}
-                  >
-                  Submit
+                  backgroundColor={"#8f00ff"}
+                  _hover={{ backgroundColor: "#5b0a91" }}
+                  color={"white"}
+                  disabled={!account.isConnected}
+                >
+                  Generate
                 </Button>
               </FormControl>
             </CardBody>
           </Card>
         </main>
       </div>
-    </>
+    </div>
   );
 }

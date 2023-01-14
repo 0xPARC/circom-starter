@@ -2,6 +2,9 @@
 # environment variables
 .env
 
+# zkey
+/proofKeys/ecdsa-semaphore.zkey
+
 # dependencies
 /node_modules
 /.pnp

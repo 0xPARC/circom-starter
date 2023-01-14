@@ -1,35 +1,54 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import type { NextApiRequest, NextApiResponse } from 'next'
-import {relayVote} from './helpers/relayVote'
+import type { NextApiRequest, NextApiResponse } from "next";
+import { relayVote } from "./helpers/relayVote";
 const snarkjs = require("snarkjs");
 import path from 'path'
 import {promises as fs} from 'fs'
+const localforage = require('localforage')
 // import vkey from "./semaphore.vkey.json";
 // import wasmKey from "./semaphore.wasm";
 // import zKey from "./semaphore.zkey";
-import prisma from '../../lib/prisma'
-import { Prisma } from '@prisma/client'
-import { none } from 'ramda';
 
-/** 
+const loadURL = "https://d34j71521rx7kc.cloudfront.net/"
+const zKeyFile = "ecdsa-semaphore_16.zkey"
+
+/**
  * @description: This is the API endpoint for submitting a vote via the relay.
  */
 
 type Data = {
-    name: string
-    proofForTx: string[]
-    nullifierHash: string
-}
+  name: string;
+  proofForTx: string[];
+  nullifierHash: string;
+};
 
 type Proof = {
-    pi_a: string[]
-    pi_b: string[]
-    pi_c: string[]
-    protocol: string
-    curve: string
-}
+  pi_a: string[];
+  pi_b: string[];
+  pi_c: string[];
+  protocol: string;
+  curve: string;
+};
 
-/** 
+const splitPrivateKey = (bigint_identityNullifier: bigint) => {
+  const shift = BigInt(2 ** 64);
+  const shift2 = shift * shift;
+  const shift3 = shift2 * shift;
+
+  const chunk1 = bigint_identityNullifier % shift;
+  const chunk2 = ((bigint_identityNullifier - chunk1) / shift) % shift;
+  const chunk3 =
+    ((bigint_identityNullifier - chunk1 - chunk2 * shift) / shift2) % shift;
+  const chunk4 =
+    ((bigint_identityNullifier - chunk1 - chunk2 * shift - chunk3 * shift2) /
+      shift3) %
+    shift;
+
+  let chunks = [chunk1, chunk2, chunk3, chunk4];
+  return chunks;
+};
+
+/**
  * @function: handler
  * @description: This is the handler for the API endpoint.
  * @param {string} req.body.data.identityNullifier - The identity nullifier (private key) for proof.
@@ -98,56 +117,66 @@ export default async function handler(
         signalHash = data.signalHash
     }
 
-    const input = {
-        identityNullifier: identityNullifier,
-        identityTrapdoor: "0",
-        treePathIndices: treePathIndices,
-        treeSiblings: treeSiblings,
-        signalHash: signalHash,
-        externalNullifier: externalNullifier
-    }
-
-    // const path = __dirname
-    // const wasmPath = "./semaphore.wasm";
-    // const zkeyPath = "./semaphore.zkey";
-    // const vkeyPath = "./semaphore.vkey.json";
-
-    const proofKeysDirectory = path.join(process.cwd(), 'proofKeys')
-
-    console.log("Proof Input: ", input)
-
-    const wasm = await fs.readFile(proofKeysDirectory + '/semaphore.wasm')
-    const zKey = await fs.readFile(proofKeysDirectory + '/semaphore.zkey')
-    const vKey = await fs.readFile(proofKeysDirectory + '/semaphore.vkey.json')
-
-    const { proof, publicSignals } = await snarkjs.groth16.fullProve(input, wasm, zKey);
-    console.log("public signals: ", publicSignals)
-    console.log("proof output: ", proof)
-    if ("pi_a" in proof == false) {
-        res.status(400).json({
-            name: "Proof not generated", proofForTx: [], nullifierHash: ""
+    const bigIntIdentityNullifier = BigInt(identityNullifier)
+    let splitIdentityNullifier;
+    if (typeof(bigIntIdentityNullifier) == "bigint") {
+        splitIdentityNullifier = splitPrivateKey(BigInt(identityNullifier));
+    } else {
+        res.status(200).json({
+            name: "Not a valid identity nullifier", proofForTx: [], nullifierHash: ""
         })
     }
-    const proofForTx = [
-        proof.pi_a[0],
-        proof.pi_a[1],
-        proof.pi_b[0][1],
-        proof.pi_b[0][0],
-        proof.pi_b[1][1],
-        proof.pi_b[1][0],
-        proof.pi_c[0],
-        proof.pi_c[1],
-      ];
 
-    return res.status(200).json({ name: "Voted!", proofForTx: proofForTx, nullifierHash: publicSignals[1]})
+    const input = {
+    identityNullifier: identityNullifier,
+    splitIdentityNullifier: splitIdentityNullifier,
+    treePathIndices: treePathIndices,
+    treeSiblings: treeSiblings,
+    signalHash: signalHash,
+    externalNullifier: externalNullifier,
+  };
 
+  const proofKeysDirectory = path.join(process.cwd(), "proofKeys");
+
+  console.log("Proof Input: ", input);
+
+  const wasm = await fs.readFile(proofKeysDirectory + "/ecdsa-semaphore.wasm");
+  const zKey = await fs.readFile(proofKeysDirectory + "/ecdsa-semaphore.zkey");
+  const vKey = await fs.readFile(
+    proofKeysDirectory + "/ecdsa-semaphore.vkey.json"
+  );
+
+  const { proof, publicSignals } = await snarkjs.groth16.fullProve(
+    input,
+    wasm,
+    zKey
+  );
+  console.log("public signals: ", publicSignals);
+  console.log("proof output: ", proof);
+  if ("pi_a" in proof == false) {
+    res.status(400).json({
+      name: "Proof not generated",
+      proofForTx: [],
+      nullifierHash: "",
+    });
+  }
+  const proofForTx = [
+    proof.pi_a[0],
+    proof.pi_a[1],
+    proof.pi_b[0][1],
+    proof.pi_b[0][0],
+    proof.pi_b[1][1],
+    proof.pi_b[1][0],
+    proof.pi_c[0],
+    proof.pi_c[1],
+  ];
+
+  return res
+    .status(200)
+    .json({
+      name: "Voted!",
+      proofForTx: proofForTx,
+      nullifierHash: publicSignals[1],
+    });
 }
-//   if (outputData.isValidPollId == false) {
-//     return res.status(400).json({ name: "invalid poll id", inTree: false, pollId: pollId })
-//   } else {
-//     if (outputData.inTree == true) {
-//       return res.status(200).json({ name: "address in tree", inTree: true, pollId: pollId })
-//     } else {
-//       return res.status(200).json({ name: "address not in tree", inTree: false, pollId: pollId })
-//     }
-//   }
+
