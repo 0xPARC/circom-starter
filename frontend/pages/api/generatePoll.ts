@@ -5,7 +5,6 @@
 */
 
 import type { NextApiRequest, NextApiResponse } from 'next'
-import {storePoll} from './helpers/merkle'
 import prisma from '../../lib/prisma'
 import { Prisma } from '@prisma/client'
 
@@ -13,8 +12,6 @@ type Data = {
   name: string
   rootHash: string
   pollId: number
-  title: string
-  deadline: number
 }
 
 /** 
@@ -33,64 +30,39 @@ export default async function handler(
 ) {
   if (req.method !== 'POST') {
     res.status(405).json({
-      name: "POST endpoint!", rootHash: "", pollId: -1, title: "", deadline: -1
+      name: "POST endpoint!", rootHash: "", pollId: -1
     })
   }
-  if (typeof req.body == 'string') {
-    var body = JSON.parse(req.body)
-  } else {
-    var body = req.body
-  }
-  if ("data" in body == false) {
-    res.status(400).json({
-      name: "No data!", rootHash: "", pollId: -1, title: "", deadline: -1
-    })
-  }
-  var data = body.data
+  var body = req.body
+  // console.log("Generating poll: ", req.body)
 
 
-  var title, description, groupDescription, createdAt, deadline, addresses
+  var title, description, groupDescription, createdAt, deadline, addresses, rootString
+  title = body.title
+  description = body.description
+  groupDescription = body.groupDescription
+  createdAt = body.createdAt
+  deadline = body.deadline
+  addresses = body.addresses
+  rootString = body.rootHash
 
-  // Required fields!
-  if ("title" in data == false) {
-    res.status(400).json({
-      name: "Add a title!", rootHash: "", pollId: -1, title: "", deadline: -1
-    })
-  } else {
-    title = data.title
-  }
-  if ("addresses" in data == false) {
-    res.status(400).json({
-      name: "Must have some addresses!", rootHash: "", pollId: -1, title: "", deadline: -1
-    })
-  } else {
-    addresses = data.addresses
-  }
 
-  if ("description" in data == false) {
-    description = ""
-  } else {
-    description = data.description
-  }
-  if ("groupDescription" in data == false) {
-    groupDescription = ""
-  } else {
-    groupDescription = data.groupDescription
-  }
-  if ("createdAt" in data == false) {
-    createdAt = Date.now()
-  } else {
-    createdAt = data.createdAt
-  }
-  if ("deadline" in data == false) {
-    // Fix: Set time to 1 hour from now
-    var myDate = new Date(Date.now() + 100*3600*24)
-    deadline = myDate.getTime()
-  } else {
-    deadline = data.deadline
-  }
-
-  var pollData = await storePoll(title, description, groupDescription, createdAt, deadline, addresses)
+  var poll = await prisma.poll.create({
+    data : {
+        title: title,
+        description: description,
+        groupDescription: groupDescription,
+        createdAt: new Date(createdAt),
+        deadline: new Date(deadline),
+        tree: {
+            create: {
+                rootHash: rootString,
+                leaves: addresses,
+            }
+            
+        }
+    }
+  })
   
-  res.status(200).json({ name: "Success!", rootHash: pollData.rootHash, pollId: pollData.pollId, title: title, deadline: deadline })
+  res.status(200).json({ name: "Success!", rootHash: rootString, pollId: poll.id })
 }

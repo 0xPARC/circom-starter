@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getSiblingsAndPathIndices } from "./merkle";
 // const snarkjs = require("snarkjs");
 // TODO: Change the storage of the Merkle Tree to an S3 Bucket
 
@@ -25,22 +26,17 @@ const splitPrivateKey = (bigint_identityNullifier: bigint) => {
 async function generateProof(identityNullifier: string, publicKey: string, vote: number, pollId: number) {
     console.log("Generating Proof")
     console.log("Address: ", publicKey)
-    const response = await axios.post("/api/getSiblings", {
-        data: {
-            address: publicKey,
-            pollId: pollId
-        }
-    })
+    const response = await getSiblingsAndPathIndices(publicKey, pollId);
 
-    if (response.data.name == "invalid poll id") {
-            return ["There is no poll corresponding to this poll ID.", [], ""]
-    } else if (response.data.name == "invalid address for poll") {
-        return ["This address is not eligible for this poll.", [], ""]
-    }
+    // if (response.data.name == "invalid poll id") {
+    //         return ["There is no poll corresponding to this poll ID.", [], ""]
+    // } else if (response.data.name == "invalid address for poll") {
+    //     return ["This address is not eligible for this poll.", [], ""]
+    // }
     
 
-    const siblings = response.data.siblings;
-    const pathIndices = response.data.pathIndices;
+    const siblings = response.siblings
+    const pathIndices = response.pathIndices
 
     const splitIdentityNullifier = splitPrivateKey(BigInt(identityNullifier));
 

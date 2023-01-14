@@ -61,6 +61,8 @@ async function buildTreePoseidon(
     leaves = leaves.map(BigInt);
     leaves.sort();
 
+    console.log("leaves map correctly!")
+
     // the equivalent of pathElements and pathIndices in merkle.circom
     const outputLeaves = leaves.filter((w: any) => w !== nullNode);
     // console.log(outputLeaves)
