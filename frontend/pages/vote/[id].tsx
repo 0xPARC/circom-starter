@@ -75,13 +75,8 @@ function PollDisplay() {
   const { data, isError, isLoading } = useWaitForTransaction({
     hash: `0x${txHash}`,
   });
-<<<<<<< HEAD
   const [invalidKey, setInvalidKey] = useState<boolean>(false)
   const Wallet = require('ethereumjs-wallet')
-=======
-  const [invalidKey, setInvalidKey] = useState<boolean>(false);
-  const Wallet = require("ethereumjs-wallet");
->>>>>>> origin
 
   const {
     data: resultData,
