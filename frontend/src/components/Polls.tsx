@@ -1,9 +1,18 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { Card, Button, Text, Grid, GridItem, FormControl, Center, Input } from "@chakra-ui/react";
+import {
+  Card,
+  Button,
+  Text,
+  Grid,
+  GridItem,
+  FormControl,
+  Center,
+  Input,
+  Spinner,
+} from "@chakra-ui/react";
 import { Flex, Spacer } from "@chakra-ui/react";
- import { CheckCircleIcon, TimeIcon } from "@chakra-ui/icons";
- import { debounce } from "lodash";
+import { debounce } from "lodash";
 
 interface IPoll {
   title: string;
@@ -22,7 +31,7 @@ function PollCard({ poll }: { poll: IPoll }) {
     <Card
       variant={"elevated"}
       margin={8}
-      _hover={{ backgroundColor: 'rgba(69, 72, 94, 0.2)' }}
+      _hover={{ backgroundColor: "rgba(69, 72, 94, 0.2)" }}
     >
       <Grid
         templateAreas={`"header header"
@@ -48,13 +57,28 @@ function PollCard({ poll }: { poll: IPoll }) {
             </Text>
             <Spacer />
             {poll.active ? (
-              <Button disabled={true} _disabled={{backgroundColor: "#651fff"}} _hover={{backgroundColor: "#651fff"}} size="xs" backgroundColor="#651fff" color={'white'}>
-              Active
-            </Button>
-          ) : (
-            <Button disabled={true} size="xs" _disabled={{backgroundColor: "#651fff"}} _hover={{backgroundColor: "#651fff"}} backgroundColor="#651fff" color={'white'} opacity={0.3}>
-              Complete
-            </Button>
+              <Button
+                disabled={true}
+                _disabled={{ backgroundColor: "#651fff" }}
+                _hover={{ backgroundColor: "#651fff" }}
+                size="xs"
+                backgroundColor="#651fff"
+                color={"white"}
+              >
+                Active
+              </Button>
+            ) : (
+              <Button
+                disabled={true}
+                size="xs"
+                _disabled={{ backgroundColor: "#651fff" }}
+                _hover={{ backgroundColor: "#651fff" }}
+                backgroundColor="#651fff"
+                color={"white"}
+                opacity={0.3}
+              >
+                Complete
+              </Button>
             )}
             <Spacer />
           </Flex>
@@ -77,10 +101,12 @@ export function Polls() {
   const [polls, setPolls] = useState<IPoll[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filteredPolls, setFilteredPolls] = useState<IPoll[]>([]);
-  // const [borderColor, setBorderColor] = useState("transparent");
+  const [isLoaded, setIsLoaded] = useState(false);
 
-
-  const debouncedSearchTerm = debounce((value: string) => setSearchTerm(value), 500);
+  const debouncedSearchTerm = debounce(
+    (value: string) => setSearchTerm(value),
+    500
+  );
 
   useEffect(() => {
     async function getPolls() {
@@ -92,6 +118,7 @@ export function Polls() {
         const temp = await response.json();
         setFilteredPolls(temp.polls);
         setPolls(temp.polls);
+        setIsLoaded(true);
       } else {
         console.warn("Server returned error status: " + response.status);
       }
@@ -107,49 +134,51 @@ export function Polls() {
     );
   }, [searchTerm]);
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    debouncedSearchTerm(searchTerm);
-  }
-
   return (
     <>
       <FormControl>
-       <Center>
-       <Input
-         placeholder="Search"
-         value={searchTerm}
-         mt={3}
-         style={{ width: '50%'}}
-         onChange={(e) => setSearchTerm(e.target.value)}
-          _hover={{borderColor:"#9B72F2", borderWidth: "1px"}}
-          focusBorderColor={"#9B72F2"}
-       />
-       </Center>
-       <Button
-         type="submit"
-         size="md"
-         colorScheme="blue"
-         style={{ display: 'none' }}
-         onClick={(e) => {
-           e.preventDefault();
-           debouncedSearchTerm(searchTerm);}}
-       >
-         Submit
-       </Button>
-     </FormControl>
+        <Center>
+          <Input
+            placeholder="Search"
+            value={searchTerm}
+            mt={3}
+            style={{ width: "50%" }}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            _hover={{ borderColor: "#9B72F2", borderWidth: "1px" }}
+            focusBorderColor={"#9B72F2"}
+          />
+        </Center>
+        <Button
+          type="submit"
+          size="md"
+          colorScheme="blue"
+          style={{ display: "none" }}
+          onClick={(e) => {
+            e.preventDefault();
+            debouncedSearchTerm(searchTerm);
+          }}
+        >
+          Submit
+        </Button>
+      </FormControl>
 
       <div>
-        {filteredPolls.map((p) => (
-          <Link
-            href={{
-              pathname: "/vote/" + p.id,
-              query: p.id.toString()
-            }}
-          >
-            <PollCard poll={p} key={p.id}/>
-          </Link>
-        ))}
+        {isLoaded ? (
+          <>
+            {filteredPolls.map((p) => (
+              <Link
+                href={{
+                  pathname: "/vote/" + p.id,
+                  query: p.id.toString(),
+                }}
+              >
+                <PollCard poll={p} key={p.id} />
+              </Link>
+            ))}
+          </>
+        ) : (
+          <Spinner mt= {"75px"} colorScheme="purple" />
+        )}
       </div>
     </>
   );
