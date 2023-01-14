@@ -1,5 +1,5 @@
 import type { NextPage } from 'next'
-import { Polls } from '../src/components/Polls'
+import { Polls } from './Polls'
 import styles from '../styles/Home.module.css'
 import Header from '../components/header'
 import { Heading } from '@chakra-ui/react'
