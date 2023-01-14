@@ -162,13 +162,10 @@ export default function GeneratePoll() {
   }
 
   return (
-    <>
+    <div className={styles.container}>
       <Header />
       <div className={styles.container}>
         <main className={styles.main}>
-          <Heading as="h1" size="xl">
-            Generate Poll
-          </Heading>
           <Card variant={"elevated"} style={{ width: "40%", marginTop: "1%" }}>
             <CardBody>
               <FormControl
@@ -253,6 +250,6 @@ export default function GeneratePoll() {
           </Card>
         </main>
       </div>
-    </>
+    </div>
   );
 }

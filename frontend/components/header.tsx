@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -6,86 +6,78 @@ import {
   Container,
   Flex,
   HStack,
-  IconButton,
   useBreakpointValue,
   useColorMode,
   useColorModeValue,
   Image,
-} from '@chakra-ui/react'
-import { FiMenu } from 'react-icons/fi'
-import { ConnectButton } from '@rainbow-me/rainbowkit'
-import { useRouter } from 'next/router'
-import { DarkModeSwitch } from 'react-toggle-dark-mode'
-import { CustomConnect } from './CustomConnectButton'
-
+  Heading,
+} from "@chakra-ui/react";
+import { useRouter } from "next/router";
+import { DarkModeSwitch } from "react-toggle-dark-mode";
+import { CustomConnect } from "./CustomConnectButton";
 
 export default function Header() {
-  const isDesktop = useBreakpointValue({ base: false, lg: true })
-  const router = useRouter()
-  const [isDarkMode, setDarkMode] = useState<boolean>(false)
+  const isDesktop = useBreakpointValue({ base: false, lg: true });
+  const router = useRouter();
+  const [isDarkMode, setDarkMode] = useState<boolean>(false);
   const toggleDarkMode = (checked: boolean) => {
-    setDarkMode(!checked)
-    toggleColorMode()
-  }
+    setDarkMode(!checked);
+    toggleColorMode();
+  };
 
-  const { colorMode, toggleColorMode } = useColorMode()
+  const { colorMode, toggleColorMode } = useColorMode();
 
-  let pages: string[] = ['Home', 'Generate Poll']
-  let paths: string[] = ['/', '/generatepoll']
+  let pages: string[] = ["Home", "Generate Poll"];
+  let paths: string[] = ["/", "/generatepoll"];
 
   return (
-    <Box as="section" pb={{ base: '12', md: '25' }}>
+    <Box as="section" pb={{ base: "12", md: "25" }}>
       <Box
         as="nav"
         bg="bg-surface"
-        boxShadow={useColorModeValue('sm', 'sm-dark')}
+        boxShadow={useColorModeValue("sm", "sm-dark")}
       >
-        <Container py={{ base: '4', lg: '5' }} maxWidth='90%'>
+        <Container py={{ base: "4", lg: "5" }} maxWidth="100%">
           <HStack justify="space-between">
-            {/* <Logo /> */}
             <HStack justify="space-between">
-              {isDesktop ? (
-                <Flex justify="space-between" flex="1">
-                  <ButtonGroup variant="link" spacing="8">
-                    {[0, 1].map((pageIndex) => (
-                      <Button
-                        key={pageIndex}
-                        onClick={() => router.push(paths[pageIndex])}
-                      >
-                        {pages[pageIndex]}
-                      </Button>
-                    ))}
-                  </ButtonGroup>
-                </Flex>
-              ) : (
-                <IconButton
-                  variant="ghost"
-                  icon={<FiMenu fontSize="1.25rem" />}
-                  aria-label="Open Menu"
-                />
-              )}
+              <Flex justify="space-between" flex="1">
+                <Box width={12} mr={5} mt={2}>
+                  <Image src="/zkpoll_logo.png" />
+                </Box>
+                <ButtonGroup variant="link" spacing="8">
+                  {[0, 1].map((pageIndex) => (
+                    <Button
+                      key={pageIndex}
+                      onClick={() => router.push(paths[pageIndex])}
+                    >
+                      {pages[pageIndex]}
+                    </Button>
+                  ))}
+                </ButtonGroup>
+              </Flex>
             </HStack>
-            <HStack alignContent={'center'}>
-            {/* <img src='https://i.imgur.com/okZ0qOy.png' width={40} alt="ZKPoll"/> */}
+            <HStack alignContent={"center"}>
+              <Heading as="h1" size="lg">
+                zkPoll
+              </Heading>
             </HStack>
-            <HStack verticalAlign={'top'}>
-
-            <HStack ml={4} mr={4}>
-              {/* <ConnectButton /> */}
-              <CustomConnect/>
-            </HStack>
-            <DarkModeSwitch
-              style={{ marginRight: '2', marginTop: '0' }}
-              checked={colorMode === 'light'}
-              onChange={toggleDarkMode}
-              size={30}
-              sunColor="white"
-              moonColor="black"
-            />
+            <HStack verticalAlign={"top"}>
+              <HStack ml={4} mr={4}>
+                {/* <ConnectButton /> */}
+                <CustomConnect />
+              </HStack>
+              <DarkModeSwitch
+                style={{ marginRight: "2", marginTop: "0" }}
+                checked={colorMode === "light"}
+                onChange={toggleDarkMode}
+                size={30}
+                sunColor="white"
+                moonColor="black"
+              />
             </HStack>
           </HStack>
         </Container>
       </Box>
     </Box>
-  )
+  );
 }
