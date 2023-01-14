@@ -93,6 +93,8 @@ function PollDisplay() {
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     setYesSelected(e.currentTarget.textContent === "Yes" ? true : false);
     setNoSelected(e.currentTarget.textContent === "No" ? true : false);
+    console.log("YES SELECTED | NO SELECTED ", e.currentTarget.textContent )
+    console.log("IS INVALID KEY", invalidKey)
   };
   const [pollLoaded, setPollLoaded] = useState(false);
   const [poll, setPoll] = useState<IPoll>({
@@ -140,7 +142,7 @@ function PollDisplay() {
       setPollLoaded(true);
     };
     postData().then(
-      (res) => console.log("AFTER POST DATA: ", (yesSelected || noSelected), !invalidKey, poll.active ),
+      (res) => console.log("AFTER POST DATA: ", (yesSelected || noSelected), invalidKey == false, poll.active ),
     );
   }, [id, resultData, privateKey]);
 
@@ -366,7 +368,7 @@ function PollDisplay() {
                   <Button
                     ml={4}
                     disabled={
-                      (yesSelected || noSelected) && !invalidKey && poll.active
+                      (yesSelected || noSelected) && invalidKey == false && poll.active
                         ? false
                         : true
                     }
@@ -381,7 +383,7 @@ function PollDisplay() {
                   <Button
                     ml={4}
                     disabled={
-                      proofResponse && !invalidKey && poll.active ? false : true
+                      proofResponse && invalidKey == false && poll.active ? false : true
                     }
                     onClick={handleSubmitVote}
                     loadingText="Submitting Vote"
