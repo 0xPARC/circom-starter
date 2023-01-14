@@ -28,6 +28,7 @@
     "ethers": "^5.7.2",
     "framer-motion": "^6.5.1",
     "keccak256": "^1.0.6",
+    "localforage": "^1.10.0",
     "merkletreejs": "^0.3.9",
     "next": "^13.1.1",
     "react": "^18.2.0",
