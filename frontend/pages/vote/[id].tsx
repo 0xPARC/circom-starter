@@ -329,103 +329,96 @@ function PollDisplay() {
                   </Text>
                 </>
               ) : null}
-              {poll.active ? (
-                <>
-                  <Spacer margin={6} />
-                  <Spacer />
-                  <Input
+
+              <Spacer margin={6} />
+              <Spacer />
+              <Input
+                mr={4}
+                mb={6}
+                placeholder="Private Key"
+                value={privateKey}
+                onChange={(e) => setPrivateKey(e.target.value)}
+                focusBorderColor={"#C4A7FF"}
+              />
+              <Center>
+                <Flex>
+                  <Button
+                    size="md"
+                    variant="outline"
+                    isActive={yesSelected}
+                    colorScheme="green"
                     mr={4}
-                    mb={6}
-                    placeholder="Private Key"
-                    value={privateKey}
-                    onChange={(e) => setPrivateKey(e.target.value)}
-                    focusBorderColor={"#C4A7FF"}
-                  />
-                  <Center>
-                    <Flex>
-                      <Button
-                        size="md"
-                        variant="outline"
-                        isActive={yesSelected}
-                        colorScheme="green"
-                        mr={4}
-                        onClick={handleClick}
-                      >
-                        Yes
-                      </Button>
-                      <Button
-                        size="md"
-                        variant="outline"
-                        isActive={noSelected}
-                        colorScheme="red"
-                        onClick={handleClick}
-                      >
-                        No
-                      </Button>
-                      <Button
-                        ml={4}
-                        disabled={
-                          account && (yesSelected || noSelected) && !invalidKey
-                            ? false
-                            : true
-                        }
-                        onClick={handleGenProof}
-                        loadingText="Generating Proof"
-                        isLoading={loadingProof}
-                        colorScheme="teal"
-                        variant="outline"
-                      >
-                        Generate Proof
-                      </Button>
-                      <Button
-                        ml={4}
-                        disabled={
-                          account && proofResponse && !invalidKey ? false : true
-                        }
-                        onClick={handleSubmitVote}
-                        loadingText="Submitting Vote"
-                        isLoading={loadingSubmitVote}
-                        colorScheme="teal"
-                        variant="outline"
-                      >
-                        Submit Vote
-                      </Button>
-                    </Flex>
-                  </Center>
-                  {proofResponse == "" ? null : (
-                    <>
-                      <Text
-                        onClick={onOpen}
-                        fontSize="xs"
-                        mt={3}
-                        textAlign={"center"}
-                      >
-                        ↗ Inspect ZK Proof
-                      </Text>
+                    onClick={handleClick}
+                  >
+                    Yes
+                  </Button>
+                  <Button
+                    size="md"
+                    variant="outline"
+                    isActive={noSelected}
+                    colorScheme="red"
+                    onClick={handleClick}
+                  >
+                    No
+                  </Button>
+                  <Button
+                    ml={4}
+                    disabled={
+                      account && (yesSelected || noSelected) && !invalidKey && poll.active
+                        ? false
+                        : true
+                    }
+                    onClick={handleGenProof}
+                    loadingText="Generating Proof"
+                    isLoading={loadingProof}
+                    colorScheme="teal"
+                    variant="outline"
+                  >
+                    Generate Proof
+                  </Button>
+                  <Button
+                    ml={4}
+                    disabled={
+                      account && proofResponse && !invalidKey && poll.active ? false : true
+                    }
+                    onClick={handleSubmitVote}
+                    loadingText="Submitting Vote"
+                    isLoading={loadingSubmitVote}
+                    colorScheme="teal"
+                    variant="outline"
+                  >
+                    Submit Vote
+                  </Button>
+                </Flex>
+              </Center>
+              {proofResponse == "" ? null : (
+                <>
+                  <Text
+                    onClick={onOpen}
+                    fontSize="xs"
+                    mt={3}
+                    textAlign={"center"}
+                  >
+                    ↗ Inspect ZK Proof
+                  </Text>
 
-                      <Modal isOpen={isOpen} onClose={onClose}>
-                        <ModalOverlay />
-                        <ModalContent>
-                          <ModalHeader>ZKP of Vote</ModalHeader>
-                          <ModalCloseButton />
-                          <ModalBody>{JSON.stringify(proofResponse)}</ModalBody>
+                  <Modal isOpen={isOpen} onClose={onClose}>
+                    <ModalOverlay />
+                    <ModalContent>
+                      <ModalHeader>ZKP of Vote</ModalHeader>
+                      <ModalCloseButton />
+                      <ModalBody>{JSON.stringify(proofResponse)}</ModalBody>
 
-                          <ModalFooter>
-                            <Button
-                              colorScheme="purple"
-                              mr={3}
-                              onClick={onClose}
-                            >
-                              Close
-                            </Button>
-                          </ModalFooter>
-                        </ModalContent>
-                      </Modal>
-                    </>
-                  )}
-                  <Spacer />
+                      <ModalFooter>
+                        <Button colorScheme="purple" mr={3} onClick={onClose}>
+                          Close
+                        </Button>
+                      </ModalFooter>
+                    </ModalContent>
+                  </Modal>
                 </>
-              ) : null}
+              )}
+              <Spacer />
             </GridItem>
           </Grid>
         </Card>
