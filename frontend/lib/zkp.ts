@@ -10,17 +10,18 @@ const snarkjs = require("snarkjs");
 export async function downloadFromFilename(s3_url: string, filename: string) {
   const link = s3_url + filename + ".zkey";
   try {
-    const zkeyResp = await fetch(link, {
-      method: "GET",
-    });
-    const zkeyBuff = await zkeyResp.arrayBuffer();
-    if (zkeyBuff.byteLength == 0) {
-        console.log("Not saving file")
+    const item = await localforage.getItem(`${filename}.zkey`);
+    if (item) {
+        console.log(`${filename}.zkey already exists!`);
     } else {
-        console.log("20: Got file", filename + ".zkey")
+        const zkeyResp = await fetch(link, {
+        method: "GET",
+        });
+        const zkeyBuff = await zkeyResp.arrayBuffer();
+
+        await localforage.setItem(filename + ".zkey", zkeyBuff);
+        console.log(`Storage of ${filename}.zkey successful!`);
     }
-    await localforage.setItem(filename + ".zkey", zkeyBuff);
-    console.log(`Storage of ${filename}.zkey successful!`);
   } catch (e) {
     console.log(
       `Storage of ${filename}.zkey unsuccessful, make sure IndexedDB is enabled in your browser.`

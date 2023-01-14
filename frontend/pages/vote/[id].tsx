@@ -379,7 +379,7 @@ function PollDisplay() {
                 disabled={
                   account &&
                   (yesSelected || noSelected) &&
-                  !invalidKey
+                  invalidKey == false
                     ? false
                     : true
                 }
@@ -394,7 +394,7 @@ function PollDisplay() {
               <Button
                 ml={4}
                 disabled={
-                  account && proofResponse && !invalidKey ? false : true
+                  account && proofResponse && invalidKey == false ? false : true
                 }
                 onClick={handleSubmitVote}
                 loadingText="Submitting Vote"
