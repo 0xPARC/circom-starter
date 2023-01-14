@@ -15,7 +15,7 @@ zkPoll is an Ethereum-compatible anonymous polling application. Polls are launch
 ## Flow
 
 1. A poll coordinator authenticates to the dApp and creates a poll in the smart contract, passing in a merkle root of the public addresses in the ETH subgroup.
-2. Poll participants generate a zero-knowledge proof that *“I know some* `eth_priv_key` *corresponding to an* `eth_pub_key` *contained in the merkle tree.”* The particiapant submits `{vote, nullifier, proof}` to the smart contract.
+2. Poll participants generate a zero-knowledge proof that _“I know some_ `eth_priv_key` _corresponding to an_ `eth_pub_key` _contained in the merkle tree.”_ The particiapant submits `{vote, nullifier, proof}` to the smart contract.
 3. The voter’s `eth_pub_key` is nullified in the smart contract upon proof submission to prevent double-voting.
 4. Users can see the state of each poll (read from the smart contract). In this way, a group’s poll results are generated without revealing who voted for what.
 
@@ -39,13 +39,13 @@ Currently, users must pass in their private key into the circuit to prove owners
 - The deterministic portion also serves as the nullifier passed in with a user’s vote. A user cannot submit a vote twice with distinct nullifiers that are both valid.
 - The nondeterministic portion is also required in order to verify the signature with a public key. This ensures that an attacker cannot just try to verify a public nullifier with all the public keys in order to reveal the voter’s identity.
 
-The user would then submit their entire signature (both the deterministic and nondeterministic portions) as well as their public key as private inputs to the circuit. They could then generate a proof that their signature was verified, and thus that they have the private key corresponding to their public address.  
+The user would then submit their entire signature (both the deterministic and nondeterministic portions) as well as their public key as private inputs to the circuit. They could then generate a proof that their signature was verified, and thus that they have the private key corresponding to their public address.
 
 One drawback is that current mainstream wallet providers do not generate this signature. Until that is the case, users would still need to pass in a private key in order to generate this signature. Alternatively, a [MetaMask Snap](https://metamask.io/snaps/) could be used to enable this, but users would need to install the Snap.
 
 ### Weighted Voting
 
-Currently, users must pass in a private key corresponding to the public address. While burner wallets can be used, it would be convenient to simple generate a deterministic signature for each user. [Recent work](https://github.com/zk-nullifier-sig/zk-nullifier-sig) allows users to generate a signature that uniquely identifies the keypair, while keeping the account identity secret. One drawback is that current mainstream wallet providers do not generate this signature. Until that is the case, users would still need to pass in a private key. Alternatively, a [MetaMask Snap](https://ethbogota-2022.netlify.app/) could be used to enable this, but users would need to install the Snap.
+Another potential feature to add is to weight user's votes based on the number of tokens they have, or their time registered into the system, etc. In the former case, users can choose to use as much weight as they want on each vote.
 
 ## Resources
 
