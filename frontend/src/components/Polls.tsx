@@ -80,7 +80,6 @@ function PollCard({ poll }: { poll: IPoll }) {
                 Complete
               </Button>
             )}
-            <Spacer />
           </Flex>
         </GridItem>
         <GridItem pl="2" area={"main"}>
