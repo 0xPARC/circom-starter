@@ -139,7 +139,7 @@ export function Polls() {
       <FormControl>
         <Center>
           <Input
-            placeholder="Search"
+            placeholder="🔎 Search"
             value={searchTerm}
             mt={3}
             style={{ width: "50%" }}
