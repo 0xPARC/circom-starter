@@ -134,180 +134,49 @@ export default async function handler(
     treeSiblings: treeSiblings,
     signalHash: signalHash,
     externalNullifier: externalNullifier,
-    };
+  };
 
-    // const input = {
-    //     identityNullifier: identityNullifier,
-    //     identityTrapdoor: "0",
-    //     treePathIndices: treePathIndices,
-    //     treeSiblings: treeSiblings,
-    //     signalHash: signalHash,
-    //     externalNullifier: externalNullifier
-    // }
+  const proofKeysDirectory = path.join(process.cwd(), "proofKeys");
 
-    // const path = __dirname
-    // const wasmPath = "./semaphore.wasm";
-    // const zkeyPath = "./semaphore.zkey";
-    // const vkeyPath = "./semaphore.vkey.json";
+  console.log("Proof Input: ", input);
 
-    const proofKeysDirectory = path.join(process.cwd(), 'proofKeys')
+  const wasm = await fs.readFile(proofKeysDirectory + "/ecdsa-semaphore.wasm");
+  const zKey = await fs.readFile(proofKeysDirectory + "/ecdsa-semaphore.zkey");
+  const vKey = await fs.readFile(
+    proofKeysDirectory + "/ecdsa-semaphore.vkey.json"
+  );
 
-    console.log("Proof Input: ", input)
+  const { proof, publicSignals } = await snarkjs.groth16.fullProve(
+    input,
+    wasm,
+    zKey
+  );
+  console.log("public signals: ", publicSignals);
+  console.log("proof output: ", proof);
+  if ("pi_a" in proof == false) {
+    res.status(400).json({
+      name: "Proof not generated",
+      proofForTx: [],
+      nullifierHash: "",
+    });
+  }
+  const proofForTx = [
+    proof.pi_a[0],
+    proof.pi_a[1],
+    proof.pi_b[0][1],
+    proof.pi_b[0][0],
+    proof.pi_b[1][1],
+    proof.pi_b[1][0],
+    proof.pi_c[0],
+    proof.pi_c[1],
+  ];
 
-    const wasm = await fs.readFile(proofKeysDirectory + '/semaphore.wasm')
-
-    const zKeyResp = await fetch(loadURL + zKeyFile, {method: 'GET'})
-    const zkBuff = await zKeyResp.arrayBuffer()
-    await localforage.setItem(loadURL + zKeyFile, zkBuff)
-
-    // const zKey = await fs.readFile(proofKeysDirectory + '/semaphore.zkey')
-    // const vKey = await fs.readFile(proofKeysDirectory + '/semaphore.vkey.json')
-
-    const { proof, publicSignals } = await snarkjs.groth16.fullProve(input, wasm, zkBuff);
-    console.log("public signals: ", publicSignals)
-    console.log("proof output: ", proof)
-    if ("pi_a" in proof == false) {
-        res.status(400).json({
-            name: "Proof not generated", proofForTx: [], nullifierHash: ""
-        })
-    }
-    const proofForTx = [
-        proof.pi_a[0],
-        proof.pi_a[1],
-        proof.pi_b[0][1],
-        proof.pi_b[0][0],
-        proof.pi_b[1][1],
-        proof.pi_b[1][0],
-        proof.pi_c[0],
-        proof.pi_c[1],
-      ];
-
-    return res.status(200).json({ name: "Voted!", proofForTx: proofForTx, nullifierHash: publicSignals[1]})
+  return res
+    .status(200)
+    .json({
+      name: "Voted!",
+      proofForTx: proofForTx,
+      nullifierHash: publicSignals[1],
+    });
 }
-//   if (req.method !== "POST") {
-//     res.status(405).json({
-//       name: "POST endpoint",
-//       proofForTx: [],
-//       nullifierHash: "",
-//     });
-//   }
-//   if (typeof req.body == "string") {
-//     var body = JSON.parse(req.body);
-//   } else {
-//     var body = req.body;
-//   }
-//   if ("data" in body == false) {
-//     res.status(400).json({
-//       name: "No Data",
-//       proofForTx: [],
-//       nullifierHash: "",
-//     });
-//   }
-//   var data = body.data;
 
-//   var identityNullifier,
-//     treePathIndices,
-//     treeSiblings,
-//     externalNullifier,
-//     signalHash;
-
-  // Required fields!
-//   if ("identityNullifier" in data == false) {
-//     res.status(400).json({
-//       name: "Must pass in nullifier",
-//       proofForTx: [],
-//       nullifierHash: "",
-//     });
-//   } else {
-//     identityNullifier = data.identityNullifier;
-//   }
-//   if ("treePathIndices" in data == false) {
-//     res.status(400).json({
-//       name: "Must pass in tree path indices",
-//       proofForTx: [],
-//       nullifierHash: "",
-//     });
-//   } else {
-//     treePathIndices = data.treePathIndices;
-//   }
-//   if ("treeSiblings" in data == false) {
-//     res.status(400).json({
-//       name: "Must pass in vote",
-//       proofForTx: [],
-//       nullifierHash: "",
-//     });
-//   } else {
-//     treeSiblings = data.treeSiblings;
-//   }
-//   if ("externalNullifier" in data == false) {
-//     res.status(400).json({
-//       name: "Must pass in a poll id",
-//       proofForTx: [],
-//       nullifierHash: "",
-//     });
-//   } else {
-//     externalNullifier = data.externalNullifier;
-//   }
-//   if ("signalHash" in data == false) {
-//     res.status(400).json({
-//       name: "Must pass in a signal hash",
-//       proofForTx: [],
-//       nullifierHash: "",
-//     });
-//   } else {
-//     signalHash = data.signalHash;
-//   }
-
-  
-
-//   const proofKeysDirectory = path.join(process.cwd(), "proofKeys");
-
-//   console.log("Proof Input: ", input);
-
-//   const wasm = await fs.readFile(proofKeysDirectory + "/ecdsa-semaphore.wasm");
-//   const zKey = await fs.readFile(proofKeysDirectory + "/ecdsa-semaphore.zkey");
-//   const vKey = await fs.readFile(
-//     proofKeysDirectory + "/ecdsa-semaphore.vkey.json"
-//   );
-
-//   const { proof, publicSignals } = await snarkjs.groth16.fullProve(
-//     input,
-//     wasm,
-//     zKey
-//   );
-//   console.log("public signals: ", publicSignals);
-//   console.log("proof output: ", proof);
-//   if ("pi_a" in proof == false) {
-//     res.status(400).json({
-//       name: "Proof not generated",
-//       proofForTx: [],
-//       nullifierHash: "",
-//     });
-//   }
-//   const proofForTx = [
-//     proof.pi_a[0],
-//     proof.pi_a[1],
-//     proof.pi_b[0][1],
-//     proof.pi_b[0][0],
-//     proof.pi_b[1][1],
-//     proof.pi_b[1][0],
-//     proof.pi_c[0],
-//     proof.pi_c[1],
-//   ];
-
-//   return res
-//     .status(200)
-//     .json({
-//       name: "Voted!",
-//       proofForTx: proofForTx,
-//       nullifierHash: publicSignals[1],
-//     });
-//   if (outputData.isValidPollId == false) {
-//     return res.status(400).json({ name: "invalid poll id", inTree: false, pollId: pollId })
-//   } else {
-//     if (outputData.inTree == true) {
-//       return res.status(200).json({ name: "address in tree", inTree: true, pollId: pollId })
-//     } else {
-//       return res.status(200).json({ name: "address not in tree", inTree: false, pollId: pollId })
-//     }
-//   }
