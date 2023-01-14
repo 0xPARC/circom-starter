@@ -75,8 +75,8 @@ function PollDisplay() {
   const { data, isError, isLoading } = useWaitForTransaction({
     hash: `0x${txHash}`,
   });
-  const [invalidKey, setInvalidKey] = useState<boolean>(false)
-  const Wallet = require('ethereumjs-wallet')
+  const [invalidKey, setInvalidKey] = useState<boolean>(false);
+  const Wallet = require("ethereumjs-wallet");
 
   const {
     data: resultData,
@@ -106,14 +106,6 @@ function PollDisplay() {
     author: "",
     votes: 1,
   });
-
-  // const handleKeys = async (e: string) => {
-  //   setPrivateKey(e);
-  //   // "64d87dfbf242dcbe088049ec74643da3fdd428be8e26974a76e4624ce3532117"
-  //   const pubKey = Wallet.fromPrivateKey(Buffer.from(privateKey, 'hex')).getAddress().toString('hex');
-  //   console.log("pubkey", pubKey);
-  //   setPublicKey(pubKey);
-  // }
 
   useEffect(() => {
     try {
@@ -257,8 +249,7 @@ function PollDisplay() {
                       "extra extra"
                       `}
             gridTemplateRows={"8% 2em 16% 90%"}
-            gridTemplateColumns={"95% 2em "}
-            // h='150%'
+            gridTemplateColumns={"95% 2em ="}
             gap="1"
             padding={4}
             marginTop={4}
@@ -274,7 +265,7 @@ function PollDisplay() {
                     '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu'
                   }
                 >
-                  POLL ID {poll.id} | {poll.createdAt}
+                  DEADLINE: {poll.deadline.toLocaleString()}
                 </Text>
                 <Spacer />
                 {poll.active ? (
@@ -338,6 +329,7 @@ function PollDisplay() {
                   </Text>
                 </>
               ) : null}
+
               <Spacer margin={6} />
               <Spacer />
               <Input
@@ -372,7 +364,7 @@ function PollDisplay() {
                   <Button
                     ml={4}
                     disabled={
-                      account && (yesSelected || noSelected) && invalidKey == false
+                      account && (yesSelected || noSelected) && !invalidKey && poll.active
                         ? false
                         : true
                     }
@@ -387,7 +379,7 @@ function PollDisplay() {
                   <Button
                     ml={4}
                     disabled={
-                      account && proofResponse && invalidKey == false ? false : true
+                      account && proofResponse && !invalidKey && poll.active ? false : true
                     }
                     onClick={handleSubmitVote}
                     loadingText="Submitting Vote"

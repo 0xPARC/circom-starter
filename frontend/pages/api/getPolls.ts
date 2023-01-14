@@ -29,8 +29,8 @@ function mapPolls(polls: Poll[]) {
       title: poll.title,
       groupDescription: poll.groupDescription,
       description: poll.description,
-      createdAt: new Date(poll.createdAt).toUTCString(),
-      deadline: new Date(poll.deadline).toUTCString(),
+      createdAt: new Date(poll.createdAt).toLocaleString(),
+      deadline: new Date(poll.deadline).toLocaleString(),
       active: Date.now() < poll.deadline.getTime()
     };
   });
