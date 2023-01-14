@@ -51,6 +51,7 @@ interface IPoll {
   active: boolean;
 }
 
+const ethers = require("ethers");
 const account = getAccount();
 const SEMAPHORE_CONTRACT = process.env.NEXT_PUBLIC_GOERLI_POLL_CONTRACT;
 
@@ -76,7 +77,6 @@ function PollDisplay() {
     hash: `0x${txHash}`,
   });
   const [invalidKey, setInvalidKey] = useState<boolean>(false);
-  const Wallet = require("ethereumjs-wallet");
 
   const {
     data: resultData,
@@ -112,10 +112,12 @@ function PollDisplay() {
   useEffect(() => {
     try {
       console.log("Private key: ", privateKey)
+      
+      let wallet = new ethers.Wallet(privateKey);
+      let address = wallet.address;
+      console.log("address handles properly", address)
       setPublicKey(
-        `0x${Wallet.fromPrivateKey(Buffer.from(privateKey, "hex"))
-          .getAddress()
-          .toString("hex")}`
+        address
       );
       console.log("Successfully generated public key")
       setInvalidKey(false);
