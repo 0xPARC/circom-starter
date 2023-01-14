@@ -235,7 +235,7 @@ function PollDisplay() {
   };
 
   return (
-    <Card variant={"elevated"} margin={8} minH="2xs">
+    <Card variant={"elevated"} margin={8} minH="xs">
       <Grid
         templateAreas={`"header header"
                         "main nav"
@@ -248,8 +248,10 @@ function PollDisplay() {
         // h='150%'
         gap="1"
         padding={4}
-        margin={6}
-        marginLeft={0}
+        marginTop={4}
+        marginLeft={2}
+        marginRight={6}
+        mb={2}
       >
         <GridItem pl="2" area={"header"}>
           <Flex>
@@ -301,7 +303,7 @@ function PollDisplay() {
           </HStack>
         </GridItem>
 
-        <GridItem pl="2" area={"extra"}>
+        <GridItem pl="2" area={"extra"} mt={4}>
           {yesVoteCount + noVoteCount > 0 ? (
             <>
               <Progress
@@ -346,7 +348,6 @@ function PollDisplay() {
                 Yes
               </Button>
               <Button
-                mb={0}
                 size="md"
                 variant="outline"
                 isActive={noSelected}
@@ -356,7 +357,6 @@ function PollDisplay() {
                 No
               </Button>
               <Button
-                mb={0}
                 ml={4}
                 disabled={
                   account &&
@@ -375,7 +375,6 @@ function PollDisplay() {
                 Generate Proof
               </Button>
               <Button
-                mb={0}
                 ml={4}
                 disabled={
                   account && proofResponse && !invalidKey ? false : true
