@@ -9,14 +9,9 @@ import {
   FormControl,
   Center,
   Input,
-  Stack,
-  Skeleton,
-  Box,
-  Progress,
   Spinner,
 } from "@chakra-ui/react";
 import { Flex, Spacer } from "@chakra-ui/react";
-import { CheckCircleIcon, TimeIcon } from "@chakra-ui/icons";
 import { debounce } from "lodash";
 
 interface IPoll {
@@ -106,7 +101,7 @@ export function Polls() {
   const [polls, setPolls] = useState<IPoll[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filteredPolls, setFilteredPolls] = useState<IPoll[]>([]);
-  const [isLoaded, setIsLoaded] = React.useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   const debouncedSearchTerm = debounce(
     (value: string) => setSearchTerm(value),
