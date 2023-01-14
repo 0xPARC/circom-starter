@@ -162,7 +162,7 @@ export default function GeneratePoll() {
   }
 
   return (
-    <>
+    <div className={styles.container}>
       <Header />
       <div className={styles.container}>
         <main className={styles.main}>
@@ -253,6 +253,6 @@ export default function GeneratePoll() {
           </Card>
         </main>
       </div>
-    </>
+    </div>
   );
 }
