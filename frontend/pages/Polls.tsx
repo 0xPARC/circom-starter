@@ -71,7 +71,6 @@ export function Polls() {
             placeholder="🔎 Search"
             value={searchTerm}
             width={568}
-            mt={5}
             onChange={(e) => setSearchTerm(e.target.value)}
             _hover={{ borderColor: "#9B72F2", borderWidth: "1px" }}
             focusBorderColor={"#9B72F2"}
@@ -103,7 +102,7 @@ export function Polls() {
               >
                 <Card
                   variant={"elevated"}
-                  margin={8}
+                  margin={6}
                   _hover={{ backgroundColor: "rgba(69, 72, 94, 0.2)" }}
                 >
                   <Grid

@@ -10,6 +10,7 @@ import {
   useColorMode,
   useColorModeValue,
   Image,
+  Heading,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { DarkModeSwitch } from "react-toggle-dark-mode";
@@ -56,7 +57,9 @@ export default function Header() {
               </Flex>
             </HStack>
             <HStack alignContent={"center"}>
-              {/* <img src='https://i.imgur.com/okZ0qOy.png' width={40} alt="ZKPoll"/> */}
+              <Heading as="h1" size="lg">
+                zkPoll
+              </Heading>
             </HStack>
             <HStack verticalAlign={"top"}>
               <HStack ml={4} mr={4}>
