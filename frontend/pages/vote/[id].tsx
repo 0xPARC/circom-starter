@@ -125,7 +125,7 @@ function PollDisplay() {
     } catch (e) {
       setInvalidKey(true)
     }
-    if (resultData) {
+    if (resultData != null) {
       setYesVoteCount(Number((resultData as number[])[0]))
       console.log('yes votes', yesVoteCount)
       setNoVoteCount(Number((resultData as number[])[1]))
@@ -170,7 +170,7 @@ function PollDisplay() {
         setNullifierHash(nullifierHash)
         toast({
           title: 'Proof generated!',
-          description: 'Find proof in console.',
+          description: 'Inspect your proof (if you want).',
           status: 'success',
           duration: 5000,
           isClosable: true,
@@ -318,7 +318,7 @@ function PollDisplay() {
             <>
               <Progress
                 colorScheme={'green'}
-                background={'red'}
+                backgroundColor={'#F47174'}
                 height="10px"
                 rounded={'xl'}
                 mb={'1%'}
@@ -371,7 +371,6 @@ function PollDisplay() {
                 disabled={
                   account &&
                   (yesSelected || noSelected) &&
-                  proofResponse == '' &&
                   !invalidKey
                     ? false
                     : true
@@ -401,22 +400,21 @@ function PollDisplay() {
           </Center>
           {proofResponse == '' ? null : (
             <>
-              <Text onClick={onOpen} fontSize="xs" mt={2} textAlign={'center'}>
+              <Text onClick={onOpen} fontSize="xs" mt={3} textAlign={'center'}>
                 ↗ Inspect ZK Proof
               </Text>
 
               <Modal isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay />
                 <ModalContent>
-                  <ModalHeader>Modal Title</ModalHeader>
+                  <ModalHeader>ZKP of Vote</ModalHeader>
                   <ModalCloseButton />
-                  <ModalBody>{proofResponse}</ModalBody>
+                  <ModalBody>{JSON.stringify(proofResponse)}</ModalBody>
 
                   <ModalFooter>
-                    <Button colorScheme="blue" mr={3} onClick={onClose}>
+                    <Button colorScheme="purple" mr={3} onClick={onClose}>
                       Close
                     </Button>
-                    <Button variant="ghost">Secondary Action</Button>
                   </ModalFooter>
                 </ModalContent>
               </Modal>
