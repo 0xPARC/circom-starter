@@ -364,7 +364,7 @@ function PollDisplay() {
                   <Button
                     ml={4}
                     disabled={
-                      account && (yesSelected || noSelected) && !invalidKey && poll.active
+                      (yesSelected || noSelected) && !invalidKey && poll.active
                         ? false
                         : true
                     }
@@ -379,7 +379,7 @@ function PollDisplay() {
                   <Button
                     ml={4}
                     disabled={
-                      account && proofResponse && !invalidKey && poll.active ? false : true
+                      proofResponse && !invalidKey && poll.active ? false : true
                     }
                     onClick={handleSubmitVote}
                     loadingText="Submitting Vote"
