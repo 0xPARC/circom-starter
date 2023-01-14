@@ -9,7 +9,7 @@ import { configureChains, createClient, WagmiConfig } from "wagmi";
 import { goerli } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
 import "../styles/globals.css";
-import { Box, ChakraProvider, Image } from "@chakra-ui/react";
+import { Box, ChakraProvider, Image, useBreakpointValue } from "@chakra-ui/react";
 import theme from "../theme";
 import Head from "next/head";
 import "@fontsource/raleway/400.css";
