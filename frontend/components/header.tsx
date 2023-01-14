@@ -18,6 +18,7 @@ import { useRouter } from 'next/router'
 import { DarkModeSwitch } from 'react-toggle-dark-mode'
 import { CustomConnect } from './CustomConnectButton'
 
+
 export default function Header() {
   const isDesktop = useBreakpointValue({ base: false, lg: true })
   const router = useRouter()
@@ -42,7 +43,6 @@ export default function Header() {
         <Container py={{ base: '4', lg: '5' }} maxWidth='90%'>
           <HStack justify="space-between">
             {/* <Logo /> */}
-            {/* <img src={require(logo).def} width={20} alt="ZKPoll"/> */}
             <HStack justify="space-between">
               {isDesktop ? (
                 <Flex justify="space-between" flex="1">
@@ -64,6 +64,9 @@ export default function Header() {
                   aria-label="Open Menu"
                 />
               )}
+            </HStack>
+            <HStack alignContent={'center'}>
+            {/* <img src='https://i.imgur.com/okZ0qOy.png' width={40} alt="ZKPoll"/> */}
             </HStack>
             <HStack verticalAlign={'top'}>
 
