@@ -18,7 +18,7 @@ import {
 } from "@chakra-ui/react";
 import { FormControl, Input, Button, Heading } from "@chakra-ui/react";
 import { Card, CardBody } from "@chakra-ui/react";
-import { useContract, useSigner, useWaitForTransaction } from "wagmi";
+import { useContract, useSigner, useWaitForTransaction, useEnsAddress } from "wagmi";
 
 interface FormValues {
   title: string;
@@ -61,10 +61,12 @@ export default function GeneratePoll() {
   const toast = useToast();
   const [currHash, setHash] = useState();
   const [showTooltip, setShowTooltip] = React.useState(false);
+  const [temp, setTemp] = useState<string>("");
 
   const { data, isError, isLoading } = useWaitForTransaction({
     hash: currHash,
   });
+
   const contract = useContract({
     address: SEMAPHORE_CONTRACT,
     abi: testABI,
@@ -74,10 +76,27 @@ export default function GeneratePoll() {
   const splitAddresses = (stringAddresses: string) => {
     setTempAddresses(stringAddresses);
     const split = stringAddresses.split(",");
+    const addressesTemp:string[] = [];
     if (split) {
-      setAddresses(split);
+      for (let i = 0; i < split.length; i++) {
+        let addr = split[i].trim()
+        if (addr.includes(".eth")) {
+          setTemp(addr)
+          console.log('ETH Address ', addr, 'is now address', ensData)
+          addressesTemp.push(ensData!)
+        } else {
+          console.log('No ETH Address here')
+          addressesTemp.push(addr!)
+        }
+      }
     }
+    setAddresses(addressesTemp)
+    console.log('Final addresses ', addresses)
   };
+
+  const { data: ensData } = useEnsAddress({
+    name: temp,
+  })
 
   const postData = async (addressesArr: string[]) => {
     let setDeadline;
