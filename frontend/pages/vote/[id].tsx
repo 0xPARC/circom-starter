@@ -235,7 +235,7 @@ function PollDisplay() {
   };
 
   return (
-    <Card variant={"elevated"} margin={8} minH="s">
+    <Card variant={"elevated"} margin={8} minH="2xs">
       <Grid
         templateAreas={`"header header"
                         "main nav"
@@ -346,7 +346,7 @@ function PollDisplay() {
                 Yes
               </Button>
               <Button
-                mb={3}
+                mb={0}
                 size="md"
                 variant="outline"
                 isActive={noSelected}
@@ -356,7 +356,7 @@ function PollDisplay() {
                 No
               </Button>
               <Button
-                mb={3}
+                mb={0}
                 ml={4}
                 disabled={
                   account &&
@@ -375,7 +375,7 @@ function PollDisplay() {
                 Generate Proof
               </Button>
               <Button
-                mb={3}
+                mb={0}
                 ml={4}
                 disabled={
                   account && proofResponse && !invalidKey ? false : true
