@@ -75,8 +75,8 @@ function PollDisplay() {
   const { data, isError, isLoading } = useWaitForTransaction({
     hash: `0x${txHash}`,
   });
-  const [invalidKey, setInvalidKey] = useState<boolean>(false);
-  const Wallet = require("ethereumjs-wallet");
+  const [invalidKey, setInvalidKey] = useState<boolean>(false)
+  const Wallet = require('ethereumjs-wallet')
 
   const {
     data: resultData,
@@ -106,6 +106,14 @@ function PollDisplay() {
     author: "",
     votes: 1,
   });
+
+  // const handleKeys = async (e: string) => {
+  //   setPrivateKey(e);
+  //   // "64d87dfbf242dcbe088049ec74643da3fdd428be8e26974a76e4624ce3532117"
+  //   const pubKey = Wallet.fromPrivateKey(Buffer.from(privateKey, 'hex')).getAddress().toString('hex');
+  //   console.log("pubkey", pubKey);
+  //   setPublicKey(pubKey);
+  // }
 
   useEffect(() => {
     try {
@@ -364,7 +372,7 @@ function PollDisplay() {
                   <Button
                     ml={4}
                     disabled={
-                      account && (yesSelected || noSelected) && !invalidKey
+                      account && (yesSelected || noSelected) && invalidKey == false
                         ? false
                         : true
                     }
@@ -379,7 +387,7 @@ function PollDisplay() {
                   <Button
                     ml={4}
                     disabled={
-                      account && proofResponse && !invalidKey ? false : true
+                      account && proofResponse && invalidKey == false ? false : true
                     }
                     onClick={handleSubmitVote}
                     loadingText="Submitting Vote"

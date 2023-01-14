@@ -37,6 +37,7 @@ function MyApp({ Component, pageProps }: AppProps) {
     <>
     <Head>
       <title>zkPoll</title>
+      <script async src="snarkjs.min.js">   </script>
     </Head>
     <ChakraProvider theme={theme}>
       <WagmiConfig client={wagmiClient}>
