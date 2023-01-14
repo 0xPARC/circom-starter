@@ -16,3 +16,5 @@ circuits/*.wasm
 circuits/*.zkey
 contracts/*.sol
 circuits/ptau/
+circuits/build/
+circuits/build_16/

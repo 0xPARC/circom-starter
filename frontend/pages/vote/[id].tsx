@@ -249,8 +249,7 @@ function PollDisplay() {
                       "extra extra"
                       `}
             gridTemplateRows={"8% 2em 16% 90%"}
-            gridTemplateColumns={"95% 2em "}
-            // h='150%'
+            gridTemplateColumns={"95% 2em ="}
             gap="1"
             padding={4}
             marginTop={4}
@@ -266,7 +265,7 @@ function PollDisplay() {
                     '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu'
                   }
                 >
-                  POLL ID {poll.id} | {poll.createdAt}
+                  DEADLINE: {poll.deadline.toLocaleString()}
                 </Text>
                 <Spacer />
                 {poll.active ? (
@@ -330,6 +329,7 @@ function PollDisplay() {
                   </Text>
                 </>
               ) : null}
+
               <Spacer margin={6} />
               <Spacer />
               <Input
@@ -364,7 +364,7 @@ function PollDisplay() {
                   <Button
                     ml={4}
                     disabled={
-                      account && (yesSelected || noSelected) && !invalidKey
+                      account && (yesSelected || noSelected) && !invalidKey && poll.active
                         ? false
                         : true
                     }
@@ -379,7 +379,7 @@ function PollDisplay() {
                   <Button
                     ml={4}
                     disabled={
-                      account && proofResponse && !invalidKey ? false : true
+                      account && proofResponse && !invalidKey && poll.active ? false : true
                     }
                     onClick={handleSubmitVote}
                     loadingText="Submitting Vote"

@@ -96,8 +96,8 @@ console.log("INPUT", typeof b.data.id)
         title: poll.title,
         groupDescription: poll.groupDescription,
         description: poll.description,
-        createdAt: poll.createdAt.toString(),
-        deadline: poll.deadline.toString(),
+        createdAt: poll.createdAt.toLocaleString(),
+        deadline: poll.deadline.toLocaleString(),
         active: Date.now() < poll.deadline.getTime(),
       });
   } else {
