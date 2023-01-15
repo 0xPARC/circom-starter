@@ -88,6 +88,7 @@ function PollDisplay() {
     abi: testABI,
     functionName: "getPollState",
     args: ["2"],
+    chainId: 5
   });
   console.log("RESULT DATA", resultData);
   console.log("id", id);
@@ -96,10 +97,6 @@ function PollDisplay() {
   console.log("SEMAPHORE_CONTRACT", SEMAPHORE_CONTRACT);
   console.log("error!", error)
   console.log("trying to change id to num")
-
-  // const { data: resultData2, isError: isResultError2, isLoading: isResultLoading2 } = useWaitForTransaction({
-  //   hash: `0x${txHash}`,
-  // });
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     setYesSelected(e.currentTarget.textContent === "Yes" ? true : false);
