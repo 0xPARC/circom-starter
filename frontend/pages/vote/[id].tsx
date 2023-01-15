@@ -92,6 +92,11 @@ function PollDisplay() {
   console.log("id", id);
   console.log("isResultError", isResultError);
   console.log("isResultLoading", isResultLoading);
+  console.log("SEMAPHORE_CONTRACT", SEMAPHORE_CONTRACT);
+
+  // const { data: resultData2, isError: isResultError2, isLoading: isResultLoading2 } = useWaitForTransaction({
+  //   hash: `0x${txHash}`,
+  // });
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     setYesSelected(e.currentTarget.textContent === "Yes" ? true : false);
