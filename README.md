@@ -45,7 +45,7 @@ One drawback is that current mainstream wallet providers do not generate this si
 
 ### Weighted Voting
 
-Another potential feature to add is to weight user's votes based on the number of tokens they have, or their time registered into the system, etc. In the former case, users can choose to use as much weight as they want on each vote.
+Another potential feature to add is to weight users' votes based on the number of tokens they have, or their time registered into the system, etc. In the former case, users can choose to use as much weight as they want on each vote.
 
 ## Resources
 
