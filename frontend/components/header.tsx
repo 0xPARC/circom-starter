@@ -63,7 +63,6 @@ export default function Header() {
             </HStack>
             <HStack verticalAlign={"top"}>
               <HStack ml={4} mr={4}>
-                {/* <ConnectButton /> */}
                 <CustomConnect />
               </HStack>
               <DarkModeSwitch

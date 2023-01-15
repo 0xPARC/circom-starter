@@ -123,6 +123,7 @@ export function Polls() {
                           fontFamily={
                             '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu'
                           }
+                          noOfLines={1}
                         >
                           DEADLINE: {p.deadline.toLocaleString()}
                         </Text>
