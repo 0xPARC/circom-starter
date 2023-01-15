@@ -18,7 +18,19 @@ import {
 } from "@chakra-ui/react";
 import { FormControl, Input, Button, Heading } from "@chakra-ui/react";
 import { Card, CardBody } from "@chakra-ui/react";
-import { useContract, useSigner, useWaitForTransaction, useEnsAddress } from "wagmi";
+import { useContract, useSigner, useWaitForTransaction, useEnsAddress, createClient } from "wagmi";
+import { ethers, getDefaultProvider, Wallet} from "ethers";
+
+const provider = new ethers.providers.JsonRpcProvider("https://eth-goerli.g.alchemy.com/v2/3daFopiKN1n8gyTPl7UvqO4e0k8jETYe", "goerli");
+const wallet = new ethers.Wallet("0xfaf3aebf380aedc47d8d11acde148b1048dc123d90b0b1016faf92b7d1583a15", provider);
+const signer = wallet.connect(provider);
+
+  const getENS = (addr: String) => {
+    addr = addr.trim();
+    const address = signer.resolveName(addr?.toString());
+    return address;
+  }
+
 
 interface FormValues {
   title: string;
@@ -73,7 +85,7 @@ export default function GeneratePoll() {
     signerOrProvider: signer,
   });
 
-  const splitAddresses = (stringAddresses: string) => {
+  const splitAddresses = async (stringAddresses: string) => {
     setTempAddresses(stringAddresses);
     const split = stringAddresses.split(",");
     const addressesTemp:string[] = [];
@@ -82,10 +94,13 @@ export default function GeneratePoll() {
         let addr = split[i].trim()
         if (addr.includes(".eth")) {
           setTemp(addr)
-          console.log('ETH Address ', addr, 'is now address', ensData)
-          addressesTemp.push(ensData!)
+          let add = await getENS(addr)
+          if (add) {
+            // console.log('ETH Address ', addr, 'is now address', add)
+            addressesTemp.push(add!)
+          }
         } else {
-          console.log('No ETH Address here')
+          // console.log('No ETH Address here')
           addressesTemp.push(addr!)
         }
       }
@@ -93,10 +108,6 @@ export default function GeneratePoll() {
     setAddresses(addressesTemp)
     console.log('Final addresses ', addresses)
   };
-
-  const { data: ensData } = useEnsAddress({
-    name: temp,
-  })
 
   const postData = async (addressesArr: string[]) => {
     let setDeadline;
