@@ -70,8 +70,7 @@ export function Polls() {
           <Input
             placeholder="🔎 Search"
             value={searchTerm}
-            mt={3}
-            style={{ width: "50%" }}
+            width={568}
             onChange={(e) => setSearchTerm(e.target.value)}
             _hover={{ borderColor: "#9B72F2", borderWidth: "1px" }}
             focusBorderColor={"#9B72F2"}
@@ -103,7 +102,7 @@ export function Polls() {
               >
                 <Card
                   variant={"elevated"}
-                  margin={8}
+                  margin={6}
                   _hover={{ backgroundColor: "rgba(69, 72, 94, 0.2)" }}
                 >
                   <Grid
@@ -116,7 +115,6 @@ export function Polls() {
                     gap="1"
                     padding={4}
                     margin={2}
-                    marginLeft={0}
                   >
                     <GridItem pl="2" area={"header"}>
                       <Flex>
@@ -125,6 +123,7 @@ export function Polls() {
                           fontFamily={
                             '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu'
                           }
+                          noOfLines={1}
                         >
                           DEADLINE: {p.deadline.toLocaleString()}
                         </Text>

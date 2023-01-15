@@ -10,11 +10,9 @@ const Home: NextPage = () => {
     <div className={styles.container}>
       <Head>
         <script async src="snarkjs.min.js"></script>
-
       </Head>
       <Header />
       <main className={styles.main}>
-        <Heading as='h1' size='xl'>zkPoll</Heading>
           <Polls />
       </main>
     </div>
