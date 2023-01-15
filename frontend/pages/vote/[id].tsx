@@ -87,7 +87,7 @@ function PollDisplay() {
     address: SEMAPHORE_CONTRACT,
     abi: testABI,
     functionName: "getPollState",
-    args: [id],
+    args: [Number(id)],
   });
   console.log("RESULT DATA", resultData);
   console.log("id", id);
@@ -95,6 +95,7 @@ function PollDisplay() {
   console.log("isResultLoading", isResultLoading);
   console.log("SEMAPHORE_CONTRACT", SEMAPHORE_CONTRACT);
   console.log("error!", error)
+  console.log("trying to change id to num", Number(id))
 
   // const { data: resultData2, isError: isResultError2, isLoading: isResultLoading2 } = useWaitForTransaction({
   //   hash: `0x${txHash}`,
