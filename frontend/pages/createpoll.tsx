@@ -18,7 +18,23 @@ import {
 } from "@chakra-ui/react";
 import { FormControl, Input, Button, Heading } from "@chakra-ui/react";
 import { Card, CardBody } from "@chakra-ui/react";
+<<<<<<< Updated upstream
 import { useContract, useSigner, useWaitForTransaction, useEnsAddress } from "wagmi";
+=======
+import { useContract, useSigner, useWaitForTransaction, useEnsAddress, createClient } from "wagmi";
+import { ethers, getDefaultProvider, Wallet} from "ethers";
+
+const provider = new ethers.providers.JsonRpcProvider(process.env.GOERLI_RPC_URL, "goerli");
+const wallet = new ethers.Wallet(process.env.GOERLI_PRIVATE_KEY, provider);
+const signer = wallet.connect(provider);
+
+  const getENS = (addr: String) => {
+    addr = addr.trim();
+    const address = signer.resolveName(addr?.toString());
+    return address;
+  }
+
+>>>>>>> Stashed changes
 
 interface FormValues {
   title: string;
