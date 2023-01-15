@@ -82,6 +82,7 @@ function PollDisplay() {
     data: resultData,
     isError: isResultError,
     isLoading: isResultLoading,
+    error
   } = useContractRead({
     address: SEMAPHORE_CONTRACT,
     abi: testABI,
@@ -93,6 +94,7 @@ function PollDisplay() {
   console.log("isResultError", isResultError);
   console.log("isResultLoading", isResultLoading);
   console.log("SEMAPHORE_CONTRACT", SEMAPHORE_CONTRACT);
+  console.log("error!", error)
 
   // const { data: resultData2, isError: isResultError2, isLoading: isResultLoading2 } = useWaitForTransaction({
   //   hash: `0x${txHash}`,
