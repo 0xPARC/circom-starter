@@ -170,7 +170,7 @@ export default function GeneratePoll() {
         duration: 5000,
         isClosable: true,
         containerStyle: {
-          width: "700px",
+          // width: "700px",
           maxWidth: "90%",
         },
       });
@@ -192,14 +192,10 @@ export default function GeneratePoll() {
   }
 
   return (
-    <>
+    <div className={styles.container}>
       <Header />
-      <div className={styles.container}>
         <main className={styles.main}>
-          <Heading as="h1" size="xl">
-            Generate Poll
-          </Heading>
-          <Card variant={"elevated"} style={{ width: "40%", marginTop: "1%" }}>
+          <Card variant={"elevated"} style={{ maxWidth: "98%", width: 600}}>
             <CardBody>
               <FormControl
                 className={styles.generate}
@@ -282,7 +278,6 @@ export default function GeneratePoll() {
             </CardBody>
           </Card>
         </main>
-      </div>
-    </>
+    </div>
   );
 }
