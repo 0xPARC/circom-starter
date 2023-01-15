@@ -93,8 +93,8 @@ function PollDisplay() {
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     setYesSelected(e.currentTarget.textContent === "Yes" ? true : false);
     setNoSelected(e.currentTarget.textContent === "No" ? true : false);
-    console.log("YES SELECTED | NO SELECTED ", e.currentTarget.textContent )
-    console.log("IS INVALID KEY", invalidKey)
+    console.log("YES SELECTED | NO SELECTED ", e.currentTarget.textContent);
+    console.log("IS INVALID KEY", invalidKey);
   };
   const [pollLoaded, setPollLoaded] = useState(false);
   const [poll, setPoll] = useState<IPoll>({
@@ -111,25 +111,16 @@ function PollDisplay() {
 
   useEffect(() => {
     try {
-      console.log("Private key: ", privateKey)
-      
       let wallet = new ethers.Wallet(privateKey);
       let address = wallet.address;
-      console.log("address handles properly", address)
-      setPublicKey(
-        address
-      );
-      console.log("Successfully generated public key")
+      setPublicKey(address);
       setInvalidKey(false);
     } catch (e) {
-      console.log("Error generating key", e)
       setInvalidKey(true);
     }
     if (resultData != null) {
       setYesVoteCount(Number((resultData as number[])[0]));
-      console.log("yes votes", yesVoteCount);
       setNoVoteCount(Number((resultData as number[])[1]));
-      console.log("no votes", noVoteCount);
     }
     if (!id) return;
     const postData = async () => {
@@ -146,9 +137,7 @@ function PollDisplay() {
       setPoll(response);
       setPollLoaded(true);
     };
-    postData().then(
-      (res) => console.log("AFTER POST DATA: ", (yesSelected || noSelected), invalidKey == false, poll.active ),
-    );
+    postData();
   }, [id, resultData, privateKey]);
 
   const handleGenProof = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -198,7 +187,6 @@ function PollDisplay() {
       }
 
       setLoadingProof(false);
-      console.log("SET TO THIS PROOF RESPONSE", proofResponse);
     }
   };
 
@@ -273,6 +261,7 @@ function PollDisplay() {
                   fontFamily={
                     '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu'
                   }
+                  // noOfLines={1}
                 >
                   DEADLINE: {poll.deadline.toLocaleString()}
                 </Text>
@@ -373,7 +362,9 @@ function PollDisplay() {
                   <Button
                     ml={4}
                     disabled={
-                      (yesSelected || noSelected) && invalidKey == false && poll.active
+                      (yesSelected || noSelected) &&
+                      invalidKey == false &&
+                      poll.active
                         ? false
                         : true
                     }
@@ -388,7 +379,9 @@ function PollDisplay() {
                   <Button
                     ml={4}
                     disabled={
-                      proofResponse && invalidKey == false && poll.active ? false : true
+                      proofResponse && invalidKey == false && poll.active
+                        ? false
+                        : true
                     }
                     onClick={handleSubmitVote}
                     loadingText="Submitting Vote"
@@ -441,8 +434,8 @@ function PollDisplay() {
 export default function GeneratePoll() {
   return (
     <>
-      <Header />
       <div className={styles.container}>
+        <Header />
         <main className={styles.main}>
           <PollDisplay />
         </main>
