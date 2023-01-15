@@ -89,6 +89,9 @@ function PollDisplay() {
     args: [id],
   });
   console.log("RESULT DATA", resultData);
+  console.log("id", id);
+  console.log("isResultError", isResultError);
+  console.log("isResultLoading", isResultLoading);
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     setYesSelected(e.currentTarget.textContent === "Yes" ? true : false);
