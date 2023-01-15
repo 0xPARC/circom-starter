@@ -87,7 +87,7 @@ function PollDisplay() {
     address: SEMAPHORE_CONTRACT,
     abi: testABI,
     functionName: "getPollState",
-    args: ["2"],
+    args: [id],
     chainId: 5
   });
   console.log("RESULT DATA", resultData);
