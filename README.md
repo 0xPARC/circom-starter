@@ -8,8 +8,6 @@ zkPoll is an Ethereum-compatible anonymous polling application. Polls are launch
 
 **Convenience:** Poll participants do not need to generate new semaphore secrets, which reduces the resistance to voting and can garner more widespread poll results.
 
-Additionally, all votes are sent through a relayer (which sees no identifying information besides the poll & vote), more can be found in our relayer repo [here](https://github.com/ratankaliani/priv-poll-relayer).
-
 **Subgroup Polls:** Poll coordinators can pass in a merkle root of an arbitrary ETH subgroup (e.g. a merkle root of all ETH users who have interacted with a certain protocol or hold a certain token).
 
 **Anonymity Set:** Anonymity is limited to the size of the anonymity set. Subgroup polls enables larger polls. While all users in a merkle tree may not necessarily vote, this can expand the anonymity set.
@@ -20,6 +18,10 @@ Additionally, all votes are sent through a relayer (which sees no identifying in
 2. Poll participants generate a zero-knowledge proof that _“I know some_ `eth_priv_key` _corresponding to an_ `eth_pub_key` _contained in the merkle tree.”_ The particiapant submits `{vote, nullifier, proof}` to the smart contract.
 3. The voter’s `eth_pub_key` is nullified in the smart contract upon proof submission to prevent double-voting.
 4. Users can see the state of each poll (read from the smart contract). In this way, a group’s poll results are generated without revealing who voted for what.
+
+## Relayer
+
+Additionally, all votes are sent through a relayer (which sees no identifying information besides the poll & vote), more can be found in our relayer repo [here](https://github.com/ratankaliani/priv-poll-relayer).
 
 ## Future Work
 
