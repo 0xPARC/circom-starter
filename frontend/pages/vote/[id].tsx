@@ -208,6 +208,7 @@ function PollDisplay() {
         Number(id)
       );
       const success = response[3];
+      const errorMsg = response[4];
       const txHash = response[1];
       setTxHash(txHash);
       if (success) {
@@ -224,17 +225,45 @@ function PollDisplay() {
         });
       } else {
         // TODO: Add error checking if the transaction fails due to proof verifying incorrectly
-        toast({
-          title: "Transaction failed: Cannot vote twice!",
-          description: txHash,
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-          containerStyle: {
-            width: "700px",
-            maxWidth: "90%",
-          },
-        });
+        if (errorMsg === ethers.utils.Logger.errors.CALL_EXCEPTION) {
+          toast({
+            title: "Transaction failed: Cannot vote twice!",
+            description: txHash,
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+            containerStyle: {
+              width: "700px",
+              maxWidth: "90%",
+            },
+          });
+        } else if (errorMsg === ethers.utils.Logger.errors.TRANSACTION_REPLACED) {
+          toast({
+            title: "Already submitted tx with same nonce!",
+            description: txHash,
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+            containerStyle: {
+              width: "700px",
+              maxWidth: "90%",
+            },
+          });
+
+        } else {
+          toast({
+            title: "Server error, try submitting transaction in a few minutes.",
+            description: txHash,
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+            containerStyle: {
+              width: "700px",
+              maxWidth: "90%",
+            },
+          });
+
+        }
       }
 
       setLoadingSubmitVote(false);
