@@ -2,8 +2,8 @@ import * as React from "react";
 import styles from "../styles/Home.module.css";
 import { useState } from "react";
 import Header from "../components/header";
-import testABI from "../components/abi/test.json";
-import { generatePollinDB } from "../components/generatePoll";
+import testABI from "../helpers/abi/contract.json";
+import { generatePollinDB } from "../helpers/generatePoll";
 import { getAccount } from "@wagmi/core";
 import {
   Grid,

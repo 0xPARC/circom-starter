@@ -24,8 +24,8 @@ import {
 import { Flex, Spacer } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { getAccount } from "@wagmi/core";
-import { generateProof } from "../../components/generateProof";
-import { castVote } from "../../components/castVote";
+import { generateProof } from "../../helpers/generateProof";
+import { castVote } from "../../helpers/castVote";
 import { useToast } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import {
@@ -34,7 +34,7 @@ import {
   useSigner,
   useContractRead,
 } from "wagmi";
-import testABI from "../../components/abi/test.json";
+import testABI from "../../helpers/abi/contract.json";
 import { Progress } from "@chakra-ui/react";
 import styles from "../../styles/Home.module.css";
 import { BsFillPeopleFill } from "react-icons/bs";
