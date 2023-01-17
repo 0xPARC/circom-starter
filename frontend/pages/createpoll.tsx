@@ -3,7 +3,7 @@ import styles from "../styles/Home.module.css";
 import { useState } from "react";
 import Header from "../components/header";
 import testABI from "../helpers/abi/contract.json";
-import { generatePollinDB } from "../helpers/generatePoll";
+import { generatePollinDB } from "../helpers/generatePoll"
 import { getAccount } from "@wagmi/core";
 import {
   Grid,
