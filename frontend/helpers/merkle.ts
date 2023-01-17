@@ -1,9 +1,5 @@
-import prisma from '../lib/prisma';
-import { MerkleTree } from 'merkletreejs'
-import keccak256 from 'keccak256'
 import { buildTreePoseidon, verifyInTree } from './merklePoseidon';
 import axios from 'axios'
-import build from 'next/dist/build';
 // const buildPoseidon = require("circomlibjs").buildPoseidon;
 
 // /**
@@ -36,13 +32,7 @@ export async function createPoseidonTree(addresses: string[]) {
     // Handles arbitrary input!
     var tree = await buildTreePoseidon(addresses)
 
-    // console.log("GETS HERE")
-
-    // console.log(tree.root)
-
     var rootString = tree.root.toString()
-
-    console.log("rootString", rootString)
 
     return {rootHash: rootString}
 }
@@ -63,8 +53,7 @@ export async function verifyAddressInTree(address: string, pollId: number) {
     var merkleTree = await buildTreePoseidon(tree.leaves)
     var BigIntAddress = BigInt(address).toString()
     var inTree = await verifyInTree(merkleTree.root.toString(), address, merkleTree.leafToPathElements[BigIntAddress], merkleTree.leafToPathIndices[BigIntAddress])
-    // console.log("inTree", inTree)
-    // var inTree = merkleTree.verify(proof, address, merkleTree.getRoot())
+
     return {isValidPollId: true, inTree: inTree}
 }
 
@@ -82,25 +71,9 @@ export async function getSiblingsAndPathIndices(address: string, pollId: number)
     }
     var tree = response.data.tree;
     var merkleTree = await buildTreePoseidon(tree.leaves)
-    console.log(merkleTree.leafToPathElements)
-    console.log(merkleTree.leafToPathIndices)
-
-
-    // const proof = merkleTree.getProof(address)
-    // var siblings = []
-    // var pathIndices = []
-    // for (var i = 0; i < proof.length; i++) {
-    //     var siblingHash = proof[i].data.toString('hex')
-    //     siblings.push(siblingHash)
-    //     // If left 0, if right 1
-    //     var pathIndex = proof[i].position == 'left' ? 1 : 0
-    //     pathIndices.push(pathIndex)
-    // }
     
     var siblings = []
-    // console.log(await merkleTree.leafToPathIndices.length)
-    // console.log(merkleTree.leafToPathElements[address])
-    // console.log(BigIntAddress)
+
     let BigIntAddress = "";
     
     // Not in valid format!
@@ -121,22 +94,3 @@ export async function getSiblingsAndPathIndices(address: string, pollId: number)
         return {isValidPollId: true, siblings: siblings, pathIndices: merkleTree.leafToPathIndices[BigIntAddress]}
     }
 }
-
-// /** 
-//  * @function: getSiblingsAndPathIndices
-//  * @description: This function gets the siblings and path indices of an address in a merkle tree for the verifier & generator.
-//  * @returns {number} pollId - Poll id of the poll that was created.
-//  * @returns {[]string} tree - The merkle tree that was created.
-//  */
-// async function getTreeFromPollId(pollId: number) {
-
-//     const tree = await prisma.merkleTree.findUnique({
-//         where: {
-//             id: pollId
-//         },
-//     })
-//     // Print all polls!
-//     // console.dir(tree, { depth: null })
-
-//     return {tree: tree, pollId: pollId}
-// }
