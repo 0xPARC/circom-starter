@@ -25,6 +25,10 @@ zkPoll is an Ethereum-compatible anonymous polling application. Polls are launch
 
 Additionally, all votes are sent through a relayer (which sees no identifying information besides the poll & vote), more can be found in our relayer repo [here](https://github.com/ratankaliani/zk-poll-relayer).
 
+## Contract
+
+zkPoll is currently deployed on Goerli Testnet, and the contract can be found [here](https://goerli.etherscan.io/address/0x426bf8b7c4f5cb67eb838ce2585116598ce3019a).
+
 ## Future Work
 
 ### Merkle Exclusion Proofs
