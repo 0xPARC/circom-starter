@@ -23,7 +23,7 @@ zkPoll is an Ethereum-compatible anonymous polling application. Polls are launch
 
 ## Relayer
 
-Additionally, all votes are sent through a relayer (which sees no identifying information besides the poll & vote), more can be found in our relayer repo [here](https://github.com/ratankaliani/priv-poll-relayer).
+Additionally, all votes are sent through a relayer (which sees no identifying information besides the poll & vote), more can be found in our relayer repo [here](https://github.com/ratankaliani/zk-poll-relayer).
 
 ## Future Work
 
