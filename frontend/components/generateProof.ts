@@ -23,16 +23,11 @@ const splitPrivateKey = (bigint_identityNullifier: bigint) => {
     return chunks;
   };
 
-async function generateProof(identityNullifier: string, publicKey: string, vote: number, pollId: number) {
-    console.log("Generating Proof")
-    console.log("Address: ", publicKey)
-    const response = await getSiblingsAndPathIndices(publicKey, pollId);
 
-    // if (response.data.name == "invalid poll id") {
-    //         return ["There is no poll corresponding to this poll ID.", [], ""]
-    // } else if (response.data.name == "invalid address for poll") {
-    //     return ["This address is not eligible for this poll.", [], ""]
-    // }
+
+async function generateProof(identityNullifier: string, publicKey: string, vote: number, pollId: number) {
+
+    const response = await getSiblingsAndPathIndices(publicKey, pollId);
     
 
     const siblings = response.siblings
@@ -49,11 +44,7 @@ async function generateProof(identityNullifier: string, publicKey: string, vote:
         externalNullifier: pollId
     }
 
-    // const wasmPath = "./semaphore.wasm";
-    // const zkeyPath = "./semaphore.zkey";
-    // const vkeyPath = "./semaphore.vkey.json";
-
-    await downloadFromFilename("https://zkpoll.s3.us-west-1.amazonaws.com/", "ecdsa-semaphore_16");
+    await downloadFromFilename("https://d34j71521rx7kc.cloudfront.net", "ecdsa-semaphore_16");
 
     const {proof, publicSignals} = await fullProve(input, "ecdsa-semaphore_16")
     const proofForTx = [
@@ -68,42 +59,7 @@ async function generateProof(identityNullifier: string, publicKey: string, vote:
       ];
     const nullifierHash = publicSignals[1];
 
-    // const outputResponse = await axios.post("/api/generateProof", {
-    //     data: input
-    // })
-
-    // const proofForTx = outputResponse.data.proofForTx;
-    // const nullifierHash = publicSignals[1];
-    // console.log("In components", outputResponse.data.name)
     return ["", proofForTx, nullifierHash];
-
-
-    // const result = await snarkjs.groth16.fullProve(
-    //     input,
-    //     "./semaphore.wasm",
-    //     "./semaphore.zkey"
-    //   );
-
-    // const worker = new Worker("worker.js");
-    // // console.log("Before posting input to worker")
-    // worker.postMessage([input]);
-    // // console.log("After posting input to worker")
-    // worker.onmessage = (e) => {
-    //     console.log("In onmessage")
-    //     const { proof, publicSignals } = e.data;
-    //     console.log("PROOF SUCCESSFULLY GENERATED: ", proof);
-    //     const proofForTx = [
-    //         proof.pi_a[0],
-    //         proof.pi_a[1],
-    //         proof.pi_b[0][1],
-    //         proof.pi_b[0][0],
-    //         proof.pi_b[1][1],
-    //         proof.pi_b[1][0],
-    //         proof.pi_c[0],
-    //         proof.pi_c[1],
-    //       ];
-    //       return proofForTx;
-    // }
 
 }
 
