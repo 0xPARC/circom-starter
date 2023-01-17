@@ -15,7 +15,7 @@ zkPoll is an Ethereum-compatible anonymous polling application. Polls are launch
 ## Flow
 
 1. A poll coordinator authenticates to the dApp and creates a poll in the smart contract, passing in a merkle root of the public addresses in the ETH subgroup.
-2. Poll participants generate a zero-knowledge proof that _“I know some_ `eth_priv_key` _corresponding to an_ `eth_pub_key` _contained in the merkle tree.”_ The particiapant submits `{vote, nullifier, proof}` to the smart contract.
+2. Poll participants generate a zero-knowledge proof that _“I know some_ `eth_priv_key` _corresponding to an_ `eth_pub_key` _contained in the merkle tree.”_ Each proof is generated fully on client-side (such that no private information gets sent outside of the client's interface). The particiapant submits `{vote, nullifier, proof}` to the smart contract.
 3. The voter’s `eth_pub_key` is nullified in the smart contract upon proof submission to prevent double-voting.
 4. Users can see the state of each poll (read from the smart contract). In this way, a group’s poll results are generated without revealing who voted for what.
 
