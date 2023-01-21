@@ -27,8 +27,8 @@ export default function Header() {
 
   const { colorMode, toggleColorMode } = useColorMode();
 
-  let pages: string[] = ["Home", "Generate Poll"];
-  let paths: string[] = ["/", "/generatepoll"];
+  let pages: string[] = ["Home", "Create Poll"];
+  let paths: string[] = ["/", "/createpoll"];
 
   return (
     <Box as="section" pb={{ base: "12", md: "25" }}>

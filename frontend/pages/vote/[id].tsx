@@ -24,8 +24,8 @@ import {
 import { Flex, Spacer } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { getAccount } from "@wagmi/core";
-import { generateProof } from "../../components/generateProof";
-import { castVote } from "../../components/castVote";
+import { generateProof } from "../../helpers/generateProof";
+import { castVote } from "../../helpers/castVote";
 import { useToast } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import {
@@ -34,7 +34,7 @@ import {
   useSigner,
   useContractRead,
 } from "wagmi";
-import testABI from "../../components/abi/test.json";
+import testABI from "../../helpers/abi/contract.json";
 import { Progress } from "@chakra-ui/react";
 import styles from "../../styles/Home.module.css";
 import { BsFillPeopleFill } from "react-icons/bs";
@@ -87,7 +87,8 @@ function PollDisplay() {
     address: SEMAPHORE_CONTRACT,
     abi: testABI,
     functionName: "getPollState",
-    args: ["2"],
+    args: [id],
+    chainId: 5
   });
   console.log("RESULT DATA", resultData);
   console.log("id", id);
@@ -96,10 +97,6 @@ function PollDisplay() {
   console.log("SEMAPHORE_CONTRACT", SEMAPHORE_CONTRACT);
   console.log("error!", error)
   console.log("trying to change id to num")
-
-  // const { data: resultData2, isError: isResultError2, isLoading: isResultLoading2 } = useWaitForTransaction({
-  //   hash: `0x${txHash}`,
-  // });
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     setYesSelected(e.currentTarget.textContent === "Yes" ? true : false);
@@ -211,6 +208,7 @@ function PollDisplay() {
         Number(id)
       );
       const success = response[3];
+      const errorMsg = response[4];
       const txHash = response[1];
       setTxHash(txHash);
       if (success) {
@@ -227,17 +225,45 @@ function PollDisplay() {
         });
       } else {
         // TODO: Add error checking if the transaction fails due to proof verifying incorrectly
-        toast({
-          title: "Transaction failed: Cannot vote twice!",
-          description: txHash,
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-          containerStyle: {
-            width: "700px",
-            maxWidth: "90%",
-          },
-        });
+        if (errorMsg === ethers.utils.Logger.errors.CALL_EXCEPTION) {
+          toast({
+            title: "Transaction failed: Cannot vote twice!",
+            description: txHash,
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+            containerStyle: {
+              width: "700px",
+              maxWidth: "90%",
+            },
+          });
+        } else if (errorMsg === ethers.utils.Logger.errors.TRANSACTION_REPLACED) {
+          toast({
+            title: "Already submitted tx with same nonce!",
+            description: txHash,
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+            containerStyle: {
+              width: "700px",
+              maxWidth: "90%",
+            },
+          });
+
+        } else {
+          toast({
+            title: "Server error, try submitting transaction in a few minutes.",
+            description: txHash,
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+            containerStyle: {
+              width: "700px",
+              maxWidth: "90%",
+            },
+          });
+
+        }
       }
 
       setLoadingSubmitVote(false);

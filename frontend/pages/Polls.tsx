@@ -70,7 +70,7 @@ export function Polls() {
           <Input
             placeholder="🔎 Search"
             value={searchTerm}
-            width={568}
+            width={727}
             onChange={(e) => setSearchTerm(e.target.value)}
             _hover={{ borderColor: "#9B72F2", borderWidth: "1px" }}
             focusBorderColor={"#9B72F2"}

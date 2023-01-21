@@ -8,7 +8,8 @@ async function castVote(nullifierHash: string, proof: string[], vote: number, po
         proof: proof,
         pollId: pollId
     })
-    return [response.data.name, response.data.txHash, response.data.pollId, response.data.success];
+    console.log(response)
+    return [response.data.name, response.data.txHash, response.data.pollId, response.data.success, response.data.errorMsg];
 
 }
 
