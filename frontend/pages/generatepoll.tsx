@@ -18,23 +18,27 @@ import {
 } from "@chakra-ui/react";
 import { FormControl, Input, Button, Heading } from "@chakra-ui/react";
 import { Card, CardBody } from "@chakra-ui/react";
-<<<<<<< Updated upstream
-import { useContract, useSigner, useWaitForTransaction, useEnsAddress } from "wagmi";
-=======
-import { useContract, useSigner, useWaitForTransaction, useEnsAddress, createClient } from "wagmi";
-import { ethers, getDefaultProvider, Wallet} from "ethers";
+import {
+  useContract,
+  useSigner,
+  useWaitForTransaction,
+  useEnsAddress,
+  createClient,
+} from "wagmi";
+import { ethers, getDefaultProvider, Wallet } from "ethers";
 
-const provider = new ethers.providers.JsonRpcProvider(process.env.GOERLI_RPC_URL, "goerli");
+const provider = new ethers.providers.JsonRpcProvider(
+  process.env.GOERLI_RPC_URL,
+  "goerli"
+);
 const wallet = new ethers.Wallet(process.env.GOERLI_PRIVATE_KEY, provider);
 const signer = wallet.connect(provider);
 
-  const getENS = (addr: String) => {
-    addr = addr.trim();
-    const address = signer.resolveName(addr?.toString());
-    return address;
-  }
-
->>>>>>> Stashed changes
+const getENS = (addr: String) => {
+  addr = addr.trim();
+  const address = signer.resolveName(addr?.toString());
+  return address;
+};
 
 interface FormValues {
   title: string;
@@ -92,27 +96,27 @@ export default function GeneratePoll() {
   const splitAddresses = (stringAddresses: string) => {
     setTempAddresses(stringAddresses);
     const split = stringAddresses.split(",");
-    const addressesTemp:string[] = [];
+    const addressesTemp: string[] = [];
     if (split) {
       for (let i = 0; i < split.length; i++) {
-        let addr = split[i].trim()
+        let addr = split[i].trim();
         if (addr.includes(".eth")) {
-          setTemp(addr)
-          console.log('ETH Address ', addr, 'is now address', ensData)
-          addressesTemp.push(ensData!)
+          setTemp(addr);
+          console.log("ETH Address ", addr, "is now address", ensData);
+          addressesTemp.push(ensData!);
         } else {
-          console.log('No ETH Address here')
-          addressesTemp.push(addr!)
+          console.log("No ETH Address here");
+          addressesTemp.push(addr!);
         }
       }
     }
-    setAddresses(addressesTemp)
-    console.log('Final addresses ', addresses)
+    setAddresses(addressesTemp);
+    console.log("Final addresses ", addresses);
   };
 
   const { data: ensData } = useEnsAddress({
     name: temp,
-  })
+  });
 
   const postData = async (addressesArr: string[]) => {
     let setDeadline;
@@ -128,9 +132,16 @@ export default function GeneratePoll() {
     //   },
     // };
 
-    const dbOutput = await generatePollinDB(title, addressesArr, description, groupDescription, Date.now(), setDeadline);
-    console.log("In pages: ", dbOutput)
-    return dbOutput
+    const dbOutput = await generatePollinDB(
+      title,
+      addressesArr,
+      description,
+      groupDescription,
+      Date.now(),
+      setDeadline
+    );
+    console.log("In pages: ", dbOutput);
+    return dbOutput;
     // console.log(response);
     // if (response.status === 200) {
     //   const temp = await response.json();
@@ -199,90 +210,90 @@ export default function GeneratePoll() {
   return (
     <div className={styles.container}>
       <Header />
-        <main className={styles.main}>
-          <Card variant={"elevated"} style={{ maxWidth: "98%", width: 600}}>
-            <CardBody>
-              <FormControl
-                className={styles.generate}
-                onSubmit={(e) => handleSubmit(e, addresses)}
-              >
-                <Input
-                  placeholder="Title"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  focusBorderColor={"#9B72F2"}
-                />
-                <Input
-                  placeholder="Additional Description"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  focusBorderColor={"#9B72F2"}
-                />
-                <Input
-                  placeholder="Group Description"
-                  value={groupDescription}
-                  onChange={(e) => setGroupDescription(e.target.value)}
-                  focusBorderColor={"#9B72F2"}
-                />
-                <Input
-                  placeholder="Public Addresses"
-                  value={tempAddresses}
-                  onChange={(e) => splitAddresses(e.target.value)}
-                  focusBorderColor={"#9B72F2"}
-                />
-                <Grid templateColumns="repeat(10, 1fr)" gap={3} ml={1}>
-                  <GridItem colSpan={7} w="100%" h="10">
-                    {" "}
-                    <Slider
-                      id="slider"
-                      defaultValue={5}
-                      min={0}
-                      max={24}
-                      mt={3}
-                      colorScheme="purple"
-                      onChange={(v) => setDuration(v)}
-                      onMouseEnter={() => setShowTooltip(true)}
-                      onMouseLeave={() => setShowTooltip(false)}
+      <main className={styles.main}>
+        <Card variant={"elevated"} style={{ maxWidth: "98%", width: 600 }}>
+          <CardBody>
+            <FormControl
+              className={styles.generate}
+              onSubmit={(e) => handleSubmit(e, addresses)}
+            >
+              <Input
+                placeholder="Title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                focusBorderColor={"#9B72F2"}
+              />
+              <Input
+                placeholder="Additional Description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                focusBorderColor={"#9B72F2"}
+              />
+              <Input
+                placeholder="Group Description"
+                value={groupDescription}
+                onChange={(e) => setGroupDescription(e.target.value)}
+                focusBorderColor={"#9B72F2"}
+              />
+              <Input
+                placeholder="Public Addresses"
+                value={tempAddresses}
+                onChange={(e) => splitAddresses(e.target.value)}
+                focusBorderColor={"#9B72F2"}
+              />
+              <Grid templateColumns="repeat(10, 1fr)" gap={3} ml={1}>
+                <GridItem colSpan={7} w="100%" h="10">
+                  {" "}
+                  <Slider
+                    id="slider"
+                    defaultValue={5}
+                    min={0}
+                    max={24}
+                    mt={3}
+                    colorScheme="purple"
+                    onChange={(v) => setDuration(v)}
+                    onMouseEnter={() => setShowTooltip(true)}
+                    onMouseLeave={() => setShowTooltip(false)}
+                  >
+                    <SliderTrack>
+                      <SliderFilledTrack />
+                    </SliderTrack>
+                    <Tooltip
+                      hasArrow
+                      bg="#9B72F2"
+                      color="white"
+                      placement="top"
+                      isOpen={showTooltip}
+                      label={duration}
                     >
-                      <SliderTrack>
-                        <SliderFilledTrack />
-                      </SliderTrack>
-                      <Tooltip
-                        hasArrow
-                        bg="#9B72F2"
-                        color="white"
-                        placement="top"
-                        isOpen={showTooltip}
-                        label={duration}
-                      >
-                        <SliderThumb />
-                      </Tooltip>
-                    </Slider>
-                  </GridItem>
-                  <GridItem colSpan={3} w="100%" h="10" mt={1}>
+                      <SliderThumb />
+                    </Tooltip>
+                  </Slider>
+                </GridItem>
+                <GridItem colSpan={3} w="100%" h="10" mt={1}>
                   {"Duration: " + duration + " hr"}
-                  </GridItem>
-                </Grid>
-                <Button
-                  type="submit"
-                  size="md"
-                  colorScheme="blue"
-                  isLoading={contractLoading || dbLoading}
-                  loadingText={
-                    dbLoading ? "Generating merkle root" : "Submitting poll"
-                  }
-                  onClick={(e) => handleSubmit(e, addresses)}
-                  backgroundColor={"#8f00ff"}
-                  _hover={{ backgroundColor: "#5b0a91" }}
-                  color={"white"}
-                  disabled={!account.isConnected}
-                >
-                  Generate
-                </Button>
-              </FormControl>
-            </CardBody>
-          </Card>
-        </main>
+                </GridItem>
+              </Grid>
+              <Button
+                type="submit"
+                size="md"
+                colorScheme="blue"
+                isLoading={contractLoading || dbLoading}
+                loadingText={
+                  dbLoading ? "Generating merkle root" : "Submitting poll"
+                }
+                onClick={(e) => handleSubmit(e, addresses)}
+                backgroundColor={"#8f00ff"}
+                _hover={{ backgroundColor: "#5b0a91" }}
+                color={"white"}
+                disabled={!account.isConnected}
+              >
+                Generate
+              </Button>
+            </FormControl>
+          </CardBody>
+        </Card>
+      </main>
     </div>
   );
 }
