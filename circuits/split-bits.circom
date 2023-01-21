@@ -52,7 +52,4 @@ template Split4(a, b, c, d) {
 
 }
 
-<<<<<<< HEAD
 // component main = Split4(64,64,64,64);
-=======
->>>>>>> beea02666f1a9df73db89dfc208e1b7d0039143e
