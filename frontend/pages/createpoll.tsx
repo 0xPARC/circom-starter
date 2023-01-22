@@ -3,7 +3,7 @@ import styles from "../styles/Home.module.css";
 import { useState } from "react";
 import Header from "../components/header";
 import testABI from "../helpers/abi/contract.json";
-import { generatePollinDB } from "../helpers/generatePoll"
+import { generatePollinDB } from "../helpers/generatePoll";
 import { getAccount } from "@wagmi/core";
 import {
   Grid,
@@ -23,22 +23,7 @@ import {
   useSigner,
   useWaitForTransaction,
   useEnsAddress,
-  createClient,
 } from "wagmi";
-import { ethers, getDefaultProvider, Wallet } from "ethers";
-
-const provider = new ethers.providers.JsonRpcProvider(
-  process.env.GOERLI_RPC_URL,
-  "goerli"
-);
-const wallet = new ethers.Wallet(process.env.GOERLI_PRIVATE_KEY, provider);
-const signer = wallet.connect(provider);
-
-const getENS = (addr: String) => {
-  addr = addr.trim();
-  const address = signer.resolveName(addr?.toString());
-  return address;
-};
 
 interface FormValues {
   title: string;
