@@ -36,6 +36,7 @@ import {
   Icon,
 } from '@chakra-ui/react'
 import { FiFile } from 'react-icons/fi'
+import Papa, {parse, ParseResult} from 'papaparse'
 
 
 const provider = new ethers.providers.JsonRpcProvider(
@@ -52,6 +53,10 @@ const getENS = (addr: String) => {
   addr = addr.trim()
   const address = signer.resolveName(addr?.toString())
   return address
+}
+
+function timeout(delay: number) {
+  return new Promise( res => setTimeout(res, delay) );
 }
 
 interface FormValues {
@@ -96,6 +101,8 @@ export default function GeneratePoll() {
   const [currHash, setHash] = useState()
   const [showTooltip, setShowTooltip] = React.useState(false)
   const [temp, setTemp] = useState<string>('')
+  const [file, setFile] = useState<File | null>(null)
+  let csvAddresses: string[] = [];
 
   const { data, isError, isLoading } = useWaitForTransaction({
     hash: currHash,
@@ -167,12 +174,36 @@ export default function GeneratePoll() {
     // }
   }
 
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files) {
+      setFile(event.target.files[0])
+    }
+  }
+
+  function onParseCsv(results: ParseResult<any>) {
+    console.log('Parsed CSV: ', results.data)
+    csvAddresses = results.data
+  }
+
   async function handleSubmit(
     e: { preventDefault: () => void },
     addressesArr: string[],
   ) {
     setDbLoading(true)
     e.preventDefault()
+
+    if (!file) {
+      console.log("no file")
+    } else {
+      console.log('Uploaded a file')
+      Papa.parse(file, {
+      complete: onParseCsv,
+      })
+      await timeout(2000);
+    }
+
+    const finalAddresses = Array.from(new Set([...addresses, ...csvAddresses]))
+    setAddresses(finalAddresses)
 
     const responseArr = await postData(addressesArr)
     // console.log(responseArr)
@@ -257,7 +288,7 @@ export default function GeneratePoll() {
 
 
               <p>or Upload a CSV of public addresses</p>
-              <input type="file" accept={'.csv'}/>
+              <input type="file" accept={'.csv'} onChange={handleFileUpload}/>
 
               <Grid templateColumns="repeat(10, 1fr)" gap={3} ml={1}>
                 <GridItem colSpan={7} w="100%" h="10">
